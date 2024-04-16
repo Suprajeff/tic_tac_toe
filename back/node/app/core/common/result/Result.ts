@@ -1,8 +1,8 @@
 type Result<T> = SuccessRes<T> | ErrorRes | NotFound;
 
 type SuccessRes<T> = {
-    type: "success";
-    data: T;
+    readonly type: "success";
+    readonly data: T;
 }
 
 type ErrorRes = {
