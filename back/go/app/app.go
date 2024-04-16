@@ -1,9 +1,9 @@
-package app
+package main
 
 import (
 	"fmt"
 )
 
-func app() {
+func main() {
 	fmt.Println("GO!")
 }
