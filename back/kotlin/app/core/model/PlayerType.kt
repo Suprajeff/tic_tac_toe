@@ -1,0 +1,1 @@
+data class PlayerType(val symbol: CellType)
