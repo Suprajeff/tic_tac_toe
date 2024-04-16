@@ -3,38 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tic Tac Toe</title>
-    <style>
-        .board {
-            display: grid;
-            grid-template-columns: repeat(3, 100px);
-            grid-template-rows: repeat(3, 100px);
-            gap: 10px;
-        }
-
-        .cell {
-            background-color: #eee;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 3rem;
-            cursor: pointer;
-        }
-    </style>
-</head>
-<body>
-    <div id="game">
-        <div class="board">
-            <div class="cell" hx-get="/move/0" hx-trigger="click" hx-target="#game"></div>
-            <div class="cell" hx-get="/move/1" hx-trigger="click" hx-target="#game"></div>
-            <div class="cell" hx-get="/move/2" hx-trigger="click" hx-target="#game"></div>
-            <div class="cell" hx-get="/move/3" hx-trigger="click" hx-target="#game"></div>
-            <div class="cell" hx-get="/move/4" hx-trigger="click" hx-target="#game"></div>
-            <div class="cell" hx-get="/move/5" hx-trigger="click" hx-target="#game"></div>
-            <div class="cell" hx-get="/move/6" hx-trigger="click" hx-target="#game"></div>
-            <div class="cell" hx-get="/move/7" hx-trigger="click" hx-target="#game"></div>
-            <div class="cell" hx-get="/move/8" hx-trigger="click" hx-target="#game"></div>
+        <title>Tic Tac Toe</title>
+        <script src="https://unpkg.com/htmx.org@1.8.4"></script>
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body class="flex justify-center items-center h-screen">
+        <div id="game" class="flex items-center justify-center">
+            <div class="grid grid-cols-3 grid-rows-3 gap-4 bg-gray-200 p-4 rounded-lg h-64 w-64">
+                <div class="flex items-center justify-center text-4xl bg-white text-gray-700 hover:bg-gray-300 transition-colors cursor-pointer" hx-get="/move/0" hx-trigger="click" hx-target="#game"></div>
+                <div class="flex items-center justify-center text-4xl bg-white text-gray-700 hover:bg-gray-300 transition-colors cursor-pointer" hx-get="/move/1" hx-trigger="click" hx-target="#game"></div>
+                <div class="flex items-center justify-center text-4xl bg-white text-gray-700 hover:bg-gray-300 transition-colors cursor-pointer" hx-get="/move/2" hx-trigger="click" hx-target="#game"></div>
+                <div class="flex items-center justify-center text-4xl bg-white text-gray-700 hover:bg-gray-300 transition-colors cursor-pointer" hx-get="/move/3" hx-trigger="click" hx-target="#game"></div>
+                <div class="flex items-center justify-center text-4xl bg-white text-gray-700 hover:bg-gray-300 transition-colors cursor-pointer" hx-get="/move/4" hx-trigger="click" hx-target="#game"></div>
+                <div class="flex items-center justify-center text-4xl bg-white text-gray-700 hover:bg-gray-300 transition-colors cursor-pointer" hx-get="/move/5" hx-trigger="click" hx-target="#game"></div>
+                <div class="flex items-center justify-center text-4xl bg-white text-gray-700 hover:bg-gray-300 transition-colors cursor-pointer" hx-get="/move/6" hx-trigger="click" hx-target="#game"></div>
+                <div class="flex items-center justify-center text-4xl bg-white text-gray-700 hover:bg-gray-300 transition-colors cursor-pointer" hx-get="/move/7" hx-trigger="click" hx-target="#game"></div>
+                <div class="flex items-center justify-center text-4xl bg-white text-gray-700 hover:bg-gray-300 transition-colors cursor-pointer" hx-get="/move/8" hx-trigger="click" hx-target="#game"></div>
+            </div>
         </div>
-    </div>
-</body>
-</html>
+    </body>
+    </html>
