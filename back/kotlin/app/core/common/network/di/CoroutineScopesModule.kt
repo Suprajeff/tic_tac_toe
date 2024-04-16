@@ -1,13 +1,18 @@
 object CoroutineScopesModule {    
     private var scope: CoroutineScope? = null
+    private val scopeLock = Any()
 
     fun providesCoroutineScope(dispatcher: CoroutineDispatcher): CoroutineScope {
-        return scope ?: createAndStoreScope(dispatcher)
+        synchronized(scopeLock) {
+            return scope ?: createAndStoreScope(dispatcher)
+        }
     }
 
     private fun createAndStoreScope(dispatcher: CoroutineDispatcher): CoroutineScope {
         val newScope = CoroutineScope(SupervisorJob() + dispatcher)
-        scope = newScope
+        synchronized(scopeLock) {
+            scope = newScope
+        }
         return newScope
     }
 }
