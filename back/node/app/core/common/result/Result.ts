@@ -6,20 +6,14 @@ type SuccessRes<T> = {
 }
 
 type ErrorRes = {
-    type: "error";
-    exception: any;
+    readonly type: "error";
+    readonly exception: any;
 }
 
 type NotFound = {
-    type: "notFound";
+    readonly type: "notFound";
 }
 
-function success<T>(data: T): SuccessRes<T> {
-    return { type: "success", data };
-}
-
-function error(exception: any): ErrorRes {
-    return { type: "error", exception };
-}
-
+const success = <T>(data: T): SuccessRes<T> => ({ type: "success", data });
+const error = (exception: any): ErrorRes => ({ type: "error", exception });
 const notFound: NotFound = { type: "notFound" };
