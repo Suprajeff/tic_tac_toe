@@ -17,3 +17,5 @@ type NotFound = {
 const success = <T>(data: T): SuccessRes<T> => ({ type: "success", data });
 const error = (exception: any): ErrorRes => ({ type: "error", exception });
 const notFound: NotFound = { type: "notFound" };
+
+export {Result, success, error, notFound}
