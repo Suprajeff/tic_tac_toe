@@ -1,6 +1,6 @@
 import Foundation
 
-protocol GameRepository {
+protocol GameUseCases {
     func initializeGame() -> Result<GameType, Error>
     func getGame() -> Result<GameType, Error>
     func makeMove(row: Int, col: Int) -> Result<GameType, Error>

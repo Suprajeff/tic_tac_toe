@@ -2,7 +2,7 @@ package repository
 
 import "go-ttt/app/core/model"
 
-type GameRepository interface {
+type GameUseCases interface {
 	initializeGame() (*model.GameType, error)
 	getGame() (*model.GameType, error)
 	makeMove(row, col uint8) (*model.GameType, error)
