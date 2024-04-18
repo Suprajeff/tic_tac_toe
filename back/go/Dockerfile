@@ -1,3 +1,15 @@
-FROM golang:1.16
+FROM golang:1.17
+
 WORKDIR /app
+
+COPY go.mod go.sum ./
+
+RUN go mod tidy
+
 COPY . .
+
+RUN go build -o app ./app
+
+EXPOSE 8080
+
+CMD ["./app"]
