@@ -4,19 +4,19 @@ services:
     image: node-ttt
     command: tail -f /dev/null
     volumes:
-      - ./node:/app
+      - ./back/node:/app
   go:
     image: go-ttt
     command: tail -f /dev/null
     volumes:
-      - ./go:/app
+      - ./back/go:/app
   kotlin:
     image: kotlin-ttt
     command: tail -f /dev/null
     volumes:
-      - ./kotlin:/app
+      - ./back/kotlin:/app
   swift:
     image: swift-ttt
     command: tail -f /dev/null
     volumes:
-      - ./swift:/app
+      - ./back/swift:/app
