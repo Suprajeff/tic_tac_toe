@@ -1,6 +1,6 @@
 import Foundation
 
-func withErrorHandling<T>(_ asynchronousOperation: @escaping () async throws -> T) -> () async rethrows -> T {
+func withErrorHandling<T>(_ asynchronousOperation: @escaping () async throws -> T) -> () async throws -> T {
     return {
         do {
             return try await asynchronousOperation()

@@ -1,4 +1,6 @@
 import Foundation
 
-print("Swift Ok!")
+func main() {
+    print("Swift Ok!")
+}
 

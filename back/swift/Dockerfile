@@ -4,5 +4,20 @@ FROM swift:latest
 # Set the working directory in the container
 WORKDIR /app
 
+# Copy package.swift
+COPY Package*.swift ./
+
+# Resolve dependencies
+RUN /usr/bin/swift package resolve
+
 # Copy the Swift files into the container
 COPY . .
+
+# Build the Vapor app
+RUN swift build -c release
+
+# Expose the port Vapor will run on
+EXPOSE 8083
+
+# Start Vapor app
+CMD ["./Run"]
