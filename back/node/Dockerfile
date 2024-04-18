@@ -7,7 +7,12 @@ COPY package*.json ./
 # Install npm packages including dev dependencies
 RUN npm install
 
-COPY dist .
+# COPY dist .
+# Copy entire project
+COPY . .
+
+# tsc
+RUN npm run build
 
 EXPOSE 8081
 
