@@ -5,6 +5,8 @@ services:
     command: tail -f /dev/null
     volumes:
       - ./back/node:/app
+    ports:
+      - "8081:8081"
     depends_on:
       - redis
   go:
@@ -12,6 +14,8 @@ services:
     command: tail -f /dev/null
     volumes:
       - ./back/go:/app
+    ports:
+      - "8080:8080"
     depends_on:
       - redis
   kotlin:
@@ -19,11 +23,19 @@ services:
     command: tail -f /dev/null
     volumes:
       - ./back/kotlin:/app
+    ports:
+      - "8082:8082"
+    depends_on:
+      - redis
   swift:
     image: swift-ttt
     command: tail -f /dev/null
     volumes:
       - ./back/swift:/app
+    ports:
+      - "8083:8083"
+    depends_on:
+      - redis
   redis:
     image: "redis:latest"
     ports:
