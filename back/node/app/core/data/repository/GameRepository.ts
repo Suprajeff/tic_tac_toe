@@ -1,6 +1,7 @@
-import {PlayerType} from "../model/PlayerType";
-import {BoardType} from "../model/BoardType";
-import {GameType} from "../model/GameType";
+import {PlayerType} from "../../model/PlayerType";
+import {BoardType} from "../../model/BoardType";
+import {GameType} from "../../model/GameType";
+import { Result } from "../../common/result/Result";
 
 interface GameRepository {
     createNewGame(): Promise<Result<GameType>>;
