@@ -5,11 +5,15 @@ services:
     command: tail -f /dev/null
     volumes:
       - ./back/node:/app
+    depends_on:
+      - redis
   go:
     image: go-ttt
     command: tail -f /dev/null
     volumes:
       - ./back/go:/app
+    depends_on:
+      - redis
   kotlin:
     image: kotlin-ttt
     command: tail -f /dev/null
@@ -20,6 +24,10 @@ services:
     command: tail -f /dev/null
     volumes:
       - ./back/swift:/app
+  redis:
+    image: "redis:latest"
+    ports:
+      - "6379:6379"
   frontend:
       image: nginx:alpine
       volumes:
