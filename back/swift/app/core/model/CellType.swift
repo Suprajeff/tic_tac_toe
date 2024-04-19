@@ -1,5 +1,7 @@
 import Foundation
 
 enum CellType {
-    case X, O, EMPTY
+    case X, O
 }
+
+// var emptyCell: CellType? = nil

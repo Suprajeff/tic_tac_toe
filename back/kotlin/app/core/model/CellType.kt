@@ -1,3 +1,5 @@
 enum class CellType {
-    X, O, EMPTY
+    X, O
 }
+
+// var emptyCell: CellType? = null
