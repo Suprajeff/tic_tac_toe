@@ -1,4 +1,6 @@
 import {RedisClientType} from "redis";
+import { Move, Moves } from "../entity/Move";
+import { GameInfo } from "../entity/GameInfo";
 
 class GameDao {
     
@@ -9,7 +11,13 @@ class GameDao {
     }
     
     
-    
+}
+
+interface GameDaoProtocol {
+    addPlayerMove(move: Move): Moves
+    getPlayerMoves(move: Move): Moves
+    getInfo(gameID: string): GameInfo
+    updateInfo(): GameInfo
 }
 
 export {GameDao}

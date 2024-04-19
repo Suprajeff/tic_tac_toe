@@ -1,4 +1,4 @@
-package model
+package entity
 
 import "go-ttt/app/core/model"
 

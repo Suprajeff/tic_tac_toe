@@ -7,4 +7,4 @@ type GameInfo = {
     winner?: PlayerType;
 }
 
-export {Info}
+export {GameInfo}
