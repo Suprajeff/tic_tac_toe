@@ -1,8 +1,8 @@
 import Foundation
 
 enum BoardCells {
-    arrayOfArrays([[CellType]])
-    dictionary([CellPosition: CellType])
+    case arrayOfArrays([[CellType]])
+    case dictionary([CellPosition: CellType])
 }
 
 struct BoardType {
