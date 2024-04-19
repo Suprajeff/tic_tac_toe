@@ -1,7 +1,7 @@
 import { CellType } from "./CellType";
 
 type PlayerType = {
-    symbol: CellType;
+    symbol: NonNullable<CellType>;
 }
 
 export {PlayerType}
