@@ -6,3 +6,5 @@ type Info = {
     gameState: GameState;
     winner?: PlayerType;
 }
+
+export {Info}

@@ -5,3 +5,5 @@ type Move = {
     player: PlayerType;
     position: CellPosition;
 }
+
+export {Move}
