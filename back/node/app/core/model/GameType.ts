@@ -3,6 +3,7 @@ import { GameState } from "./GameState";
 import { PlayerType } from "./PlayerType";
 
 type GameType = {
+    id: string;
     board: BoardType;
     currentPlayer: PlayerType;
     gameState: GameState;
