@@ -6,4 +6,9 @@ type Move = {
     position: CellPosition;
 }
 
-export {Move}
+type Moves = {
+    player: PlayerType;
+    positions: CellPosition[];
+}
+
+export {Move, Moves}
