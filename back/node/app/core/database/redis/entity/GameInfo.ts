@@ -1,7 +1,7 @@
 import { GameState } from "../../model/GameState";
 import { PlayerType } from "../../model/PlayerType";
 
-type Info = {
+type GameInfo = {
     currentPlayer: PlayerType;
     gameState: GameState;
     winner?: PlayerType;

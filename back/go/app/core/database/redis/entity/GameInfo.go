@@ -2,7 +2,7 @@ package model
 
 import "go-ttt/app/core/model"
 
-type Info struct {
+type GameInfo struct {
 	gameState     model.GameState
 	currentPlayer model.PlayerType
 	winner *model.PlayerType
