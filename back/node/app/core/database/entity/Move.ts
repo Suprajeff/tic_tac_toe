@@ -1,7 +1,7 @@
 import { CellPosition } from "../../model/CellPosition";
 import {PlayerType} from "../../model/PlayerType";
 
-interface PlayerMove {
+type Move = {
     player: PlayerType;
     position: CellPosition;
 }
