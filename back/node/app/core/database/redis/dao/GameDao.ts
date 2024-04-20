@@ -3,6 +3,9 @@ import { Move, Moves } from "../entity/Move";
 import { GameInfo } from "../entity/GameInfo";
 import {Result} from "../../../common/result/Result";
 import {CellPosition} from "../../../model/CellPosition";
+import {PlayerType} from "../../../model/PlayerType";
+import {GameState} from "../../../model/GameState";
+import {CellType} from "../../../model/CellType";
 
 class GameDao implements GameDaoProtocol {
     
@@ -14,7 +17,7 @@ class GameDao implements GameDaoProtocol {
 
     async addPlayerMove(gameID: string, move: Move): Promise<Result<Moves>> {
         await this.redis.sAdd(`${gameID}:moves:${move.player}`, move.position);
-        const playerMoves: CellPosition[] = await this.redis.sMembers(`${gameID}:moves:${move.player}`)
+        const playerMoves: CellPosition[] = await this.redis.sMembers(`${gameID}:moves:${move.player}`) as CellPosition[]
         return {
             type: "success",
             data: {
@@ -26,13 +29,13 @@ class GameDao implements GameDaoProtocol {
 
     async getInfo(gameID: string): Promise<Result<GameInfo>> {
         const info = await this.redis.hmGet(`${gameID}:info`, ["currentPlayer", "gameState", "winner"]);
-        const currentPlayer = info.currentPlayer;
-        const gameState = info.gameState;
-        const winner = info.winner
+        const currentPlayerSymbol = info[0] as NonNullable<CellType>;
+        const gameState = info[1] as GameState;
+        const winner = info[2] as CellType;
         return {
             type: "success",
             data: {
-                currentPlayer: currentPlayer,
+                currentPlayer: {symbol: currentPlayerSymbol},
                 gameState: gameState,
                 winner: winner
             }
@@ -40,7 +43,7 @@ class GameDao implements GameDaoProtocol {
     }
 
     async getPlayerMoves(gameID: string, move: Move): Promise<Result<Moves>> {
-        const playerMoves: CellPosition[] = await this.redis.sMembers(`${gameID}:moves:${move.player}`)
+        const playerMoves: CellPosition[] = await this.redis.sMembers(`${gameID}:moves:${move.player}`) as CellPosition[]
         return {
             type: "success",
             data: {
@@ -52,9 +55,9 @@ class GameDao implements GameDaoProtocol {
 
     async updateInfo(gameID: string, info: GameInfo): Promise<Result<GameInfo>> {
         await this.redis.hSet(`${gameID}:info`, {
-            currentPlayer: info.currentPlayer,
-            gameState: info.gameState,
-            winner: info.winner
+            currentPlayer: String(info.currentPlayer.symbol),
+            gameState: String(info.gameState),
+            winner: String(info.winner)
         })
 
         return {type: "success", data: {currentPlayer: info.currentPlayer, gameState: info.gameState, winner: info.winner}}

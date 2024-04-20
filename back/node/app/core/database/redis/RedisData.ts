@@ -1,3 +1,4 @@
+import {RedisClientType} from "redis";
 import {GameDao} from "./dao/GameDao";
 
 class RedisData {

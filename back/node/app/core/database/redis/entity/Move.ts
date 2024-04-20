@@ -1,5 +1,5 @@
-import { CellPosition } from "../../model/CellPosition";
-import {PlayerType} from "../../model/PlayerType";
+import { CellPosition } from "../../../model/CellPosition";
+import {PlayerType} from "../../../model/PlayerType";
 
 type Move = {
     player: PlayerType;
