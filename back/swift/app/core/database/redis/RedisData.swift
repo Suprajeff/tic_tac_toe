@@ -1,10 +1,11 @@
 import Foundation
+import Redis
 
 class RedisData: RedisDataProtocol {
-    private let redis: Redis
+    private let redis: RedisClient
     lazy var gameDao: GameDaoProtocol = GameDao(redis: redis)
 
-    init(redis: Redis) {
+    init(redis: RedisClient) {
         self.redis = redis
     }
 }

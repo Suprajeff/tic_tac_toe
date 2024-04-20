@@ -1,17 +1,18 @@
 import Foundation
+import Redis
 
-class GameDao {
+class GameDao: GameDaoProtocol {
     
-    private let redis: Redis
+    private let redis: RedisClient
     
-    init(redis: Redis) {
+    init(redis: RedisClient) {
         self.redis = redis
     }
     
-    func addPlayerMove(gameID: string, move: Move) -> Result<Moves> {
+    func addPlayerMove(gameID: String, move: Move) -> Result<Moves, Error> {
         do {
-            try redis.send(Operation.sadd("\(gameID):moves:\(move.player)", move.position)).wait()
-            let positions = try redis.send(Operation.smembers("\(gameID):moves:\(move.player)")).wait()
+            try redis.sadd(move.position, to: "\(gameID):moves:\(move.player)").wait()
+            let positions = try redis.smembers(of: "\(gameID):moves:\(move.player)").wait()
             let moves = Moves(player: move.player, positions: positions)
             return .success(moves)
         } catch {
@@ -19,9 +20,9 @@ class GameDao {
         }
     }
 
-    func getPlayerMoves(gameID: string, move: Move) -> Result<Moves> {
+    func getPlayerMoves(gameID: String, move: Move) -> Result<Moves, Error> {
         do {
-            let positions = try redis.send(Operation.smembers("\(gameID):moves:\(move.player)")).wait()
+            let positions = try redis.smembers(of: "\(gameID):moves:\(move.player)").wait()
             let moves = Moves(player: move.player, positions: positions)
             return .success(moves)
         } catch {
@@ -29,9 +30,9 @@ class GameDao {
         }
     }
 
-    func getInfo(gameID: String) -> Result<GameInfo> {
+    func getInfo(gameID: String) -> Result<GameInfo, Error> {
         do {
-            let info = try redis.send(Operation.hmget("\(gameID):info", ["currentPlayer", "gameState", "winner"])).wait()
+            let info = try redis.hmget(["currentPlayer", "gameState", "winner"], from: "\(gameID):info").wait()
             let currentPlayer = info[0]
             let gameState = info[1]
             let winner = info[2]
@@ -42,9 +43,9 @@ class GameDao {
         }
     }
 
-    func updateInfo(gameID: String, info: GameInfo) -> Result<GameInfo> {
+    func updateInfo(gameID: String, info: GameInfo) -> Result<GameInfo, Error> {
         do {
-            try redis.send(Operation.hmset("\(gameID):info", ["currentPlayer": info.currentPlayer, "gameState": info.gameState, "winner": info.winner ?? ""])).wait()
+            try redis.hmset(["currentPlayer": info.currentPlayer, "gameState": info.gameState, "winner": info.winner ?? ""], in: "\(gameID):info").wait()
             return .success(info)
         } catch {
             return .failure(error)
@@ -54,8 +55,8 @@ class GameDao {
 }
 
 protocol GameDaoProtocol {
-    func addPlayerMove(gameID: string, move: Move) -> Result<Moves>
-    func getPlayerMoves(gameID: string, move: Move) -> Result<Moves>
-    func getInfo(gameID: string) -> Result<GameInfo>
-    func updateInfo(gameID: String, info: GameInfo) -> Result<GameInfo>
+    func addPlayerMove(gameID: String, move: Move) -> Result<Moves, Error>
+    func getPlayerMoves(gameID: String, move: Move) -> Result<Moves, Error>
+    func getInfo(gameID: String) -> Result<GameInfo, Error>
+    func updateInfo(gameID: String, info: GameInfo) -> Result<GameInfo, Error>
 }
