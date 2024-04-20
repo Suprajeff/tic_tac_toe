@@ -10,19 +10,22 @@ type GameDao struct {
 }
 
 type GameDaoProtocol interface {
-	addPlayerMove(move *entity.Move) (*entity.Moves, error)
-	getPlayerMoves(move *entity.Move) (*entity.Moves, error)
+	addPlayerMove(gameID string, move *entity.Move) (*entity.Moves, error)
+	getPlayerMoves(gameID string, move *entity.Move) (*entity.Moves, error)
 	getInfo(gameID string) (*entity.GameInfo, error)
 	updateInfo(gameID string, info *entity.GameInfo) (*entity.GameInfo, error)
 }
 
-func (dao *GameDao) addPlayerMove(move entity.Move) (entity.Moves, error) {
-	err := dao.Redis.SAdd(move.Player, move.Position).Err()
+func (dao *GameDao) addPlayerMove(gameID string, move entity.Move) (entity.Moves, error) {
+
+	key := fmt.Sprintf("%s:moves:%s", gameID, move.player)
+
+	err := dao.Redis.SAdd(key, move.Position).Err()
 	if err != nil {
 		return entity.Moves{}, err
 	}
 
-	positions, err := dao.Redis.SMembers(move.Player).Result()
+	positions, err := dao.Redis.SMembers(key).Result()
 	if err != nil {
 		return entity.Moves{}, err
 	}
@@ -33,8 +36,11 @@ func (dao *GameDao) addPlayerMove(move entity.Move) (entity.Moves, error) {
 	}, nil
 }
 
-func (dao *GameDao) getPlayerMoves(move entity.Move) (entity.Moves, error) {
-	positions, err := dao.Redis.SMembers(move.Player).Result()
+func (dao *GameDao) getPlayerMoves(gameID string, move entity.Move) (entity.Moves, error) {
+
+	key := fmt.Sprintf("%s:moves:%s", gameID, move.player)
+
+	positions, err := dao.Redis.SMembers(key).Result()
 	if err != nil {
 		return entity.Moves{}, err
 	}
@@ -46,7 +52,10 @@ func (dao *GameDao) getPlayerMoves(move entity.Move) (entity.Moves, error) {
 }
 
 func (dao *GameDao) getInfo(gameID string) (*entity.GameInfo, error) {
-	info, err := dao.Redis.HMGet(gameID, "currentPlayer", "gameState", "winner").Result()
+
+	key := fmt.Sprintf("%s:info", gameID)
+
+	info, err := dao.Redis.HMGet(key, "currentPlayer", "gameState", "winner").Result()
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +68,10 @@ func (dao *GameDao) getInfo(gameID string) (*entity.GameInfo, error) {
 }
 
 func (dao *GameDao) updateInfo(gameID string, info *entity.GameInfo) (*entity.GameInfo, error) {
-	err := dao.Redis.HMSet(gameID, map[string]interface{}{
+
+	key := fmt.Sprintf("%s:info", gameID)
+
+	err := dao.Redis.HMSet(key, map[string]interface{}{
 		"currentPlayer": info.CurrentPlayer,
 		"gameState":     info.GameState,
 		"winner":        info.Winner,

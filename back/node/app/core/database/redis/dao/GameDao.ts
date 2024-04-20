@@ -12,9 +12,9 @@ class GameDao implements GameDaoProtocol {
         this.redis = redis
     }
 
-    async addPlayerMove(move: Move): Promise<Result<Moves>> {
-        await this.redis.sAdd(move.player, move.position);
-        const playerMoves: CellPosition[] = await this.redis.sMembers(move.player)
+    async addPlayerMove(gameID: string, move: Move): Promise<Result<Moves>> {
+        await this.redis.sAdd(`${gameID}:moves:${move.player}`, move.position);
+        const playerMoves: CellPosition[] = await this.redis.sMembers(`${gameID}:moves:${move.player}`)
         return {
             type: "success",
             data: {
@@ -25,7 +25,7 @@ class GameDao implements GameDaoProtocol {
     }
 
     async getInfo(gameID: string): Promise<Result<GameInfo>> {
-        const info = await this.redis.hmGet(gameID, ["currentPlayer", "gameState", "winner"]);
+        const info = await this.redis.hmGet(`${gameID}:info`, ["currentPlayer", "gameState", "winner"]);
         const currentPlayer = info.currentPlayer;
         const gameState = info.gameState;
         const winner = info.winner
@@ -39,8 +39,8 @@ class GameDao implements GameDaoProtocol {
         }
     }
 
-    async getPlayerMoves(move: Move): Promise<Result<Moves>> {
-        const playerMoves: CellPosition[] = await this.redis.sMembers(move.player)
+    async getPlayerMoves(gameID: string, move: Move): Promise<Result<Moves>> {
+        const playerMoves: CellPosition[] = await this.redis.sMembers(`${gameID}:moves:${move.player}`)
         return {
             type: "success",
             data: {
@@ -51,7 +51,7 @@ class GameDao implements GameDaoProtocol {
     }
 
     async updateInfo(gameID: string, info: GameInfo): Promise<Result<GameInfo>> {
-        await this.redis.hSet(gameID, {
+        await this.redis.hSet(`${gameID}:info`, {
             currentPlayer: info.currentPlayer,
             gameState: info.gameState,
             winner: info.winner
@@ -64,8 +64,8 @@ class GameDao implements GameDaoProtocol {
 }
 
 interface GameDaoProtocol {
-    addPlayerMove(move: Move): Promise<Result<Moves>>
-    getPlayerMoves(move: Move): Promise<Result<Moves>>
+    addPlayerMove(gameID: string,move: Move): Promise<Result<Moves>>
+    getPlayerMoves(gameID: string, move: Move): Promise<Result<Moves>>
     getInfo(gameID: string): Promise<Result<GameInfo>>
     updateInfo(gameID: string, info: GameInfo): Promise<Result<GameInfo>>
 }
