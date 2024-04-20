@@ -11,9 +11,19 @@ class GameDao: GameDaoProtocol {
     
     func addPlayerMove(gameID: String, move: Move) -> Result<Moves, Error> {
         do {
-            try redis.sadd(move.position, to: "\(gameID):moves:\(move.player)").wait()
+            let cellPosition = TypeConverter.cellPositiontoString(move.position)
+            let newMove = try redis.sadd(cellPosition, to: "\(gameID):moves:\(move.player)").wait()
+            print(newMove)
             let positions = try redis.smembers(of: "\(gameID):moves:\(move.player)").wait()
-            let moves = Moves(player: move.player, positions: positions)
+            var cellPositions: [CellPosition] = []
+            for position in positions {
+                if let RESPValueString = TypeConverter.extractString(from: position) {
+                    if let cellPosition = TypeConverter.stringToCellPosition(RESPValueString){
+                        cellPositions.append(cellPosition)
+                    }
+                }
+            }
+            let moves = Moves(player: move.player, positions: cellPositions)
             return .success(moves)
         } catch {
             return .failure(error)
@@ -23,7 +33,15 @@ class GameDao: GameDaoProtocol {
     func getPlayerMoves(gameID: String, move: Move) -> Result<Moves, Error> {
         do {
             let positions = try redis.smembers(of: "\(gameID):moves:\(move.player)").wait()
-            let moves = Moves(player: move.player, positions: positions)
+            var cellPositions: [CellPosition] = []
+            for position in positions {
+                if let RESPValueString = TypeConverter.extractString(from: position) {
+                    if let cellPosition = TypeConverter.stringToCellPosition(RESPValueString) {
+                        cellPositions.append(cellPosition)
+                    }
+                }
+            }
+            let moves = Moves(player: move.player, positions: cellPositions)
             return .success(moves)
         } catch {
             return .failure(error)
@@ -33,9 +51,11 @@ class GameDao: GameDaoProtocol {
     func getInfo(gameID: String) -> Result<GameInfo, Error> {
         do {
             let info = try redis.hmget(["currentPlayer", "gameState", "winner"], from: "\(gameID):info").wait()
-            let currentPlayer = info[0]
+            let currentPlayerString = TypeConverter.extractString(from: info[0])
+            let currentPlayer = TypeConverter.stringToPlayerType(currentPlayerString)
             let gameState = info[1]
-            let winner = info[2]
+            let winnerString = TypeConverter.extractString(from: info[2])
+            let winner = TypeConverter.stringToPlayerType(winnerString)
             let gameInfo = GameInfo(currentPlayer: currentPlayer, gameState: gameState, winner: winner)
             return .success(gameInfo)
         } catch {
