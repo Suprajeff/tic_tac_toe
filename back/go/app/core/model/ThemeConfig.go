@@ -1,6 +1,6 @@
 package model
 
-type ThemeConfig int
+type ThemeConfig uint8
 
 const (
 	FOLLOW_SYSTEM ThemeConfig = iota

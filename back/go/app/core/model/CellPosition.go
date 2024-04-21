@@ -1,15 +1,15 @@
 package model
 
-type CellPosition uint8
+type CellPosition string
 
 const (
-	TL CellPosition = iota
-	T
-	TR
-	L
-	C
-	R
-	BL
-	B
-	BR
+	TL CellPosition = "TL"
+	T  CellPosition = "T"
+	TR CellPosition = "TR"
+	L  CellPosition = "L"
+	C  CellPosition = "C"
+	R  CellPosition = "R"
+	BL CellPosition = "BL"
+	B  CellPosition = "B"
+	BR CellPosition = "BR"
 )

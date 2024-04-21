@@ -1,10 +1,10 @@
 package model
 
-type CellType uint8
+type CellType string
 
 const (
-	X CellType = iota
-	O                
+	X CellType = "X"
+	O CellType = "O"
 )
 
 // var emptyCell *CellType = nil
