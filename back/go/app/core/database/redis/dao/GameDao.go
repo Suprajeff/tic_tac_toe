@@ -51,7 +51,7 @@ func (dao *GameDao) resetGame(ctx context.Context, gameID string, board *model.B
 		return nil, err
 	}
 
-	_, err = dao.Redis.HDel(ctx, gameID, "winner").Result()
+	_, err = dao.Redis.HDel(ctx, fmt.Sprintf("%s:info", gameID), "winner").Result()
 	if err != nil {
 		return nil, err
 	}

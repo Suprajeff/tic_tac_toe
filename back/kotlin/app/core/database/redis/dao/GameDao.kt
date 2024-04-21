@@ -10,7 +10,7 @@ class GameDao(private val syncCommands: RedisCommands<String, String>): GameDaoP
 
     override fun resetGame(gameID: string, board: BoardType, player: PlayerType): GameType {
         syncCommands.del("$gameID:moves:X", "$gameID:moves:O")
-        syncCommands.hdel(gameID, "winner")
+        syncCommands.hdel("$newKey:info", "winner")
         syncCommands.hset("$gameID:info", mapOf(
             "currentPlayer" to player,
             "gameState" to "IN_PROGRESS"

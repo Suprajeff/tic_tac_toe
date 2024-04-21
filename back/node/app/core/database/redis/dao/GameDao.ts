@@ -19,7 +19,7 @@ class GameDao implements GameDaoProtocol {
 
     async setGame(newKey: string, board: BoardType, player: PlayerType): Promise<Result<GameType>> {
 
-        const newGame = await this.redis.hSet(newKey, {
+        const newGame = await this.redis.hSet(`${newKey}:info`, {
             currentPlayer: player.symbol, // "X"
             gameState: "IN_PROGRESS"
         })
@@ -40,9 +40,9 @@ class GameDao implements GameDaoProtocol {
     async resetGame(gameID: string, board: BoardType, player: PlayerType): Promise<Result<GameType>> {
 
         await this.redis.del([`${gameID}:moves:X`, `${gameID}:moves:O`]);
-        await this.redis.hDel(gameID, "winner");
+        await this.redis.hDel(`${gameID}:info`, "winner");
 
-        const newGame = await this.redis.hSet(gameID, {
+        const newGame = await this.redis.hSet(`${gameID}:info`, {
             currentPlayer: player.symbol, // "X"
             gameState: "IN_PROGRESS"
         })

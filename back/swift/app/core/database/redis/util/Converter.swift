@@ -23,8 +23,6 @@ class TypeConverter {
             return "B"
         case .BR:
             return "BR"
-        default:
-            return nil
         }
     }
     
@@ -59,8 +57,6 @@ class TypeConverter {
             return "X"
         case .O:
             return "O"
-        default:
-            return nil
         }
     }
 

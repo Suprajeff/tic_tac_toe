@@ -16,7 +16,7 @@ class GameDao: GameDaoProtocol {
                 return .failure(GameInfoError("Failed to extract or convert data from Redis"))
             }
             _ = try redis.hmset(["currentPlayer": starter, "gameState": "IN_PROGRESS"], in: "\(newKey):info").wait()
-            let newGame = GameType(id: newKey, board: board, currentPlayer: player, gameState: .inProgress, winner: nil)
+            let newGame = GameType(id: newKey, board: board, currentPlayer: player, gameState: .InProgress, winner: nil)
             return .success(newGame)
         } catch {
             return .failure(error)
@@ -28,12 +28,12 @@ class GameDao: GameDaoProtocol {
 
         do {
             _ = try redis.delete(["\(gameID):moves:X", "\(gameID):moves:O"]).wait()
-            _ = try redis.hdel(["winner"], from: gameID).wait()
+            _ = try redis.hdel(["winner"], from: "\(gameID):info").wait()
             guard let starter = TypeConverter.playerTypeToString(player) else {
                 return .failure(GameInfoError("Failed to extract or convert data from Redis"))
             }
-            _ = try redis.hmset(["currentPlayer": starter, "gameState": "IN_PROGRESS"], in: "\(newKey):info").wait()
-            let newGame = GameType(id: gameID, board: board, currentPlayer: player, gameState: .inProgress, winner: nil)
+            _ = try redis.hmset(["currentPlayer": starter, "gameState": "IN_PROGRESS"], in: "\(gameID):info").wait()
+            let newGame = GameType(id: gameID, board: board, currentPlayer: player, gameState: .InProgress, winner: nil)
             return .success(newGame)
         } catch {
             return .failure(error)
@@ -107,7 +107,7 @@ class GameDao: GameDaoProtocol {
                         let winnerFormatted = TypeConverter.playerTypeToString(winner) else {
                 return .failure(GameInfoError("Failed to extract or convert data from Redis"))
             }
-            _ = try redis.hmset(["currentPlayer": currentPlayer, "gameState": gameState, "winner": winnerFormatted ?? ""], in: "\(gameID):info").wait()
+            _ = try redis.hmset(["currentPlayer": currentPlayer, "gameState": gameState, "winner": winnerFormatted], in: "\(gameID):info").wait()
             return .success(info)
         } catch {
             return .failure(error)
@@ -118,7 +118,7 @@ class GameDao: GameDaoProtocol {
 
 protocol GameDaoProtocol {
     func setGame(newKey: String, board: BoardType, player: PlayerType) -> Result<GameType, Error>
-    func resetGame(gameID: String, player: PlayerType) -> Result<GameType, Error>
+    func resetGame(gameID: String, board: BoardType, player: PlayerType) -> Result<GameType, Error>
     func addPlayerMove(gameID: String, move: Move) -> Result<Moves, Error>
     func getPlayerMoves(gameID: String, move: Move) -> Result<Moves, Error>
     func getInfo(gameID: String) -> Result<GameInfo, Error>
