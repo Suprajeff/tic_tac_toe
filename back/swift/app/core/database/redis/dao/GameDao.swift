@@ -9,6 +9,38 @@ class GameDao: GameDaoProtocol {
         self.redis = redis
     }
     
+    func setGame(newKey: String, board: BoardType, player: PlayerType) -> Result<GameType, Error> {
+
+        do {
+            guard let starter = TypeConverter.playerTypeToString(player) else {
+                return .failure(GameInfoError("Failed to extract or convert data from Redis"))
+            }
+            _ = try redis.hmset(["currentPlayer": starter, "gameState": "IN_PROGRESS"], in: "\(newKey):info").wait()
+            let newGame = GameType(id: newKey, board: board, currentPlayer: player, gameState: .inProgress, winner: nil)
+            return .success(newGame)
+        } catch {
+            return .failure(error)
+        }
+
+    }
+
+    func resetGame(gameID: String, board: BoardType, player: PlayerType) -> Result<GameType, Error> {
+
+        do {
+            _ = try redis.delete(["\(gameID):moves:X", "\(gameID):moves:O"]).wait()
+            _ = try redis.hdel(["winner"], from: gameID).wait()
+            guard let starter = TypeConverter.playerTypeToString(player) else {
+                return .failure(GameInfoError("Failed to extract or convert data from Redis"))
+            }
+            _ = try redis.hmset(["currentPlayer": starter, "gameState": "IN_PROGRESS"], in: "\(newKey):info").wait()
+            let newGame = GameType(id: gameID, board: board, currentPlayer: player, gameState: .inProgress, winner: nil)
+            return .success(newGame)
+        } catch {
+            return .failure(error)
+        }
+
+    }
+
     func addPlayerMove(gameID: String, move: Move) -> Result<Moves, Error> {
         do {
             let cellPosition = TypeConverter.cellPositiontoString(move.position)
@@ -85,6 +117,8 @@ class GameDao: GameDaoProtocol {
 }
 
 protocol GameDaoProtocol {
+    func setGame(newKey: String, board: BoardType, player: PlayerType) -> Result<GameType, Error>
+    func resetGame(gameID: String, player: PlayerType) -> Result<GameType, Error>
     func addPlayerMove(gameID: String, move: Move) -> Result<Moves, Error>
     func getPlayerMoves(gameID: String, move: Move) -> Result<Moves, Error>
     func getInfo(gameID: String) -> Result<GameInfo, Error>

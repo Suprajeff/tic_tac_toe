@@ -1,7 +1,7 @@
 package model
 
 type GameType struct {
-	id  string
+	ID  string
 	Board        BoardType
 	CurrentPlayer PlayerType
 	GameState    GameState

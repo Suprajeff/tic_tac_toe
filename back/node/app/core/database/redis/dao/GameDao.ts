@@ -2,9 +2,12 @@ import {RedisClientType} from "redis";
 import { Move, Moves } from "../entity/Move";
 import { GameInfo } from "../entity/GameInfo";
 import {Result} from "../../../common/result/Result";
+import {GameType} from "../../../model/GameType";
 import {CellPosition} from "../../../model/CellPosition";
 import {GameState} from "../../../model/GameState";
 import {CellType} from "../../../model/CellType";
+import {PlayerType} from "../../../model/PlayerType";
+import {BoardType} from "../../../model/BoardType";
 
 class GameDao implements GameDaoProtocol {
     
@@ -12,6 +15,49 @@ class GameDao implements GameDaoProtocol {
     
     constructor(redis: RedisClientType) {
         this.redis = redis
+    }
+
+    async setGame(newKey: string, board: BoardType, player: PlayerType): Promise<Result<<GameType>> {
+
+        const newGame = await this.redis.hSet(newKey, {
+            currentPlayer: player, // "X"
+            gameState: "IN_PROGRESS"
+        })
+
+        return {
+            type: "success",
+            data: {
+                id: newKey,
+                board: board,
+                currentPlayer: player,
+                gameState: GameState.InProgress,
+                winner: undefined
+            }
+        }
+
+    }
+
+    async resetGame(gameID: string, board: BoardType, player: PlayerType): Promise<Result<<GameType>> {
+
+        await this.redis.del(`${gameID}:moves:X`, `${gameID}:moves:O`);
+        await this.redis.hDel(gameID, "winner");
+
+        const newGame = await this.redis.hSet(newKey, {
+            currentPlayer: player, // "X"
+            gameState: "IN_PROGRESS"
+        })
+
+        return {
+            type: "success",
+            data: {
+                id: gameID,
+                board: board,
+                currentPlayer: player,
+                gameState: GameState.InProgress,
+                winner: undefined
+            }
+        }
+
     }
 
     async addPlayerMove(gameID: string, move: Move): Promise<Result<Moves>> {
@@ -66,6 +112,8 @@ class GameDao implements GameDaoProtocol {
 }
 
 interface GameDaoProtocol {
+    setGame(newKey: string, board: BoardType, player: PlayerType): Promise<Result<<GameType>>
+    resetGame(gameID: string, board: BoardType, player: PlayerType): Promise<Result<<GameType>>
     addPlayerMove(gameID: string,move: Move): Promise<Result<Moves>>
     getPlayerMoves(gameID: string, move: Move): Promise<Result<Moves>>
     getInfo(gameID: string): Promise<Result<GameInfo>>

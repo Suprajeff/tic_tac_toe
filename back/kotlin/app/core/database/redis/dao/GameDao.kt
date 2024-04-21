@@ -1,5 +1,23 @@
 class GameDao(private val syncCommands: RedisCommands<String, String>): GameDaoProtocol {
 
+    override fun setGame(newKey: string, board: BoardType, player: PlayerType): GameType {
+        syncCommands.hset("$newKey:info", mapOf(
+            "currentPlayer" to player,
+            "gameState" to "IN_PROGRESS"
+        ))
+        return GameType(newKey, board, player, GameState.InProgress, null)
+    }
+
+    override fun resetGame(gameID: string, board: BoardType, player: PlayerType): GameType {
+        syncCommands.del("$gameID:moves:X", "$gameID:moves:O")
+        syncCommands.hdel(gameID, "winner")
+        syncCommands.hset("$gameID:info", mapOf(
+            "currentPlayer" to player,
+            "gameState" to "IN_PROGRESS"
+        ))
+        return GameType(gameID, board, player, GameState.InProgress, null)
+    }
+
     override fun addPlayerMove(gameID: String, move: Move): Moves {
         syncCommands.sadd("$gameID:moves:${move.player}", move.position)
         val playerMoves = syncCommands.smembers("$gameID:moves:${move.player}")
@@ -31,6 +49,8 @@ class GameDao(private val syncCommands: RedisCommands<String, String>): GameDaoP
 }
 
 interface GameDaoProtocol {
+    fun setGame(newKey: string, board: BoardType, player: PlayerType): GameType
+    fun resetGame(gameID: string, board: BoardType, player: PlayerType): GameType
     fun addPlayerMove(gameID: String, move: Move): Moves
     fun getPlayerMoves(gameID: String, move: Move): Moves
     fun getInfo(gameID: string): GameInfo

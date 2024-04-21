@@ -14,10 +14,64 @@ type GameDao struct {
 }
 
 type GameDaoProtocol interface {
-	addPlayerMove(gameID string, move *entity.Move) (*entity.Moves, error)
-	getPlayerMoves(gameID string, move *entity.Move) (*entity.Moves, error)
-	getInfo(gameID string) (*entity.GameInfo, error)
-	updateInfo(gameID string, info *entity.GameInfo) (*entity.GameInfo, error)
+	setGame(ctx context.Context, newKey string, board *model.BoardType, player *model.PlayerType) (*model.GameType, error)
+	resetGame(ctx context.Context, gameID string, board *model.BoardType, player *model.PlayerType) (*model.GameType, error)
+	addPlayerMove(ctx context.Context, gameID string, move *entity.Move) (*entity.Moves, error)
+	getPlayerMoves(ctx context.Context, gameID string, move *entity.Move) (*entity.Moves, error)
+	getInfo(ctx context.Context, gameID string) (*entity.GameInfo, error)
+	updateInfo(ctx context.Context, gameID string, info *entity.GameInfo) (*entity.GameInfo, error)
+}
+
+func (dao *GameDao) setGame(ctx context.Context, newKey string, board *model.BoardType, player *model.PlayerType) (*model.GameType, error) {
+
+	key := fmt.Sprintf("%s:info", newKey)
+
+	err := dao.Redis.HMSet(ctx, key, map[string]interface{}{
+		"currentPlayer": player,
+		"gameState":     "IN_PROGRESS",
+	}).Err()
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.GameType{
+		ID:    newKey,
+		Board: *board,
+		CurrentPlayer: *player,
+		GameState: model.InProgress,
+		Winner: nil,
+	}, nil
+
+}
+
+func (dao *GameDao) resetGame(ctx context.Context, gameID string, board *model.BoardType, player *model.PlayerType) (*model.GameType, error) {
+
+	_, err := dao.Redis.Del(ctx, fmt.Sprintf("%s:moves:X", gameID), fmt.Sprintf("%s:moves:O", gameID)).Result()
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = dao.Redis.HDel(ctx, gameID, "winner").Result()
+	if err != nil {
+		return nil, err
+	}
+
+	err = dao.Redis.HMSet(ctx, fmt.Sprintf("%s:info", gameID), map[string]interface{}{
+		"currentPlayer": player,
+		"gameState":     "IN_PROGRESS",
+	}).Err()
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.GameType{
+		ID:    gameID,
+		Board: *board,
+		CurrentPlayer: *player,
+		GameState: model.InProgress,
+		Winner: nil,
+	}, nil
+
 }
 
 func (dao *GameDao) addPlayerMove(ctx context.Context, gameID string, move entity.Move) (entity.Moves, error) {
