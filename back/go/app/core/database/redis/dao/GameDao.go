@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"fmt"
 	redisInstance "go-ttt/app/core/database/redis"
 	"go-ttt/app/core/database/redis/entity"
 )
@@ -18,7 +19,7 @@ type GameDaoProtocol interface {
 
 func (dao *GameDao) addPlayerMove(gameID string, move entity.Move) (entity.Moves, error) {
 
-	key := fmt.Sprintf("%s:moves:%s", gameID, move.player)
+	key := fmt.Sprintf("%s:moves:%s", gameID, move.Player)
 
 	err := dao.Redis.SAdd(key, move.Position).Err()
 	if err != nil {
@@ -38,7 +39,7 @@ func (dao *GameDao) addPlayerMove(gameID string, move entity.Move) (entity.Moves
 
 func (dao *GameDao) getPlayerMoves(gameID string, move entity.Move) (entity.Moves, error) {
 
-	key := fmt.Sprintf("%s:moves:%s", gameID, move.player)
+	key := fmt.Sprintf("%s:moves:%s", gameID, move.Player)
 
 	positions, err := dao.Redis.SMembers(key).Result()
 	if err != nil {

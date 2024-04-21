@@ -11,3 +11,5 @@ interface GameRepository {
     getCurrentPlayer(): Promise<Result<PlayerType>>;
     getBoardState(): Promise<Result<BoardType>>;
 }
+
+export {GameRepository}

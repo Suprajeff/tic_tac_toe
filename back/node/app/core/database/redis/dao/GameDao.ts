@@ -3,7 +3,6 @@ import { Move, Moves } from "../entity/Move";
 import { GameInfo } from "../entity/GameInfo";
 import {Result} from "../../../common/result/Result";
 import {CellPosition} from "../../../model/CellPosition";
-import {PlayerType} from "../../../model/PlayerType";
 import {GameState} from "../../../model/GameState";
 import {CellType} from "../../../model/CellType";
 

@@ -3,7 +3,7 @@ package entity
 import "go-ttt/app/core/model"
 
 type Move struct {
-	player model.PlayerType
+	Player   model.PlayerType
 	position model.CellPosition
 }
 
