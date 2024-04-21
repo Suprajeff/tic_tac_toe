@@ -59,14 +59,14 @@ func PlayerTypeToString(playerType model.PlayerType) string {
 	return string(playerType.Symbol)
 }
 
-func StringToPlayerType(s string) (model.PlayerType, error) {
+func StringToPlayerType(s string) (*model.PlayerType, error) {
 	switch s {
 	case string(model.X):
-		return model.PlayerType{Symbol: model.X}, nil
+		return &model.PlayerType{Symbol: model.X}, nil
 	case string(model.O):
-		return model.PlayerType{Symbol: model.O}, nil
+		return &model.PlayerType{Symbol: model.O}, nil
 	default:
-		return model.PlayerType{}, errors.New("invalid PlayerType string")
+		return nil, errors.New("invalid PlayerType string")
 	}
 }
 

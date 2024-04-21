@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	redisInstance "go-ttt/app/core/database/redis"
-	util "go-ttt/app/core/database/redis/util"
 	"go-ttt/app/core/database/redis/entity"
+	"go-ttt/app/core/database/redis/util"
 	"go-ttt/app/core/model"
 )
 
@@ -80,23 +80,34 @@ func (dao *GameDao) getInfo(ctx context.Context, gameID string) (*entity.GameInf
 		return nil, err
 	}
 
-	currentPlayerData, err := util.StringToPlayerType(info[0])
+	var values []string
+
+	for _, value := range info {
+		// is string ?
+		if strValue, ok := value.(string); ok {
+			values = append(values, strValue)
+		} else {
+			fmt.Println("Value is not a string")
+		}
+	}
+
+	currentPlayerData, err := util.StringToPlayerType(values[0])
 	if err != nil {
 		return nil, err
 	}
 
-	gameStateData, err := util.StringToGameState(info[1])
+	gameStateData, err := util.StringToGameState(values[1])
 	if err != nil {
 		return nil, err
 	}
 
-	winnerData, err := util.StringToPlayerType(info[2])
+	winnerData, err := util.StringToPlayerType(values[2])
 	if err != nil {
 		return nil, err
 	}
 
 	return &entity.GameInfo{
-		CurrentPlayer: currentPlayerData,
+		CurrentPlayer: *currentPlayerData,
 		GameState:     gameStateData,
 		Winner:        winnerData,
 	}, nil
