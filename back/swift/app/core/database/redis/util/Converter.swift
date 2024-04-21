@@ -3,7 +3,7 @@ import Redis
 
 class TypeConverter {
     
-    static func cellPositiontoString(_ position: CellPosition) -> String {
+    static func cellPositiontoString(_ position: CellPosition) -> String? {
         switch position {
         case .TL:
             return "TL"
@@ -23,6 +23,8 @@ class TypeConverter {
             return "B"
         case .BR:
             return "BR"
+        default:
+            return nil
         }
     }
     
@@ -51,12 +53,14 @@ class TypeConverter {
         }
     }
     
-    static func playerTypeToString(_ playerType: PlayerType) -> String {
+    static func playerTypeToString(_ playerType: PlayerType) -> String? {
         switch playerType.symbol {
         case .X:
             return "X"
         case .O:
             return "O"
+        default:
+            return nil
         }
     }
 
@@ -71,7 +75,7 @@ class TypeConverter {
         }
     }
     
-    static func gameStateToString(_ gameState: GameState) -> String {
+    static func gameStateToString(_ gameState: GameState) -> String? {
         return gameState.rawValue
     }
 
@@ -80,8 +84,11 @@ class TypeConverter {
     }
 
     static func extractString(from respValue: RESPValue) -> String? {
-        if case .bulkString(let string) = respValue {
-            return string
+        if case .bulkString(let byteBuffer) = respValue {
+            guard let data = byteBuffer?.getData(at: 0, length: byteBuffer!.readableBytes) else {
+                return nil
+            }
+            return String(decoding: data, as: UTF8.self)
         }
         return nil
     }

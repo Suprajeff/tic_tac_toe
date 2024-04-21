@@ -58,7 +58,7 @@ class GameDao: GameDaoProtocol {
                   let gameState = TypeConverter.stringToGameState(gameStateString),
                   let winnerString = TypeConverter.extractString(from: info[2]),
                   let winner = TypeConverter.stringToPlayerType(winnerString) else {
-                return
+                return .failure(GameInfoError("Failed to extract or convert data from Redis"))
             }
             let gameInfo = GameInfo(currentPlayer: currentPlayer, gameState: gameState, winner: winner)
             return .success(gameInfo)
@@ -71,10 +71,11 @@ class GameDao: GameDaoProtocol {
         do {
             guard let currentPlayer = TypeConverter.playerTypeToString(info.currentPlayer),
                         let gameState = TypeConverter.gameStateToString(info.gameState),
-                        let winner = TypeConverter.playerTypeToString(info.winner) else {
-                    return
+                        let winner = info.winner,
+                        let winnerFormatted = TypeConverter.playerTypeToString(winner) else {
+                return .failure(GameInfoError("Failed to extract or convert data from Redis"))
             }
-            try redis.hmset(["currentPlayer": currentPlayer, "gameState": gameState, "winner": winner ?? ""], in: "\(gameID):info").wait()
+            _ = try redis.hmset(["currentPlayer": currentPlayer, "gameState": gameState, "winner": winnerFormatted ?? ""], in: "\(gameID):info").wait()
             return .success(info)
         } catch {
             return .failure(error)
