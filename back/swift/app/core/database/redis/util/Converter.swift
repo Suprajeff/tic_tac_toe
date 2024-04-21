@@ -59,7 +59,7 @@ class TypeConverter {
             return "O"
         }
     }
-    
+
     static func stringToPlayerType(_ string: String) -> PlayerType? {
         switch string {
         case "X":
@@ -71,6 +71,14 @@ class TypeConverter {
         }
     }
     
+    static func gameStateToString(_ gameState: GameState) -> String {
+        return gameState.rawValue
+    }
+
+    static func stringToGameState(_ string: String) -> GameState? {
+        return GameState(rawValue: string)
+    }
+
     static func extractString(from respValue: RESPValue) -> String? {
         if case .bulkString(let string) = respValue {
             return string

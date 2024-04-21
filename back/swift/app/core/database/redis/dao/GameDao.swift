@@ -51,11 +51,15 @@ class GameDao: GameDaoProtocol {
     func getInfo(gameID: String) -> Result<GameInfo, Error> {
         do {
             let info = try redis.hmget(["currentPlayer", "gameState", "winner"], from: "\(gameID):info").wait()
-            let currentPlayerString = TypeConverter.extractString(from: info[0])
-            let currentPlayer = TypeConverter.stringToPlayerType(currentPlayerString)
-            let gameState = info[1]
-            let winnerString = TypeConverter.extractString(from: info[2])
-            let winner = TypeConverter.stringToPlayerType(winnerString)
+
+            guard let currentPlayerString = TypeConverter.extractString(from: info[0]),
+                  let currentPlayer = TypeConverter.stringToPlayerType(currentPlayerString),
+                  let gameStateString = TypeConverter.extractString(from: info[1]),
+                  let gameState = TypeConverter.stringToGameState(gameStateString),
+                  let winnerString = TypeConverter.extractString(from: info[2]),
+                  let winner = TypeConverter.stringToPlayerType(winnerString) else {
+                return
+            }
             let gameInfo = GameInfo(currentPlayer: currentPlayer, gameState: gameState, winner: winner)
             return .success(gameInfo)
         } catch {
@@ -65,7 +69,12 @@ class GameDao: GameDaoProtocol {
 
     func updateInfo(gameID: String, info: GameInfo) -> Result<GameInfo, Error> {
         do {
-            try redis.hmset(["currentPlayer": info.currentPlayer, "gameState": info.gameState, "winner": info.winner ?? ""], in: "\(gameID):info").wait()
+            guard let currentPlayer = TypeConverter.playerTypeToString(info.currentPlayer),
+                        let gameState = TypeConverter.gameStateToString(info.gameState),
+                        let winner = TypeConverter.playerTypeToString(info.winner) else {
+                    return
+            }
+            try redis.hmset(["currentPlayer": currentPlayer, "gameState": gameState, "winner": winner ?? ""], in: "\(gameID):info").wait()
             return .success(info)
         } catch {
             return .failure(error)
