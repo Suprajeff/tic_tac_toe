@@ -2,12 +2,12 @@ import {RedisClientType} from "redis";
 import { Move, Moves } from "../entity/Move";
 import { GameInfo } from "../entity/GameInfo";
 import {Result} from "../../../common/result/Result";
-import {GameType} from "../../../model/GameType";
 import {CellPosition} from "../../../model/CellPosition";
 import {GameState} from "../../../model/GameState";
 import {CellType} from "../../../model/CellType";
 import {PlayerType} from "../../../model/PlayerType";
 import {BoardType} from "../../../model/BoardType";
+import {GameType} from "../../../model/GameType";
 
 class GameDao implements GameDaoProtocol {
     
@@ -17,10 +17,10 @@ class GameDao implements GameDaoProtocol {
         this.redis = redis
     }
 
-    async setGame(newKey: string, board: BoardType, player: PlayerType): Promise<Result<<GameType>> {
+    async setGame(newKey: string, board: BoardType, player: PlayerType): Promise<Result<GameType>> {
 
         const newGame = await this.redis.hSet(newKey, {
-            currentPlayer: player, // "X"
+            currentPlayer: player.symbol, // "X"
             gameState: "IN_PROGRESS"
         })
 
@@ -37,13 +37,13 @@ class GameDao implements GameDaoProtocol {
 
     }
 
-    async resetGame(gameID: string, board: BoardType, player: PlayerType): Promise<Result<<GameType>> {
+    async resetGame(gameID: string, board: BoardType, player: PlayerType): Promise<Result<GameType>> {
 
-        await this.redis.del(`${gameID}:moves:X`, `${gameID}:moves:O`);
+        await this.redis.del([`${gameID}:moves:X`, `${gameID}:moves:O`]);
         await this.redis.hDel(gameID, "winner");
 
-        const newGame = await this.redis.hSet(newKey, {
-            currentPlayer: player, // "X"
+        const newGame = await this.redis.hSet(gameID, {
+            currentPlayer: player.symbol, // "X"
             gameState: "IN_PROGRESS"
         })
 
@@ -112,8 +112,8 @@ class GameDao implements GameDaoProtocol {
 }
 
 interface GameDaoProtocol {
-    setGame(newKey: string, board: BoardType, player: PlayerType): Promise<Result<<GameType>>
-    resetGame(gameID: string, board: BoardType, player: PlayerType): Promise<Result<<GameType>>
+    setGame(newKey: string, board: BoardType, player: PlayerType): Promise<Result<GameType>>
+    resetGame(gameID: string, board: BoardType, player: PlayerType): Promise<Result<GameType>>
     addPlayerMove(gameID: string,move: Move): Promise<Result<Moves>>
     getPlayerMoves(gameID: string, move: Move): Promise<Result<Moves>>
     getInfo(gameID: string): Promise<Result<GameInfo>>
