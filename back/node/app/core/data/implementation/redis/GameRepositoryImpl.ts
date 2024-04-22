@@ -3,6 +3,7 @@ import {BoardType} from "../../../model/BoardType";
 import { PlayerType } from "../../../model/PlayerType";
 import { GameType } from "../../../model/GameType";
 import { Result } from "../../../common/result/Result";
+import { CellPosition } from "../../../model/CellPosition";
 
 class GameRepositoryImpl implements GameRepository {
     
@@ -20,7 +21,7 @@ class GameRepositoryImpl implements GameRepository {
         const newGame = await this.client.gameDao.resetGame(gameID, board, player)
     }
     
-    async updateBoard(row: number, col: number, player: PlayerType): Promise<Result<GameType>> {
+    async updateBoard(gameID: string, position: CellPosition, player: PlayerType): Promise<Result<GameType>> {
         const newBoard = await this.client.gameDao.addPlayerMove()
     }
     

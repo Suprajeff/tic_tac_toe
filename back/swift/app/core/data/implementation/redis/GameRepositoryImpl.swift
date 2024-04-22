@@ -16,7 +16,7 @@ class GameRepositoryImpl: GameRepository {
         
     }
     
-    func updateBoard(row: Int, col: Int, player: PlayerType) -> Result<GameType, Error> {
+    func updateBoard(gameID: String, position: CellPosition, player: PlayerType) -> Result<GameType, Error> {
         
     }
     

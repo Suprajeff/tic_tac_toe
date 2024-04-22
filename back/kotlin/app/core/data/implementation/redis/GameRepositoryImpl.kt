@@ -8,7 +8,7 @@ class GameRepositoryImpl(private val redisData: RedisDataProtocol): GameReposito
         
     }
     
-    override fun updateBoard(row: Int, col: Int, player: PlayerType): Result<GameType, Error>{
+    override fun updateBoard(gameID: string, position: CellPosition, player: PlayerType): Result<GameType, Error>{
         
     }
     
