@@ -7,4 +7,5 @@ protocol GameRepository {
     func switchCurrentPlayer() -> Result<GameType, Error> 
     func getCurrentPlayer() -> Result<PlayerType, Error> 
     func getBoardState() -> Result<BoardType, Error>
+    func getGameState() -> Result<GameType, Error>
 }

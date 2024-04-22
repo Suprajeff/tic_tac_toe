@@ -9,4 +9,5 @@ type GameRepository interface {
 	switchCurrentPlayer() (*model.GameType, error)
 	getCurrentPlayer() (*model.PlayerType, error)
 	getBoardState() (*model.BoardType, error)
+	getGameState() (*model.GameType, error)
 }

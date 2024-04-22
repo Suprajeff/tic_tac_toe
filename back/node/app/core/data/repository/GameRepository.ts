@@ -10,6 +10,7 @@ interface GameRepository {
     switchCurrentPlayer(): Promise<Result<GameType>>;
     getCurrentPlayer(): Promise<Result<PlayerType>>;
     getBoardState(): Promise<Result<BoardType>>;
+    getGameState(): Promise<Result<GameType>>;
 }
 
 export {GameRepository}

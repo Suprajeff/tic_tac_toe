@@ -5,4 +5,5 @@ interface GameRepository {
     fun switchCurrentPlayer(): Result<GameType, Error> 
     fun getCurrentPlayer(): Result<PlayerType, Error> 
     fun getBoardState(): Result<BoardType, Error>
+    fun getGameState(): Result<GameType, Error>
 }
