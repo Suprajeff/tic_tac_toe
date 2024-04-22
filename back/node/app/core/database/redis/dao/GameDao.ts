@@ -118,7 +118,6 @@ interface GameDaoProtocol {
     getPlayerMoves(gameID: string, move: Move): Promise<Result<Moves>>
     getInfo(gameID: string): Promise<Result<GameInfo>>
     updateInfo(gameID: string, info: GameInfo): Promise<Result<GameInfo>>
-    switchCurrentPlayer(gameID: string): Promise<Result<GameType>>
 }
 
 export {GameDao}

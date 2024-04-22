@@ -2,7 +2,7 @@ import {GameRepository} from "../../repository/GameRepository";
 import {BoardType} from "../../../model/BoardType";
 import {PlayerType} from "../../../model/PlayerType";
 import {GameType} from "../../../model/GameType";
-import {Result} from "../../../common/result/Result";
+import {Result, error, notFound, success} from "../../../common/result/Result";
 import {CellPosition} from "../../../model/CellPosition";
 import {RedisData} from "../../../database/redis/RedisData";
 
@@ -27,7 +27,19 @@ class GameRepositoryImpl implements GameRepository {
     }
     
     async getCurrentPlayer(gameID: string): Promise<Result<PlayerType>> {
-        const info = await this.client.gameDao.getInfo(gameID)
+        const result = await this.client.gameDao.getInfo(gameID)
+        switch (result.status) {
+            case 'success':
+                console.log('Data:', result.data);
+                return success({
+                    symbol: result.data.currentPlayer.symbol
+                });
+            case 'error':
+                console.error('Error:', result.exception);
+                return error(result.exception);
+            case 'notFound':
+                return notFound
+        }
     }
     
     async getBoardState(gameID: string): Promise<Result<BoardType>> {
