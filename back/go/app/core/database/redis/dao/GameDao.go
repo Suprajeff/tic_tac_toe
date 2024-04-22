@@ -18,7 +18,7 @@ type GameDaoProtocol interface {
 	resetGame(ctx context.Context, gameID string, board *model.BoardType, player *model.PlayerType) (*model.GameType, error)
 	addPlayerMove(ctx context.Context, gameID string, move *entity.Move) (*entity.Moves, error)
 	getPlayerMoves(ctx context.Context, gameID string, move *entity.Move) (*entity.Moves, error)
-	getInfo(ctx context.Context, gameID string) (*entity.GameInfo, error)
+	getInfo(ctx context.Context, gameID string) (*entity.Game, error)
 	updateInfo(ctx context.Context, gameID string, info *entity.GameInfo) (*entity.GameInfo, error)
 }
 
@@ -125,7 +125,7 @@ func (dao *GameDao) getPlayerMoves(ctx context.Context, gameID string, move enti
 	}, nil
 }
 
-func (dao *GameDao) getInfo(ctx context.Context, gameID string) (*entity.GameInfo, error) {
+func (dao *GameDao) getInfo(ctx context.Context, gameID string) (*entity.Game, error) {
 
 	key := fmt.Sprintf("%s:info", gameID)
 
@@ -160,7 +160,38 @@ func (dao *GameDao) getInfo(ctx context.Context, gameID string) (*entity.GameInf
 		return nil, err
 	}
 
-	return &entity.GameInfo{
+	xPositions, err := dao.Redis.SMembers(ctx, fmt.Sprintf("%s:moves:X", gameID)).Result()
+	if err != nil {
+		return &entity.Game{}, err
+	}
+
+	oPositions, err := dao.Redis.SMembers(ctx, fmt.Sprintf("%s:moves:O", gameID)).Result()
+	if err != nil {
+		return &entity.Game{}, err
+	}
+
+	xCellPositions := make([]model.CellPosition, len(xPositions))
+	for i, pos := range xPositions {
+		xCellPositions[i], err = util.StringToCellPosition(pos)
+		if err != nil {
+			return &entity.Game{}, err
+		}
+	}
+
+	oCellPositions := make([]model.CellPosition, len(oPositions))
+	for i, pos := range oPositions {
+		oCellPositions[i], err = util.StringToCellPosition(pos)
+		if err != nil {
+			return &entity.Game{}, err
+		}
+	}
+
+	return &entity.Game{
+		ID: gameID,
+		Moves: map[model.CellType][]model.CellPosition{
+			model.X: xCellPositions,
+			model.O: oCellPositions,
+		},
 		CurrentPlayer: *currentPlayerData,
 		GameState:     gameStateData,
 		Winner:        winnerData,

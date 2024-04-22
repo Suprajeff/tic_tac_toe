@@ -77,16 +77,16 @@ class GameDao implements GameDaoProtocol {
         const info = await this.redis.hmGet(`${gameID}:info`, ["currentPlayer", "gameState", "winner"]);
         const currentPlayerSymbol = info[0] as NonNullable<CellType>;
         const gameState = info[1] as GameState;
-        const winner = info[2] as CellType;
-        const xMoves = await this.redis.sMembers(`${gameID}:moves:X`)
-        const oMoves = await this.redis.sMembers(`${gameID}:moves:O`)
+        const winner = info[2] as PlayerType | undefined;
+        const xMoves: CellPosition[] = await this.redis.sMembers(`${gameID}:moves:X`) as CellPosition[]
+        const oMoves: CellPosition[] = await this.redis.sMembers(`${gameID}:moves:O`) as CellPosition[]
         return {
             status: "success",
             data: {
                 id: gameID,
                 moves: {
-                    X: [],
-                    O: []
+                    X: xMoves,
+                    O: oMoves
                 },
                 currentPlayer: {symbol: currentPlayerSymbol},
                 gameState: gameState,

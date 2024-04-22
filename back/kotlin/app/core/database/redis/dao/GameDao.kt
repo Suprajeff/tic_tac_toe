@@ -29,12 +29,17 @@ class GameDao(private val syncCommands: RedisCommands<String, String>): GameDaoP
         return Moves(move.player, playerMoves.toList())
     }
 
-    override fun getInfo(gameID: String): GameInfo {
+    override fun getInfo(gameID: String): Game {
+
         val info = syncCommands.hmget("$gameID:info", "currentPlayer", "gameState", "winner")
+        val xMoves = syncCommands.smembers("$gameID:moves:X")
+        val oMoves = syncCommands.smembers("$gameID:moves:O")
+
         val currentPlayer = info[0]
         val gameState = info[1]
         val winner = info[2]
-        return GameInfo(currentPlayer, gameState, winner)
+
+        return Game(gameID, mapOf(CellType.X to xCellPositions, CellType.O to oCellPositions) ,currentPlayer, gameState, winner)
     }
     
     override fun updateInfo(gameID: String, info: GameInfo): GameInfo {
@@ -53,6 +58,6 @@ interface GameDaoProtocol {
     fun resetGame(gameID: string, board: BoardType, player: PlayerType): GameType
     fun addPlayerMove(gameID: String, move: Move): Moves
     fun getPlayerMoves(gameID: String, move: Move): Moves
-    fun getInfo(gameID: string): GameInfo
+    fun getInfo(gameID: string): Game
     fun updateInfo(gameID: String, info: GameInfo): GameInfo
 }

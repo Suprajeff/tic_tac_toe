@@ -80,9 +80,30 @@ class GameDao: GameDaoProtocol {
         }
     }
 
-    func getInfo(gameID: String) -> Result<GameInfo, Error> {
+    func getInfo(gameID: String) -> Result<Game, Error> {
         do {
             let info = try redis.hmget(["currentPlayer", "gameState", "winner"], from: "\(gameID):info").wait()
+            let xPositions = try redis.smembers(of: "\(gameID):moves:X").wait()
+            let oPositions = try redis.smembers(of: "\(gameID):moves:O").wait()
+
+            var xCellPositions: [CellPosition] = []
+            var oCellPositions: [CellPosition] = []
+
+            for xPosition in xPositions {
+                if let xRESPValueString = TypeConverter.extractString(from: xPosition) {
+                    if let xCellPosition = TypeConverter.stringToCellPosition(xRESPValueString) {
+                        xCellPositions.append(xCellPosition)
+                    }
+                }
+            }
+
+            for oPosition in oPositions {
+                if let oRESPValueString = TypeConverter.extractString(from: oPosition) {
+                    if let oCellPosition = TypeConverter.stringToCellPosition(oRESPValueString) {
+                        oCellPositions.append(oCellPosition)
+                    }
+                }
+            }
 
             guard let currentPlayerString = TypeConverter.extractString(from: info[0]),
                   let currentPlayer = TypeConverter.stringToPlayerType(currentPlayerString),
@@ -92,7 +113,7 @@ class GameDao: GameDaoProtocol {
                   let winner = TypeConverter.stringToPlayerType(winnerString) else {
                 return .failure(GameInfoError("Failed to extract or convert data from Redis"))
             }
-            let gameInfo = GameInfo(currentPlayer: currentPlayer, gameState: gameState, winner: winner)
+            let gameInfo = Game(id: gameID, moves: [.X: xCellPositions, .O: oCellPositions] ,currentPlayer: currentPlayer, gameState: gameState, winner: winner)
             return .success(gameInfo)
         } catch {
             return .failure(error)
@@ -121,6 +142,6 @@ protocol GameDaoProtocol {
     func resetGame(gameID: String, board: BoardType, player: PlayerType) -> Result<GameType, Error>
     func addPlayerMove(gameID: String, move: Move) -> Result<Moves, Error>
     func getPlayerMoves(gameID: String, move: Move) -> Result<Moves, Error>
-    func getInfo(gameID: String) -> Result<GameInfo, Error>
+    func getInfo(gameID: String) -> Result<Game, Error>
     func updateInfo(gameID: String, info: GameInfo) -> Result<GameInfo, Error>
 }
