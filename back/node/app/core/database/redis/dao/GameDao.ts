@@ -8,6 +8,7 @@ import {CellType} from "../../../model/CellType";
 import {PlayerType} from "../../../model/PlayerType";
 import {BoardType} from "../../../model/BoardType";
 import {GameType} from "../../../model/GameType";
+import { Game } from "../entity/Game";
 
 class GameDao implements GameDaoProtocol {
     
@@ -72,14 +73,21 @@ class GameDao implements GameDaoProtocol {
         }
     }
 
-    async getInfo(gameID: string): Promise<Result<GameInfo>> {
+    async getInfo(gameID: string): Promise<Result<Game>> {
         const info = await this.redis.hmGet(`${gameID}:info`, ["currentPlayer", "gameState", "winner"]);
         const currentPlayerSymbol = info[0] as NonNullable<CellType>;
         const gameState = info[1] as GameState;
         const winner = info[2] as CellType;
+        const xMoves = await this.redis.sMembers(`${gameID}:moves:X`)
+        const oMoves = await this.redis.sMembers(`${gameID}:moves:O`)
         return {
             status: "success",
             data: {
+                id: gameID,
+                moves: {
+                    X: [],
+                    O: []
+                },
                 currentPlayer: {symbol: currentPlayerSymbol},
                 gameState: gameState,
                 winner: winner
@@ -116,7 +124,7 @@ interface GameDaoProtocol {
     resetGame(gameID: string, board: BoardType, player: PlayerType): Promise<Result<GameType>>
     addPlayerMove(gameID: string,move: Move): Promise<Result<Moves>>
     getPlayerMoves(gameID: string, move: Move): Promise<Result<Moves>>
-    getInfo(gameID: string): Promise<Result<GameInfo>>
+    getInfo(gameID: string): Promise<Result<Game>>
     updateInfo(gameID: string, info: GameInfo): Promise<Result<GameInfo>>
 }
 
