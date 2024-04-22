@@ -12,10 +12,6 @@ class GameRepositoryImpl(private val redisData: RedisDataProtocol): GameReposito
         
     }
     
-    override fun switchCurrentPlayer(gameID: string): Result<GameType, Error> {
-        
-    }
-    
     override fun getCurrentPlayer(gameID: string): Result<PlayerType, Error> {
         
     }

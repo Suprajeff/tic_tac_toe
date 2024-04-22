@@ -26,10 +26,6 @@ func (repo *GameRepositoryImpl) UpdateBoard(ctx context.Context, gameID string, 
 	
 }
 
-func (repo *GameRepositoryImpl) SwitchCurrentPlayer(ctx context.Context, gameID string) (*model.GameType, error) {
-	
-}
-
 func (repo *GameRepositoryImpl) GetCurrentPlayer(ctx context.Context, gameID string) (*model.PlayerType, error) {
 	
 }

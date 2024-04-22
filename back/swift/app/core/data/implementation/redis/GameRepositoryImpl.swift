@@ -20,10 +20,6 @@ class GameRepositoryImpl: GameRepository {
         
     }
     
-    func switchCurrentPlayer(gameID: String) -> Result<GameType, Error> {
-        
-    }
-    
     func getCurrentPlayer(gameID: String) -> Result<PlayerType, Error> {
         
     }

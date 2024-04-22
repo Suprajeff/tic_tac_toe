@@ -8,7 +8,6 @@ interface GameRepository {
     createNewGame(newKey: string, board: BoardType, player: PlayerType): Promise<Result<GameType>>;
     resetGame(gameID: string, board: BoardType, player: PlayerType): Promise<Result<GameType>>;
     updateBoard(gameID: string, position: CellPosition, player: PlayerType): Promise<Result<GameType>>;
-    switchCurrentPlayer(gameID: string): Promise<Result<GameType>>;
     getCurrentPlayer(gameID: string): Promise<Result<PlayerType>>;
     getBoardState(gameID: string): Promise<Result<BoardType>>;
     getGameState(gameID: string): Promise<Result<GameType>>;

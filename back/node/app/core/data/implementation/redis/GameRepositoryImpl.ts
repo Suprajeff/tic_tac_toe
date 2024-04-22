@@ -26,10 +26,6 @@ class GameRepositoryImpl implements GameRepository {
         const newBoard = await this.client.gameDao.addPlayerMove(gameID, {player, position})
     }
     
-    async switchCurrentPlayer(gameID: string): Promise<Result<GameType>> {
-        
-    }
-    
     async getCurrentPlayer(gameID: string): Promise<Result<PlayerType>> {
         const info = await this.client.gameDao.getInfo(gameID)
     }
@@ -43,14 +39,3 @@ class GameRepositoryImpl implements GameRepository {
     }
 
 }
-
-//        switch (result.status) {
-//            case 'success':
-//                console.log('Data:', result.data);
-//                return success(result.data);
-//            case 'error':
-//                console.error('Error:', result.exception);
-//                return error(result.exception);
-//            case 'notFound':
-//                return notFound
-//        }
