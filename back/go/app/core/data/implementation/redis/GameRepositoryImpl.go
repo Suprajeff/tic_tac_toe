@@ -1,6 +1,7 @@
 package redis
 
 import (
+	"context"
 	"go-ttt/app/core/database/redis"
 	"go-ttt/app/core/model"
 )
@@ -13,11 +14,11 @@ func NewGameRepositoryImpl(client *redis.Data) *GameRepositoryImpl {
 	return &GameRepositoryImpl{client: client}
 }
 
-func (repo *GameRepositoryImpl) CreateNewGame() (*model.GameType, error) {
+func (repo *GameRepositoryImpl) CreateNewGame(ctx context.Context, newKey string, board *model.BoardType, player *model.PlayerType) (*model.GameType, error) {
 	
 }
 
-func (repo *GameRepositoryImpl) ResetGame() (*model.GameType, error) {
+func (repo *GameRepositoryImpl) ResetGame(ctx context.Context, gameID string, board *model.BoardType, player *model.PlayerType) (*model.GameType, error) {
 	
 }
 
@@ -25,14 +26,18 @@ func (repo *GameRepositoryImpl) UpdateBoard(row, col uint8, player *model.Player
 	
 }
 
-func (repo *GameRepositoryImpl) SwitchCurrentPlayer() (*model.GameType, error) {
+func (repo *GameRepositoryImpl) SwitchCurrentPlayer(ctx context.Context, gameID string) (*model.GameType, error) {
 	
 }
 
-func (repo *GameRepositoryImpl) GetCurrentPlayer() (*model.PlayerType, error) {
+func (repo *GameRepositoryImpl) GetCurrentPlayer(ctx context.Context, gameID string) (*model.PlayerType, error) {
 	
 }
 
-func (repo *GameRepositoryImpl) GetBoardState() (*model.BoardType, error) {
+func (repo *GameRepositoryImpl) GetBoardState(ctx context.Context, gameID string) (*model.BoardType, error) {
 	
+}
+
+func (repo *GameRepositoryImpl) GetGameState(ctx context.Context, gameID string) (*model.GameType, error) {
+
 }

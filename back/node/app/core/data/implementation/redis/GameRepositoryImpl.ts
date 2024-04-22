@@ -1,5 +1,8 @@
 import {GameRepository} from "../../repository/GameRepository";
 import {BoardType} from "../../../model/BoardType";
+import { PlayerType } from "../../../model/PlayerType";
+import { GameType } from "../../../model/GameType";
+import { Result } from "../../../common/result/Result";
 
 class GameRepositoryImpl implements GameRepository {
     
@@ -9,19 +12,19 @@ class GameRepositoryImpl implements GameRepository {
         this.client = client;
     }
     
-    async createNewGame(): Promise<Result<GameType>> {
-        const newGame = await this.client.gameDao.setGame()
+    async createNewGame(newKey: string, board: BoardType, player: PlayerType): Promise<Result<GameType>> {
+        const newGame = await this.client.gameDao.setGame(newKey, board, player)
     }
     
-    async resetGame(): Promise<Result<GameType>> {
-        const newGame = await this.client.gameDao.resetGame()
+    async resetGame(gameID: string, board: BoardType, player: PlayerType): Promise<Result<GameType>> {
+        const newGame = await this.client.gameDao.resetGame(gameID, board, player)
     }
     
     async updateBoard(row: number, col: number, player: PlayerType): Promise<Result<GameType>> {
         const newBoard = await this.client.gameDao.addPlayerMove()
     }
     
-    async switchCurrentPlayer(): Promise<Result<GameType>> {
+    async switchCurrentPlayer(gameID: string): Promise<Result<GameType>> {
         
     }
     
@@ -29,8 +32,12 @@ class GameRepositoryImpl implements GameRepository {
         const info = await this.client.gameDao.getInfo(gameID)
     }
     
-    async getBoardState(): Promise<Result<BoardType>> {
+    async getBoardState(gameID: string): Promise<Result<BoardType>> {
         const boardState = await this.client.gameDao.getPlayerMoves()
     }
     
+    async getGameState(gameID: string): Promise<Result<GameType>> {
+
+    }
+
 }

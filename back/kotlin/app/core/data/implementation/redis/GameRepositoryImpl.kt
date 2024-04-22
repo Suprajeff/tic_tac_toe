@@ -1,10 +1,10 @@
 class GameRepositoryImpl(private val redisData: RedisDataProtocol): GameRepository {
     
-    override fun createNewGame(): Result<GameType, Error> {
+    override fun createNewGame(newKey: string, board: BoardType, player: PlayerType): Result<GameType, Error> {
         
     }
     
-    override fun resetGame(): Result<GameType, Error> {
+    override fun resetGame(gameID: string, board: BoardType, player: PlayerType): Result<GameType, Error> {
         
     }
     
@@ -12,16 +12,20 @@ class GameRepositoryImpl(private val redisData: RedisDataProtocol): GameReposito
         
     }
     
-    override fun switchCurrentPlayer(): Result<GameType, Error> {
+    override fun switchCurrentPlayer(gameID: string): Result<GameType, Error> {
         
     }
     
-    override fun getCurrentPlayer(): Result<PlayerType, Error> {
+    override fun getCurrentPlayer(gameID: string): Result<PlayerType, Error> {
         
     }
     
-    override fun getBoardState(): Result<BoardType, Error>{
+    override fun getBoardState(gameID: string): Result<BoardType, Error>{
         
     }
-    
+
+    override fun getGameState(gameID: string): Result<GameType, Error>{
+
+    }
+
 }
