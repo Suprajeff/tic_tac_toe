@@ -25,7 +25,7 @@ class GameDao implements GameDaoProtocol {
         })
 
         return {
-            type: "success",
+            status: "success",
             data: {
                 id: newKey,
                 board: board,
@@ -48,7 +48,7 @@ class GameDao implements GameDaoProtocol {
         })
 
         return {
-            type: "success",
+            status: "success",
             data: {
                 id: gameID,
                 board: board,
@@ -64,7 +64,7 @@ class GameDao implements GameDaoProtocol {
         await this.redis.sAdd(`${gameID}:moves:${move.player}`, move.position);
         const playerMoves: CellPosition[] = await this.redis.sMembers(`${gameID}:moves:${move.player}`) as CellPosition[]
         return {
-            type: "success",
+            status: "success",
             data: {
                 player: move.player,
                 positions: playerMoves
@@ -78,7 +78,7 @@ class GameDao implements GameDaoProtocol {
         const gameState = info[1] as GameState;
         const winner = info[2] as CellType;
         return {
-            type: "success",
+            status: "success",
             data: {
                 currentPlayer: {symbol: currentPlayerSymbol},
                 gameState: gameState,
@@ -90,7 +90,7 @@ class GameDao implements GameDaoProtocol {
     async getPlayerMoves(gameID: string, move: Move): Promise<Result<Moves>> {
         const playerMoves: CellPosition[] = await this.redis.sMembers(`${gameID}:moves:${move.player}`) as CellPosition[]
         return {
-            type: "success",
+            status: "success",
             data: {
                 player: move.player,
                 positions: playerMoves
@@ -105,7 +105,7 @@ class GameDao implements GameDaoProtocol {
             winner: String(info.winner)
         })
 
-        return {type: "success", data: {currentPlayer: info.currentPlayer, gameState: info.gameState, winner: info.winner}}
+        return {status: "success", data: {currentPlayer: info.currentPlayer, gameState: info.gameState, winner: info.winner}}
 
     }
 
