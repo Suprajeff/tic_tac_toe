@@ -1,9 +1,10 @@
 import {GameRepository} from "../../repository/GameRepository";
 import {BoardType} from "../../../model/BoardType";
-import { PlayerType } from "../../../model/PlayerType";
-import { GameType } from "../../../model/GameType";
-import { Result } from "../../../common/result/Result";
-import { CellPosition } from "../../../model/CellPosition";
+import {PlayerType} from "../../../model/PlayerType";
+import {GameType} from "../../../model/GameType";
+import {Result} from "../../../common/result/Result";
+import {CellPosition} from "../../../model/CellPosition";
+import {RedisData} from "../../../database/redis/RedisData";
 
 class GameRepositoryImpl implements GameRepository {
     
@@ -14,11 +15,11 @@ class GameRepositoryImpl implements GameRepository {
     }
     
     async createNewGame(newKey: string, board: BoardType, player: PlayerType): Promise<Result<GameType>> {
-        const newGame = await this.client.gameDao.setGame(newKey, board, player)
+        return await this.client.gameDao.setGame(newKey, board, player);
     }
     
     async resetGame(gameID: string, board: BoardType, player: PlayerType): Promise<Result<GameType>> {
-        const newGame = await this.client.gameDao.resetGame(gameID, board, player)
+        return  await this.client.gameDao.resetGame(gameID, board, player)
     }
     
     async updateBoard(gameID: string, position: CellPosition, player: PlayerType): Promise<Result<GameType>> {
@@ -42,3 +43,14 @@ class GameRepositoryImpl implements GameRepository {
     }
 
 }
+
+//        switch (result.status) {
+//            case 'success':
+//                console.log('Data:', result.data);
+//                return success(result.data);
+//            case 'error':
+//                console.error('Error:', result.exception);
+//                return error(result.exception);
+//            case 'notFound':
+//                return notFound
+//        }

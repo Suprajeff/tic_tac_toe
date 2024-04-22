@@ -12,3 +12,5 @@ class RedisData {
     }
 
 }
+
+export {RedisData}
