@@ -127,9 +127,7 @@ func (dao *GameDao) getPlayerMoves(ctx context.Context, gameID string, move enti
 
 func (dao *GameDao) getInfo(ctx context.Context, gameID string) (*entity.Game, error) {
 
-	key := fmt.Sprintf("%s:info", gameID)
-
-	info, err := dao.Redis.HMGet(ctx, key, "currentPlayer", "gameState", "winner").Result()
+	info, err := dao.Redis.HMGet(ctx, fmt.Sprintf("%s:info", gameID), "currentPlayer", "gameState", "winner").Result()
 	if err != nil {
 		return nil, err
 	}
@@ -162,19 +160,19 @@ func (dao *GameDao) getInfo(ctx context.Context, gameID string) (*entity.Game, e
 
 	xPositions, err := dao.Redis.SMembers(ctx, fmt.Sprintf("%s:moves:X", gameID)).Result()
 	if err != nil {
-		return &entity.Game{}, err
+		return nil, err
 	}
 
 	oPositions, err := dao.Redis.SMembers(ctx, fmt.Sprintf("%s:moves:O", gameID)).Result()
 	if err != nil {
-		return &entity.Game{}, err
+		return nil, err
 	}
 
 	xCellPositions := make([]model.CellPosition, len(xPositions))
 	for i, pos := range xPositions {
 		xCellPositions[i], err = util.StringToCellPosition(pos)
 		if err != nil {
-			return &entity.Game{}, err
+			return nil, err
 		}
 	}
 
@@ -182,7 +180,7 @@ func (dao *GameDao) getInfo(ctx context.Context, gameID string) (*entity.Game, e
 	for i, pos := range oPositions {
 		oCellPositions[i], err = util.StringToCellPosition(pos)
 		if err != nil {
-			return &entity.Game{}, err
+			return nil, err
 		}
 	}
 
