@@ -5,5 +5,6 @@ type GameType struct {
 	Board        BoardType
 	CurrentPlayer PlayerType
 	GameState    GameState
+	Moves        *PlayersMoves
 	Winner       *PlayerType
 }

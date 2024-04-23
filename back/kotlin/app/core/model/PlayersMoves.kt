@@ -1,0 +1,1 @@
+typealias PlayersMoves = Map<CellType, List<CellPosition>>

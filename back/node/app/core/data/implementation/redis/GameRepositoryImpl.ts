@@ -43,11 +43,25 @@ class GameRepositoryImpl implements GameRepository {
     }
     
     async getBoardState(gameID: string): Promise<Result<BoardType>> {
-        const boardState = await this.client.gameDao.getPlayerMoves()
+        const result = await this.client.gameDao.getInfo(gameID)
+        switch (result.status) {
+            case 'success':
+                console.log('Data:', result.data);
+                let boardData: BoardType = {}
+                const xPositions = result.data.moves.X
+                const oPositions = result.data.moves.O
+
+                return success(boardData);
+            case 'error':
+                console.error('Error:', result.exception);
+                return error(result.exception);
+            case 'notFound':
+                return notFound
+        }
     }
     
     async getGameState(gameID: string): Promise<Result<GameType>> {
-
+        const result = await this.client.gameDao.getInfo(gameID)
     }
 
 }

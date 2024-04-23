@@ -5,5 +5,6 @@ struct GameType {
     var board: BoardType
     var currentPlayer: PlayerType
     var gameState: GameState
+    var moves: PlayersMoves?
     var winner: PlayerType?
 }
