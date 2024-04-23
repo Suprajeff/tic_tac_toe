@@ -16,7 +16,7 @@ class GameRepositoryImpl(private val redisData: RedisDataProtocol): GameReposito
         
     }
     
-    override fun getBoardState(gameID: string): Result<BoardType, Error>{
+    override fun getBoardState(gameID: string): Result<StateType, Error>{
         
     }
 

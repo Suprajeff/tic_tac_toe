@@ -24,7 +24,7 @@ class GameRepositoryImpl: GameRepository {
         
     }
     
-    func getBoardState(gameID: String) -> Result<BoardType, Error> {
+    func getBoardState(gameID: String) -> Result<StateType, Error> {
         
     }
 

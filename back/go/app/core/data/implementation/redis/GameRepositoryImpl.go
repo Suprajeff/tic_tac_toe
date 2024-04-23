@@ -30,7 +30,7 @@ func (repo *GameRepositoryImpl) GetCurrentPlayer(ctx context.Context, gameID str
 	
 }
 
-func (repo *GameRepositoryImpl) GetBoardState(ctx context.Context, gameID string) (*model.BoardType, error) {
+func (repo *GameRepositoryImpl) GetBoardState(ctx context.Context, gameID string) (*model.StateType, error) {
 	
 }
 
