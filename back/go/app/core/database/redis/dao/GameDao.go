@@ -39,6 +39,7 @@ func (dao *GameDao) setGame(ctx context.Context, newKey string, board *model.Boa
 		Board: *board,
 		CurrentPlayer: *player,
 		GameState: model.InProgress,
+		Moves: nil,
 		Winner: nil,
 	}, nil
 
@@ -69,6 +70,7 @@ func (dao *GameDao) resetGame(ctx context.Context, gameID string, board *model.B
 		Board: *board,
 		CurrentPlayer: *player,
 		GameState: model.InProgress,
+		Moves: nil,
 		Winner: nil,
 	}, nil
 

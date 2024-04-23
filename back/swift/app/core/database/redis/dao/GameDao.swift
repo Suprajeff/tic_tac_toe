@@ -16,7 +16,7 @@ class GameDao: GameDaoProtocol {
                 return .failure(GameInfoError("Failed to extract or convert data from Redis"))
             }
             _ = try redis.hmset(["currentPlayer": starter, "gameState": "IN_PROGRESS"], in: "\(newKey):info").wait()
-            let newGame = GameType(id: newKey, board: board, currentPlayer: player, gameState: .InProgress, winner: nil)
+            let newGame = GameType(id: newKey, board: board, currentPlayer: player, gameState: .InProgress, moves: nil, winner: nil)
             return .success(newGame)
         } catch {
             return .failure(error)
@@ -33,7 +33,7 @@ class GameDao: GameDaoProtocol {
                 return .failure(GameInfoError("Failed to extract or convert data from Redis"))
             }
             _ = try redis.hmset(["currentPlayer": starter, "gameState": "IN_PROGRESS"], in: "\(gameID):info").wait()
-            let newGame = GameType(id: gameID, board: board, currentPlayer: player, gameState: .InProgress, winner: nil)
+            let newGame = GameType(id: gameID, board: board, currentPlayer: player, gameState: .InProgress, moves: nil, winner: nil)
             return .success(newGame)
         } catch {
             return .failure(error)

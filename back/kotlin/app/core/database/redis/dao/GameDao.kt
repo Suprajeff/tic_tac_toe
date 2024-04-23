@@ -5,7 +5,7 @@ class GameDao(private val syncCommands: RedisCommands<String, String>): GameDaoP
             "currentPlayer" to player,
             "gameState" to "IN_PROGRESS"
         ))
-        return GameType(newKey, board, player, GameState.InProgress, null)
+        return GameType(newKey, board, player, GameState.InProgress, null, null)
     }
 
     override fun resetGame(gameID: string, board: BoardType, player: PlayerType): GameType {
@@ -15,7 +15,7 @@ class GameDao(private val syncCommands: RedisCommands<String, String>): GameDaoP
             "currentPlayer" to player,
             "gameState" to "IN_PROGRESS"
         ))
-        return GameType(gameID, board, player, GameState.InProgress, null)
+        return GameType(gameID, board, player, GameState.InProgress, null, null)
     }
 
     override fun addPlayerMove(gameID: String, move: Move): Moves {

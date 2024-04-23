@@ -32,6 +32,7 @@ class GameDao implements GameDaoProtocol {
                 board: board,
                 currentPlayer: player,
                 gameState: GameState.InProgress,
+                moves: undefined,
                 winner: undefined
             }
         }
@@ -55,6 +56,7 @@ class GameDao implements GameDaoProtocol {
                 board: board,
                 currentPlayer: player,
                 gameState: GameState.InProgress,
+                moves: undefined,
                 winner: undefined
             }
         }
