@@ -18,7 +18,7 @@ type GameDaoProtocol interface {
 	resetGame(ctx context.Context, gameID string, board *model.BoardType, player *model.PlayerType) (*model.GameType, error)
 	addPlayerMove(ctx context.Context, gameID string, move *entity.Move) (*entity.Moves, error)
 	getPlayerMoves(ctx context.Context, gameID string, move *entity.Move) (*entity.Moves, error)
-	getInfo(ctx context.Context, gameID string) (*entity.Game, error)
+	getInfo(ctx context.Context, gameID string) (*entity.GameType, error)
 	updateInfo(ctx context.Context, gameID string, info *entity.GameInfo) (*entity.GameInfo, error)
 }
 
@@ -36,10 +36,9 @@ func (dao *GameDao) setGame(ctx context.Context, newKey string, board *model.Boa
 
 	return &model.GameType{
 		ID:    newKey,
-		Board: *board,
 		CurrentPlayer: *player,
 		GameState: model.InProgress,
-		Moves: nil,
+		State: board,
 		Winner: nil,
 	}, nil
 
@@ -67,10 +66,9 @@ func (dao *GameDao) resetGame(ctx context.Context, gameID string, board *model.B
 
 	return &model.GameType{
 		ID:    gameID,
-		Board: *board,
 		CurrentPlayer: *player,
 		GameState: model.InProgress,
-		Moves: nil,
+		State: board,
 		Winner: nil,
 	}, nil
 
@@ -127,7 +125,7 @@ func (dao *GameDao) getPlayerMoves(ctx context.Context, gameID string, move enti
 	}, nil
 }
 
-func (dao *GameDao) getInfo(ctx context.Context, gameID string) (*entity.Game, error) {
+func (dao *GameDao) getInfo(ctx context.Context, gameID string) (*entity.GameType, error) {
 
 	info, err := dao.Redis.HMGet(ctx, fmt.Sprintf("%s:info", gameID), "currentPlayer", "gameState", "winner").Result()
 	if err != nil {
@@ -186,14 +184,14 @@ func (dao *GameDao) getInfo(ctx context.Context, gameID string) (*entity.Game, e
 		}
 	}
 
-	return &entity.Game{
+	return &entity.GameType{
 		ID: gameID,
-		Moves: map[model.CellType][]model.CellPosition{
+		CurrentPlayer: *currentPlayerData,
+		GameState:     gameStateData,
+		State: map[model.CellType][]model.CellPosition{
 			model.X: xCellPositions,
 			model.O: oCellPositions,
 		},
-		CurrentPlayer: *currentPlayerData,
-		GameState:     gameStateData,
 		Winner:        winnerData,
 	}, nil
 }

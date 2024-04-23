@@ -5,7 +5,7 @@ class GameDao(private val syncCommands: RedisCommands<String, String>): GameDaoP
             "currentPlayer" to player,
             "gameState" to "IN_PROGRESS"
         ))
-        return GameType(newKey, board, player, GameState.InProgress, null, null)
+        return GameType(newKey, player, GameState.InProgress, board, null)
     }
 
     override fun resetGame(gameID: string, board: BoardType, player: PlayerType): GameType {
@@ -15,7 +15,7 @@ class GameDao(private val syncCommands: RedisCommands<String, String>): GameDaoP
             "currentPlayer" to player,
             "gameState" to "IN_PROGRESS"
         ))
-        return GameType(gameID, board, player, GameState.InProgress, null, null)
+        return GameType(gameID, player, GameState.InProgress, board, null)
     }
 
     override fun addPlayerMove(gameID: String, move: Move): Moves {
@@ -29,7 +29,7 @@ class GameDao(private val syncCommands: RedisCommands<String, String>): GameDaoP
         return Moves(move.player, playerMoves.toList())
     }
 
-    override fun getInfo(gameID: String): Game {
+    override fun getInfo(gameID: String): GameType {
 
         val info = syncCommands.hmget("$gameID:info", "currentPlayer", "gameState", "winner")
         val xMoves = syncCommands.smembers("$gameID:moves:X")
@@ -39,7 +39,7 @@ class GameDao(private val syncCommands: RedisCommands<String, String>): GameDaoP
         val gameState = info[1]
         val winner = info[2]
 
-        return Game(gameID, mapOf(CellType.X to xCellPositions, CellType.O to oCellPositions) ,currentPlayer, gameState, winner)
+        return Game(gameID, currentPlayer, gameState, mapOf(CellType.X to xCellPositions, CellType.O to oCellPositions), winner)
     }
     
     override fun updateInfo(gameID: String, info: GameInfo): GameInfo {
@@ -58,6 +58,6 @@ interface GameDaoProtocol {
     fun resetGame(gameID: string, board: BoardType, player: PlayerType): GameType
     fun addPlayerMove(gameID: String, move: Move): Moves
     fun getPlayerMoves(gameID: String, move: Move): Moves
-    fun getInfo(gameID: string): Game
+    fun getInfo(gameID: string): GameType
     fun updateInfo(gameID: String, info: GameInfo): GameInfo
 }

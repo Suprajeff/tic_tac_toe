@@ -8,7 +8,6 @@ import {CellType} from "../../../model/CellType";
 import {PlayerType} from "../../../model/PlayerType";
 import {BoardType} from "../../../model/BoardType";
 import {GameType} from "../../../model/GameType";
-import { Game } from "../entity/Game";
 
 class GameDao implements GameDaoProtocol {
     
@@ -29,10 +28,9 @@ class GameDao implements GameDaoProtocol {
             status: "success",
             data: {
                 id: newKey,
-                board: board,
                 currentPlayer: player,
                 gameState: GameState.InProgress,
-                moves: undefined,
+                state: board,
                 winner: undefined
             }
         }
@@ -53,10 +51,9 @@ class GameDao implements GameDaoProtocol {
             status: "success",
             data: {
                 id: gameID,
-                board: board,
                 currentPlayer: player,
                 gameState: GameState.InProgress,
-                moves: undefined,
+                state: board,
                 winner: undefined
             }
         }
@@ -88,10 +85,7 @@ class GameDao implements GameDaoProtocol {
                 id: gameID,
                 currentPlayer: {symbol: currentPlayerSymbol},
                 gameState: gameState,
-                moves: {
-                X: xMoves,
-                O: oMoves
-                },
+                state: {X: xMoves, O: oMoves},
                 winner: winner
             }
         }
@@ -126,7 +120,7 @@ interface GameDaoProtocol {
     resetGame(gameID: string, board: BoardType, player: PlayerType): Promise<Result<GameType>>
     addPlayerMove(gameID: string,move: Move): Promise<Result<Moves>>
     getPlayerMoves(gameID: string, move: Move): Promise<Result<Moves>>
-    getInfo(gameID: string): Promise<Result<Game>>
+    getInfo(gameID: string): Promise<Result<GameType>>
     updateInfo(gameID: string, info: GameInfo): Promise<Result<GameInfo>>
 }
 
