@@ -75,7 +75,7 @@ class GameDao implements GameDaoProtocol {
         }
     }
 
-    async getInfo(gameID: string): Promise<Result<Game>> {
+    async getInfo(gameID: string): Promise<Result<GameType>> {
         const info = await this.redis.hmGet(`${gameID}:info`, ["currentPlayer", "gameState", "winner"]);
         const currentPlayerSymbol = info[0] as NonNullable<CellType>;
         const gameState = info[1] as GameState;
@@ -86,12 +86,12 @@ class GameDao implements GameDaoProtocol {
             status: "success",
             data: {
                 id: gameID,
-                moves: {
-                    X: xMoves,
-                    O: oMoves
-                },
                 currentPlayer: {symbol: currentPlayerSymbol},
                 gameState: gameState,
+                moves: {
+                X: xMoves,
+                O: oMoves
+                },
                 winner: winner
             }
         }

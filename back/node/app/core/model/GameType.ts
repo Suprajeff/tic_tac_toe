@@ -5,10 +5,9 @@ import { PlayersMoves } from "./PlayersMoves";
 
 type GameType = {
     id: string;
-    board: BoardType;
     currentPlayer: PlayerType;
     gameState: GameState;
-    moves?: PlayersMoves;
+    state: BoardType | PlayersMoves;
     winner?: PlayerType; 
 }
 

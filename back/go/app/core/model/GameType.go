@@ -2,9 +2,8 @@ package model
 
 type GameType struct {
 	ID  string
-	Board        BoardType
 	CurrentPlayer PlayerType
 	GameState    GameState
-	Moves        *PlayersMoves
+	State        StateType
 	Winner       *PlayerType
 }

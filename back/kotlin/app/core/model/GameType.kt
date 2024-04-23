@@ -4,9 +4,8 @@ import GameState
 
 data class GameType(
     val id: String,
-    val board: BoardType,
     val currentPlayer: PlayerType,
     val gameState: GameState,
-    val moves: PlayersMoves? = null,
+    val state: StateType,
     val winner: PlayerType? = null
 )
