@@ -41,21 +41,33 @@ class GameDao: GameDaoProtocol {
 
     }
 
-    func addPlayerMove(gameID: String, move: Move) -> Result<Moves, Error> {
+    func addPlayerMove(gameID: String, move: Move) -> Result<StateType, Error> {
         do {
             let cellPosition = TypeConverter.cellPositiontoString(move.position)
             let newMove = try redis.sadd(cellPosition, to: "\(gameID):moves:\(move.player)").wait()
-            print(newMove)
-            let positions = try redis.smembers(of: "\(gameID):moves:\(move.player)").wait()
-            var cellPositions: [CellPosition] = []
-            for position in positions {
-                if let RESPValueString = TypeConverter.extractString(from: position) {
-                    if let cellPosition = TypeConverter.stringToCellPosition(RESPValueString){
-                        cellPositions.append(cellPosition)
+            let xPositions = try redis.smembers(of: "\(gameID):moves:X").wait()
+            let oPositions = try redis.smembers(of: "\(gameID):moves:O").wait()
+
+            var xCellPositions: [CellPosition] = []
+            var oCellPositions: [CellPosition] = []
+
+            for xPosition in xPositions {
+                if let xRESPValueString = TypeConverter.extractString(from: xPosition) {
+                    if let xCellPosition = TypeConverter.stringToCellPosition(xRESPValueString) {
+                        xCellPositions.append(xCellPosition)
                     }
                 }
             }
-            let moves = Moves(player: move.player, positions: cellPositions)
+
+            for oPosition in oPositions {
+                if let oRESPValueString = TypeConverter.extractString(from: oPosition) {
+                    if let oCellPosition = TypeConverter.stringToCellPosition(oRESPValueString) {
+                        oCellPositions.append(oCellPosition)
+                    }
+                }
+            }
+
+            let moves = StateType([.X: xCellPositions, .O: oCellPositions])
             return .success(moves)
         } catch {
             return .failure(error)
@@ -140,7 +152,7 @@ class GameDao: GameDaoProtocol {
 protocol GameDaoProtocol {
     func setGame(newKey: String, board: BoardType, player: PlayerType) -> Result<GameType, Error>
     func resetGame(gameID: String, board: BoardType, player: PlayerType) -> Result<GameType, Error>
-    func addPlayerMove(gameID: String, move: Move) -> Result<Moves, Error>
+    func addPlayerMove(gameID: String, move: Move) -> Result<StateType, Error>
     func getPlayerMoves(gameID: String, move: Move) -> Result<Moves, Error>
     func getInfo(gameID: String) -> Result<GameType, Error>
     func updateInfo(gameID: String, info: GameInfo) -> Result<GameInfo, Error>

@@ -14,15 +14,15 @@ type GameDao struct {
 }
 
 type GameDaoProtocol interface {
-	setGame(ctx context.Context, newKey string, board *model.BoardType, player *model.PlayerType) (*model.GameType, error)
-	resetGame(ctx context.Context, gameID string, board *model.BoardType, player *model.PlayerType) (*model.GameType, error)
-	addPlayerMove(ctx context.Context, gameID string, move *entity.Move) (*entity.Moves, error)
+	setGame(ctx context.Context, newKey string, board *model.StateType, player *model.PlayerType) (*model.GameType, error)
+	resetGame(ctx context.Context, gameID string, board *model.StateType, player *model.PlayerType) (*model.GameType, error)
+	addPlayerMove(ctx context.Context, gameID string, move *entity.Move) (*model.StateType, error)
 	getPlayerMoves(ctx context.Context, gameID string, move *entity.Move) (*entity.Moves, error)
-	getInfo(ctx context.Context, gameID string) (*entity.GameType, error)
+	getInfo(ctx context.Context, gameID string) (*model.GameType, error)
 	updateInfo(ctx context.Context, gameID string, info *entity.GameInfo) (*entity.GameInfo, error)
 }
 
-func (dao *GameDao) setGame(ctx context.Context, newKey string, board *model.BoardType, player *model.PlayerType) (*model.GameType, error) {
+func (dao *GameDao) setGame(ctx context.Context, newKey string, board *model.StateType, player *model.PlayerType) (*model.GameType, error) {
 
 	key := fmt.Sprintf("%s:info", newKey)
 
@@ -38,13 +38,13 @@ func (dao *GameDao) setGame(ctx context.Context, newKey string, board *model.Boa
 		ID:    newKey,
 		CurrentPlayer: *player,
 		GameState: model.InProgress,
-		State: board,
+		State: *board,
 		Winner: nil,
 	}, nil
 
 }
 
-func (dao *GameDao) resetGame(ctx context.Context, gameID string, board *model.BoardType, player *model.PlayerType) (*model.GameType, error) {
+func (dao *GameDao) resetGame(ctx context.Context, gameID string, board *model.StateType, player *model.PlayerType) (*model.GameType, error) {
 
 	_, err := dao.Redis.Del(ctx, fmt.Sprintf("%s:moves:X", gameID), fmt.Sprintf("%s:moves:O", gameID)).Result()
 	if err != nil {
@@ -68,38 +68,56 @@ func (dao *GameDao) resetGame(ctx context.Context, gameID string, board *model.B
 		ID:    gameID,
 		CurrentPlayer: *player,
 		GameState: model.InProgress,
-		State: board,
+		State: *board,
 		Winner: nil,
 	}, nil
 
 }
 
-func (dao *GameDao) addPlayerMove(ctx context.Context, gameID string, move entity.Move) (entity.Moves, error) {
+func (dao *GameDao) addPlayerMove(ctx context.Context, gameID string, move entity.Move) (*model.StateType, error) {
 
-	key := fmt.Sprintf("%s:moves:%s", gameID, move.Player)
-
-	err := dao.Redis.SAdd(ctx, key, string(move.Position)).Err()
+	err := dao.Redis.SAdd(ctx, fmt.Sprintf("%s:moves:%s", gameID, move.Player), string(move.Position)).Err()
 	if err != nil {
-		return entity.Moves{}, err
+		return nil, err
 	}
 
-	positions, err := dao.Redis.SMembers(ctx, key).Result()
+	xPositions, err := dao.Redis.SMembers(ctx, fmt.Sprintf("%s:moves:X", gameID)).Result()
 	if err != nil {
-		return entity.Moves{}, err
+		return nil, err
 	}
 
-	cellPositions := make([]model.CellPosition, len(positions))
-	for i, pos := range positions {
-		cellPositions[i], err = util.StringToCellPosition(pos)
+	oPositions, err := dao.Redis.SMembers(ctx, fmt.Sprintf("%s:moves:O", gameID)).Result()
+	if err != nil {
+		return nil, err
+	}
+
+	xCellPositions := make([]model.CellPosition, len(xPositions))
+	for i, pos := range xPositions {
+		xCellPositions[i], err = util.StringToCellPosition(pos)
 		if err != nil {
-			return entity.Moves{}, err
+			return nil, err
 		}
 	}
 
-	return entity.Moves{
-		Player:    move.Player,
-		Positions: cellPositions,
-	}, nil
+	oCellPositions := make([]model.CellPosition, len(oPositions))
+	for i, pos := range oPositions {
+		oCellPositions[i], err = util.StringToCellPosition(pos)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	playersMoves := model.PlayersMoves{
+		model.X: xCellPositions,
+		model.O: oCellPositions,
+	}
+
+	state := model.MovesState{PlayersMoves: playersMoves}
+
+	var stateAsStateType model.StateType = &state
+
+
+	return &stateAsStateType, nil
 }
 
 func (dao *GameDao) getPlayerMoves(ctx context.Context, gameID string, move entity.Move) (entity.Moves, error) {
@@ -125,7 +143,7 @@ func (dao *GameDao) getPlayerMoves(ctx context.Context, gameID string, move enti
 	}, nil
 }
 
-func (dao *GameDao) getInfo(ctx context.Context, gameID string) (*entity.GameType, error) {
+func (dao *GameDao) getInfo(ctx context.Context, gameID string) (*model.GameType, error) {
 
 	info, err := dao.Redis.HMGet(ctx, fmt.Sprintf("%s:info", gameID), "currentPlayer", "gameState", "winner").Result()
 	if err != nil {
@@ -184,14 +202,20 @@ func (dao *GameDao) getInfo(ctx context.Context, gameID string) (*entity.GameTyp
 		}
 	}
 
-	return &entity.GameType{
+	playersMoves := model.PlayersMoves{
+		model.X: xCellPositions,
+		model.O: oCellPositions,
+	}
+
+	state := model.MovesState{PlayersMoves: playersMoves}
+
+	var stateAsStateType model.StateType = &state
+
+	return &model.GameType{
 		ID: gameID,
 		CurrentPlayer: *currentPlayerData,
 		GameState:     gameStateData,
-		State: map[model.CellType][]model.CellPosition{
-			model.X: xCellPositions,
-			model.O: oCellPositions,
-		},
+		State: stateAsStateType,
 		Winner:        winnerData,
 	}, nil
 }

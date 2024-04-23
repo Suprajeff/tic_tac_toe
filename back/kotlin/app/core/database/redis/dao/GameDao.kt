@@ -18,10 +18,11 @@ class GameDao(private val syncCommands: RedisCommands<String, String>): GameDaoP
         return GameType(gameID, player, GameState.InProgress, board, null)
     }
 
-    override fun addPlayerMove(gameID: String, move: Move): Moves {
+    override fun addPlayerMove(gameID: String, move: Move): StateType {
         syncCommands.sadd("$gameID:moves:${move.player}", move.position)
-        val playerMoves = syncCommands.smembers("$gameID:moves:${move.player}")
-        return Moves(move.player, playerMoves.toList())
+        val xMoves = syncCommands.smembers("$gameID:moves:X")
+        val oMoves = syncCommands.smembers("$gameID:moves:O")
+        return StateType(mapOf(CellType.X to xCellPositions, CellType.O to oCellPositions))
     }
     
     override fun getPlayerMoves(gameID: String, move: Move): Moves {
@@ -56,7 +57,7 @@ class GameDao(private val syncCommands: RedisCommands<String, String>): GameDaoP
 interface GameDaoProtocol {
     fun setGame(newKey: string, board: BoardType, player: PlayerType): GameType
     fun resetGame(gameID: string, board: BoardType, player: PlayerType): GameType
-    fun addPlayerMove(gameID: String, move: Move): Moves
+    fun addPlayerMove(gameID: String, move: Move): StateType
     fun getPlayerMoves(gameID: String, move: Move): Moves
     fun getInfo(gameID: string): GameType
     fun updateInfo(gameID: String, info: GameInfo): GameInfo

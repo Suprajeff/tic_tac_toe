@@ -11,7 +11,7 @@ type BoardState struct {
 func (*BoardState) stateMember() {}
 
 type MovesState struct {
-	PlayerMoves
+	PlayersMoves
 }
 
 func (*MovesState) stateMember() {}

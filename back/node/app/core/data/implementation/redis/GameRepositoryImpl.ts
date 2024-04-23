@@ -60,7 +60,7 @@ class GameRepositoryImpl implements GameRepository {
     }
     
     async getGameState(gameID: string): Promise<Result<GameType>> {
-        const result = await this.client.gameDao.getInfo(gameID)
+        return  await this.client.gameDao.getInfo(gameID)
     }
 
 }
