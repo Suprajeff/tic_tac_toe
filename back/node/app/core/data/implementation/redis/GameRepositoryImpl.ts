@@ -24,7 +24,7 @@ class GameRepositoryImpl implements GameRepository {
         return  await this.client.gameDao.resetGame(gameID, board, player)
     }
     
-    async updateBoard(gameID: string, position: CellPosition, player: PlayerType): Promise<Result<GameType>> {
+    async updateBoard(gameID: string, position: CellPosition, player: PlayerType): Promise<Result<StateType>> {
         const newBoard = await this.client.gameDao.addPlayerMove(gameID, {player, position})
     }
     

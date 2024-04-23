@@ -22,7 +22,7 @@ func (repo *GameRepositoryImpl) ResetGame(ctx context.Context, gameID string, bo
 	
 }
 
-func (repo *GameRepositoryImpl) UpdateBoard(ctx context.Context, gameID string, position *model.CellPosition, player *model.PlayerType) (*model.GameType, error) {
+func (repo *GameRepositoryImpl) UpdateBoard(ctx context.Context, gameID string, position *model.CellPosition, player *model.PlayerType) (*model.StateType, error) {
 	
 }
 
