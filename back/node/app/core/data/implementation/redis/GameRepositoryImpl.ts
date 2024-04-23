@@ -5,7 +5,6 @@ import {GameType} from "../../../model/GameType";
 import {Result, error, notFound, success} from "../../../common/result/Result";
 import {CellPosition} from "../../../model/CellPosition";
 import {RedisData} from "../../../database/redis/RedisData";
-import { PlayersMoves } from "../../../model/PlayersMoves";
 import {StateType} from "../../../model/StateType";
 
 class GameRepositoryImpl implements GameRepository {
@@ -25,7 +24,7 @@ class GameRepositoryImpl implements GameRepository {
     }
     
     async updateBoard(gameID: string, position: CellPosition, player: PlayerType): Promise<Result<StateType>> {
-        const newBoard = await this.client.gameDao.addPlayerMove(gameID, {player, position})
+       return await this.client.gameDao.addPlayerMove(gameID, {player, position})
     }
     
     async getCurrentPlayer(gameID: string): Promise<Result<PlayerType>> {
@@ -60,7 +59,7 @@ class GameRepositoryImpl implements GameRepository {
     }
     
     async getGameState(gameID: string): Promise<Result<GameType>> {
-        return  await this.client.gameDao.getInfo(gameID)
+        return await this.client.gameDao.getInfo(gameID)
     }
 
 }
