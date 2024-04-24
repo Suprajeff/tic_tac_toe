@@ -22,37 +22,22 @@ class GameLogic implements GameLogicB {
             ['TL', 'C', 'BR'], ['TR', 'C', 'BL'] // Diagonals
         ];
 
-        if ('cells' in boardState) {
+        const cells = 'cells' in boardState
+            ? boardState.cells
+            : Object.fromEntries(Object.entries(boardState).flatMap(([player, moves]) => moves.map(pos => [pos, player])));
 
-            const cells = boardState.cells;
+        for (const combination of winningCombinations) {
+            const [pos1, pos2, pos3] = combination;
+            const cell1 = cells[pos1];
+            const cell2 = cells[pos2];
+            const cell3 = cells[pos3];
 
-            for (const combination of winningCombinations) {
-                const [pos1, pos2, pos3] = combination;
-                const cell1 = cells[pos1];
-                const cell2 = cells[pos2];
-                const cell3 = cells[pos3];
-
-                if (cell1 && cell1 === cell2 && cell2 === cell3) {
-                    return success(true, cell1);
-                }
+            if (cell1 && cell1 === cell2 && cell2 === cell3) {
+                return success(true, cell1);
             }
-
-            return success(false, null)
-
-        } else {
-
-            const playersMoves = boardState;
-
-            const winningPlayer = ['X', 'O'].find(player => {
-                const moves = playersMoves[player as CellType];
-                return winningCombinations.some(combination => {
-                    return combination.every(pos => moves.includes(pos));
-                });
-            });
-
-            return winningPlayer ? success(true, winningPlayer) : success(false, null)
-
         }
+
+        return success(false, null)
 
     }
 
