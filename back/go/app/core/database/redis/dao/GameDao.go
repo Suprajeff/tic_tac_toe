@@ -14,15 +14,19 @@ type GameDao struct {
 }
 
 type GameDaoProtocol interface {
-	setGame(ctx context.Context, newKey string, board *model.StateType, player *model.PlayerType) (*model.GameType, error)
-	resetGame(ctx context.Context, gameID string, board *model.StateType, player *model.PlayerType) (*model.GameType, error)
-	addPlayerMove(ctx context.Context, gameID string, move *entity.Move) (*model.StateType, error)
-	getPlayerMoves(ctx context.Context, gameID string, move *entity.Move) (*entity.Moves, error)
-	getInfo(ctx context.Context, gameID string) (*model.GameType, error)
-	updateInfo(ctx context.Context, gameID string, info *entity.GameInfo) (*entity.GameInfo, error)
+	SetGame(ctx context.Context, newKey string, board *model.StateType, player *model.PlayerType) (*model.GameType, error)
+	ResetGame(ctx context.Context, gameID string, board *model.StateType, player *model.PlayerType) (*model.GameType, error)
+	AddPlayerMove(ctx context.Context, gameID string, move *entity.Move) (*model.StateType, error)
+	GetPlayerMoves(ctx context.Context, gameID string, move *entity.Move) (*entity.Moves, error)
+	GetInfo(ctx context.Context, gameID string) (*model.GameType, error)
+	UpdateInfo(ctx context.Context, gameID string, info *entity.GameInfo) (*entity.GameInfo, error)
 }
 
-func (dao *GameDao) setGame(ctx context.Context, newKey string, board *model.StateType, player *model.PlayerType) (*model.GameType, error) {
+func NewGameDao(rData *redisInstance.Data) GameDaoProtocol {
+	return &GameDao{Data:rData}
+}
+
+func (dao *GameDao) SetGame(ctx context.Context, newKey string, board *model.StateType, player *model.PlayerType) (*model.GameType, error) {
 
 	key := fmt.Sprintf("%s:info", newKey)
 
@@ -44,7 +48,7 @@ func (dao *GameDao) setGame(ctx context.Context, newKey string, board *model.Sta
 
 }
 
-func (dao *GameDao) resetGame(ctx context.Context, gameID string, board *model.StateType, player *model.PlayerType) (*model.GameType, error) {
+func (dao *GameDao) ResetGame(ctx context.Context, gameID string, board *model.StateType, player *model.PlayerType) (*model.GameType, error) {
 
 	_, err := dao.Redis.Del(ctx, fmt.Sprintf("%s:moves:X", gameID), fmt.Sprintf("%s:moves:O", gameID)).Result()
 	if err != nil {
@@ -74,7 +78,7 @@ func (dao *GameDao) resetGame(ctx context.Context, gameID string, board *model.S
 
 }
 
-func (dao *GameDao) addPlayerMove(ctx context.Context, gameID string, move entity.Move) (*model.StateType, error) {
+func (dao *GameDao) AddPlayerMove(ctx context.Context, gameID string, move *entity.Move) (*model.StateType, error) {
 
 	err := dao.Redis.SAdd(ctx, fmt.Sprintf("%s:moves:%s", gameID, move.Player), string(move.Position)).Err()
 	if err != nil {
@@ -120,30 +124,30 @@ func (dao *GameDao) addPlayerMove(ctx context.Context, gameID string, move entit
 	return &stateAsStateType, nil
 }
 
-func (dao *GameDao) getPlayerMoves(ctx context.Context, gameID string, move entity.Move) (entity.Moves, error) {
+func (dao *GameDao) GetPlayerMoves(ctx context.Context, gameID string, move *entity.Move) (*entity.Moves, error) {
 
 	key := fmt.Sprintf("%s:moves:%s", gameID, move.Player)
 
 	positions, err := dao.Redis.SMembers(ctx, key).Result()
 	if err != nil {
-		return entity.Moves{}, err
+		return nil, err
 	}
 
 	cellPositions := make([]model.CellPosition, len(positions))
 	for i, pos := range positions {
 		cellPositions[i], err = util.StringToCellPosition(pos)
 		if err != nil {
-			return entity.Moves{}, err
+			return nil, err
 		}
 	}
 
-	return entity.Moves{
+	return &entity.Moves{
 		Player:    move.Player,
 		Positions: cellPositions,
 	}, nil
 }
 
-func (dao *GameDao) getInfo(ctx context.Context, gameID string) (*model.GameType, error) {
+func (dao *GameDao) GetInfo(ctx context.Context, gameID string) (*model.GameType, error) {
 
 	info, err := dao.Redis.HMGet(ctx, fmt.Sprintf("%s:info", gameID), "currentPlayer", "gameState", "winner").Result()
 	if err != nil {
@@ -220,7 +224,7 @@ func (dao *GameDao) getInfo(ctx context.Context, gameID string) (*model.GameType
 	}, nil
 }
 
-func (dao *GameDao) updateInfo(ctx context.Context, gameID string, info *entity.GameInfo) (*entity.GameInfo, error) {
+func (dao *GameDao) UpdateInfo(ctx context.Context, gameID string, info *entity.GameInfo) (*entity.GameInfo, error) {
 
 	key := fmt.Sprintf("%s:info", gameID)
 

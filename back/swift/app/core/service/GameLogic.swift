@@ -4,7 +4,35 @@ protocol GameLogicB {
     func generateNewID() -> Result<String, Error>
     func generateNewBoard() -> Result<BoardType, Error>
     func randomPlayer() -> Result<PlayerType, Error>
-    func getNextPlayer() -> Result<PlayerType, Error>
-    func checkForWinner() -> Result<PlayerType, Error>
-    func checkForDraw() -> Result<Bool, Error>
+    func getNextPlayer(currentPlayer: PlayerType) -> Result<PlayerType, Error>
+    func checkForWinner(state: StateType) -> Result<PlayerType, Error>
+    func checkForDraw(state: StateType) -> Result<Bool, Error>
+}
+
+class GameLogic: GameLogicB {
+
+    func generateNewID() -> Result<String, Error> {
+
+    }
+
+    func generateNewBoard() -> Result<BoardType, Error> {
+
+    }
+
+    func randomPlayer() -> Result<PlayerType, Error> {
+
+    }
+
+    func getNextPlayer(currentPlayer: PlayerType) -> Result<PlayerType, Error> {
+
+    }
+
+    func checkForWinner(state: StateType) -> Result<PlayerType, Error> {
+
+    }
+
+    func checkForDraw(state: StateType) -> Result<Bool, Error> {
+
+    }
+
 }
