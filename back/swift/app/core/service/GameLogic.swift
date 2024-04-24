@@ -6,7 +6,6 @@ protocol GameLogicB {
     func randomPlayer() -> Result<PlayerType, Error>
     func getNextPlayer(currentPlayer: PlayerType) -> Result<PlayerType, Error>
     func checkForWinner(state: StateType) -> Result<PlayerType, Error>
-    func checkForDraw(state: StateType) -> Result<Bool, Error>
 }
 
 class GameLogic: GameLogicB {
@@ -28,10 +27,6 @@ class GameLogic: GameLogicB {
     }
 
     func checkForWinner(state: StateType) -> Result<PlayerType, Error> {
-
-    }
-
-    func checkForDraw(state: StateType) -> Result<Bool, Error> {
 
     }
 

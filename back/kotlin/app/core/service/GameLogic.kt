@@ -4,7 +4,6 @@ interface GameLogicB {
     fun randomPlayer(): Result<PlayerType>
     fun getNextPlayer(currentPlayer: PlayerType): Result<PlayerType>
     fun checkForWinner(state: StateType): Result<PlayerType>
-    fun checkForDraw(state: StateType): Result<Boolean>
 }
 
 class GameLogic(): GameLogicB {
@@ -27,10 +26,6 @@ class GameLogic(): GameLogicB {
 
     override fun checkForWinner(state: StateType): Result<PlayerType> {
 
-    }
-
-    override fun checkForDraw(state: StateType): Result<Boolean> {
-        
     }
 
 }

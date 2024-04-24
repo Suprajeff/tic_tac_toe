@@ -1,41 +1,84 @@
-import { Result } from "../common/result/Result";
+import {Result, success, error} from "../common/result/Result";
 import { PlayerType } from "../model/PlayerType";
 import {BoardType} from "../model/BoardType";
 import {StateType} from "../model/StateType";
+import {randomUUID} from "crypto";
 
 interface GameLogicB {
-    generateNewID(): Promise<Result<string>>;
-    generateNewBoard(): Promise<Result<BoardType>>;
-    randomPlayer(): Promise<Result<PlayerType>>;
-    getNextPlayer(currentPlayer: PlayerType): Promise<Result<PlayerType>>;
-    checkForWinner(boardState: StateType): Promise<Result<PlayerType>>;
-    checkForDraw(boardState: StateType): Promise<Result<boolean>>;
+    generateNewID(): Result<string>;
+    generateNewBoard(): BoardType;
+    randomPlayer(): Result<PlayerType>;
+    getNextPlayer(currentPlayer: PlayerType): Result<PlayerType>;
+    checkForWinner(boardState: StateType): Result<boolean, PlayerType?>;
 }
 
 class GameLogic implements GameLogicB {
 
-    checkForDraw(boardState: StateType): Promise<Result<boolean>> {
-        return Promise.resolve(undefined);
+    checkForWinner(boardState: StateType): Result<boolean, PlayerType?> {
+
+        const winningCombinations: CellPosition[][] = [
+            ['TL', 'T', 'TR'], ['L', 'C', 'R'], ['BL', 'B', 'BR'], // Rows
+            ['TL', 'L', 'BL'], ['T', 'C', 'B'], ['TR', 'R', 'BR'], // Columns
+            ['TL', 'C', 'BR'], ['TR', 'C', 'BL'] // Diagonals
+        ];
+
+        if ('cells' in boardState) {
+
+            const cells = boardState.cells;
+
+            for (const combination of winningCombinations) {
+                const [pos1, pos2, pos3] = combination;
+                const cell1 = cells[pos1];
+                const cell2 = cells[pos2];
+                const cell3 = cells[pos3];
+
+                if (cell1 && cell1 === cell2 && cell2 === cell3) {
+                    return success(true, cell1);
+                }
+            }
+
+            return success(false, null)
+
+        } else {
+
+            const playersMoves = boardState;
+
+            const winningPlayer = ['X', 'O'].find(player => {
+                const moves = playersMoves[player as CellType];
+                return winningCombinations.some(combination => {
+                    return combination.every(pos => moves.includes(pos));
+                });
+            });
+
+            return winningPlayer ? success(true, winningPlayer) : success(false, null)
+
+        }
+
     }
 
-    checkForWinner(boardState: StateType): Promise<Result<PlayerType>> {
-        return Promise.resolve(undefined);
+    generateNewBoard(): BoardType {
+        return {
+                cells: [
+                    [null, null, null],
+                    [null, null, null],
+                    [null, null, null]
+                ]
+            };
     }
 
-    generateNewBoard(): Promise<Result<BoardType>> {
-        return Promise.resolve(undefined);
+    generateNewID(): Result<string> {
+        const newID: string = randomUUID()
+        return newID ? success(newID) : error("could not generate a new ID")
     }
 
-    generateNewID(): Promise<Result<string>> {
-        return Promise.resolve(undefined);
+    getNextPlayer(currentPlayer: PlayerType): Result<PlayerType> {
+        const nextPlayer: PlayerType = currentPlayer.symbol === 'X' ? {symbol: 'O'} : {symbol: 'X'}
+        return nextPlayer ? success(nextPlayer) : error("could not get player")
     }
 
-    getNextPlayer(currentPlayer: PlayerType): Promise<Result<PlayerType>> {
-        return Promise.resolve(undefined);
-    }
-
-    randomPlayer(): Promise<Result<PlayerType>> {
-        return Promise.resolve(undefined);
+    randomPlayer(): Result<PlayerType> {
+        const [symbol] = ['X', 'O'].sort(() => Math.random() - 0.5);
+        return symbol ? success({ symbol }) : error("could not get player");
     }
 
 }
