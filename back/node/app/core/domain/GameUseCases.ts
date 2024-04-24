@@ -5,11 +5,8 @@ import {GameRepository} from "../data/repository/GameRepository";
 
 interface GameUseCasesB {
     initializeGame(): Promise<Result<GameType>>;
-    getGame(): Promise<Result<GameType>>;
+    resetGame(): Promise<Result<GameType>>;
     makeMove(row: number, col: number, player: PlayerType): Promise<Result<GameType>>;
-    getNextPlayer(): Promise<Result<PlayerType>>;
-    checkForWinner(): Promise<Result<PlayerType>>;
-    checkForDraw(): Promise<Result<boolean>>;
 }
 
 class GameUseCases implements GameUseCasesB {
@@ -20,23 +17,11 @@ class GameUseCases implements GameUseCasesB {
         this.gameRepo = repository
     }
 
-    async checkForDraw(): Promise<Result<boolean>> {
-        return Promise.resolve(undefined);
-    }
-
-    async checkForWinner(): Promise<Result<PlayerType>> {
-        return Promise.resolve(undefined);
-    }
-
-    async getGame(): Promise<Result<GameType>> {
-        return Promise.resolve(undefined);
-    }
-
-    async getNextPlayer(): Promise<Result<PlayerType>> {
-        return Promise.resolve(undefined);
-    }
-
     async initializeGame(): Promise<Result<GameType>> {
+        return Promise.resolve(undefined);
+    }
+
+    async resetGame(): Promise<Result<GameType>> {
         return Promise.resolve(undefined);
     }
 

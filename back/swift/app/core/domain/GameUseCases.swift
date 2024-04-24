@@ -1,10 +1,7 @@
 import Foundation
 
-protocol GameUseCases {
+protocol GameUseCasesB {
     func initializeGame() -> Result<GameType, Error>
-    func getGame() -> Result<GameType, Error>
+    func resetGame() -> Result<GameType, Error>
     func makeMove(row: Int, col: Int, player: PlayerType) -> Result<GameType, Error>
-    func getNextPlayer() -> Result<PlayerType, Error>
-    func checkForWinner() -> Result<PlayerType, Error>
-    func checkForDraw() -> Result<Bool, Error>
 }
