@@ -4,7 +4,7 @@ type BoardType interface {
 	boardMember()
 }
 type ArrayBoard struct {
-Cells [][]CellType
+Cells [][]*CellType
 }
 
 func (*ArrayBoard) boardMember() {}

@@ -7,7 +7,7 @@ import (
 )
 
 type GameLogicB interface {
-	generateNewID() (*string, error)
+	generateNewID() (string, error)
 	generateNewBoard() (*model.BoardType, error)
 	randomPlayer() (*model.PlayerType, error)
 	getNextPlayer(currentPlayer *model.PlayerType) (*model.PlayerType, error)
@@ -21,21 +21,26 @@ func NewGameLogic() GameLogicB {
 	return &GameLogic{}
 }
 
-func (gl *GameLogic) generateNewID() (*string, error) {
+func (gl *GameLogic) generateNewID() (string, error) {
 	newID, err := uuid.NewRandom()
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	return newID.String(), nil
 }
 
 func (gl *GameLogic) generateNewBoard() (*model.BoardType, error) {
-	board := model.BoardType{
-			{nil, nil, nil},
-			{nil, nil, nil},
-			{nil, nil, nil},
+	board := &model.ArrayBoard{
+			Cells: [][]*model.CellType{
+				{nil, nil, nil},
+				{nil, nil, nil},
+				{nil, nil, nil},
+			},
 		}
-		return &board, nil
+
+	var boardAsBoardType model.BoardType = board
+
+	return &boardAsBoardType, nil
 }
 
 func (gl *GameLogic) randomPlayer() (*model.PlayerType, error) {
