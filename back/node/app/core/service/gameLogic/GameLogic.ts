@@ -1,10 +1,10 @@
-import {Result, success, error} from "../common/result/Result";
-import { PlayerType } from "../model/PlayerType";
-import {BoardType} from "../model/BoardType";
-import {StateType} from "../model/StateType";
+import {Result, success, error} from "../../common/result/Result";
+import { PlayerType } from "../../model/PlayerType";
+import {BoardType} from "../../model/BoardType";
+import {StateType} from "../../model/StateType";
 import {randomUUID} from "crypto";
-import { CellPosition } from "../model/CellPosition";
-import { CellType } from "../model/CellType";
+import { CellPosition } from "../../model/CellPosition";
+import { CellType } from "../../model/CellType";
 
 interface GameLogicB {
     generateNewID(): Result<string>;
