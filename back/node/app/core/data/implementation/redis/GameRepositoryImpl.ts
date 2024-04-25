@@ -6,6 +6,7 @@ import {Result, error, notFound, success} from "../../../common/result/Result";
 import {CellPosition} from "../../../model/CellPosition";
 import {RedisData} from "../../../database/redis/RedisData";
 import {StateType} from "../../../model/StateType";
+import { GameInfo } from "../../../database/redis/entity/GameInfo";
 
 class GameRepositoryImpl implements GameRepository {
     
@@ -60,6 +61,10 @@ class GameRepositoryImpl implements GameRepository {
     
     async getGameState(gameID: string): Promise<Result<GameType>> {
         return await this.client.gameDao.getInfo(gameID)
+    }
+
+    async updateGameState(gameID: string, board: StateType, gameInfo: GameInfo): Promise<Result<GameType>> {
+        return await this.client.gameDao.updateInfo(gameID, board, gameInfo)
     }
 
 }

@@ -5,7 +5,7 @@ protocol GameLogicB {
     func generateNewBoard() -> Result<BoardType, Error>
     func randomPlayer() -> Result<PlayerType, Error>
     func getNextPlayer(currentPlayer: PlayerType) -> Result<PlayerType, Error>
-    func checkForWinner(state: StateType) -> Result<PlayerType, Error>
+    func checkForWinner(state: StateType) -> Result<Bool, CellType?>
 }
 
 class GameLogic: GameLogicB {

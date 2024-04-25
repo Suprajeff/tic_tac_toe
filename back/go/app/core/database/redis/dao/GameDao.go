@@ -19,7 +19,7 @@ type GameDaoProtocol interface {
 	AddPlayerMove(ctx context.Context, gameID string, move *entity.Move) (*model.StateType, error)
 	GetPlayerMoves(ctx context.Context, gameID string, move *entity.Move) (*entity.Moves, error)
 	GetInfo(ctx context.Context, gameID string) (*model.GameType, error)
-	UpdateInfo(ctx context.Context, gameID string, info *entity.GameInfo) (*entity.GameInfo, error)
+	UpdateInfo(ctx context.Context, gameID string, board *model.StateType, info *entity.GameInfo) (*model.GameType, error)
 }
 
 func NewGameDao(rData *redisInstance.Data) GameDaoProtocol {
@@ -224,7 +224,7 @@ func (dao *GameDao) GetInfo(ctx context.Context, gameID string) (*model.GameType
 	}, nil
 }
 
-func (dao *GameDao) UpdateInfo(ctx context.Context, gameID string, info *entity.GameInfo) (*entity.GameInfo, error) {
+func (dao *GameDao) UpdateInfo(ctx context.Context, gameID string, board *model.StateType, info *entity.GameInfo) (*model.GameType, error) {
 
 	key := fmt.Sprintf("%s:info", gameID)
 
@@ -237,6 +237,12 @@ func (dao *GameDao) UpdateInfo(ctx context.Context, gameID string, info *entity.
 		return nil, err
 	}
 
-	return info, nil
+	return &model.GameType{
+		ID: gameID,
+		CurrentPlayer: info.CurrentPlayer,
+		GameState: info.GameState,
+		State: *board,
+		Winner: info.Winner
+	}, nil
 }
 

@@ -5,4 +5,5 @@ interface GameRepository {
     fun getCurrentPlayer(gameID: string): Result<PlayerType, Error>
     fun getBoardState(gameID: string): Result<StateType, Error>
     fun getGameState(gameID: string): Result<GameType, Error>
+    fun updateGameState(gameID: String, board: StateType, info: GameInfo): Result<GameType, Error>
 }

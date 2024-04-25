@@ -43,13 +43,13 @@ class GameDao(private val syncCommands: RedisCommands<String, String>): GameDaoP
         return Game(gameID, currentPlayer, gameState, mapOf(CellType.X to xCellPositions, CellType.O to oCellPositions), winner)
     }
     
-    override fun updateInfo(gameID: String, info: GameInfo): GameInfo {
+    override fun updateInfo(gameID: String, board: StateType, info: GameInfo): GameType {
         syncCommands.hset("$gameID:info", mapOf(
             "currentPlayer" to info.currentPlayer,
             "gameState" to info.gameState,
             "winner" to info.winner
         ))
-        return info
+        return GameType(gameID, info.currentPlayer, info.gameState, board, info.winner)
     }
     
 }
@@ -60,5 +60,5 @@ interface GameDaoProtocol {
     fun addPlayerMove(gameID: String, move: Move): StateType
     fun getPlayerMoves(gameID: String, move: Move): Moves
     fun getInfo(gameID: string): GameType
-    fun updateInfo(gameID: String, info: GameInfo): GameInfo
+    fun updateInfo(gameID: String, board: StateType, info: GameInfo): GameType
 }

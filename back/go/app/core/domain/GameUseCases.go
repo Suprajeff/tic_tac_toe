@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"go-ttt/app/core/data/repository"
+	"go-ttt/app/core/database/redis/entity"
 	"go-ttt/app/core/model"
 	service "go-ttt/app/core/service/gameLogic"
 )
@@ -71,6 +72,7 @@ func (uc *GameUseCasesImpl) resetGame(ctx context.Context, gameID string) (*mode
 }
 
 func (uc *GameUseCasesImpl) makeMove(ctx context.Context, gameID string, position *model.CellPosition, player *model.PlayerType) (*model.GameType, error) {
+
 	newBoardState, err := uc.gameRepo.UpdateBoard(ctx, gameID, position, player)
 	if err != nil {
 		return nil, err
@@ -85,7 +87,18 @@ func (uc *GameUseCasesImpl) makeMove(ctx context.Context, gameID string, positio
 	if err != nil {
 		return nil, err
 	}
-	
-	return uc.gameRepo.GetGameState(ctx, gameID)
+
+	gameState := model.InProgress
+	if victory {
+		gameState = model.Won
+	}
+
+	var gameInfo = entity.GameInfo{
+		GameState: gameState,
+		CurrentPlayer: *nextPlayer,
+		Winner: winner,
+	}
+
+	return uc.gameRepo.UpdateGameState(ctx, gameID, newBoardState, &gameInfo)
 }
 

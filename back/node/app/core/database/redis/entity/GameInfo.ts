@@ -5,7 +5,7 @@ import { PlayerType } from "../../../model/PlayerType";
 type GameInfo = {
     currentPlayer: PlayerType;
     gameState: GameState;
-    winner: CellType;
+    winner: PlayerType | undefined;
 }
 
 export {GameInfo}

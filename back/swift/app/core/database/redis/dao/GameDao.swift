@@ -132,7 +132,7 @@ class GameDao: GameDaoProtocol {
         }
     }
 
-    func updateInfo(gameID: String, info: GameInfo) -> Result<GameInfo, Error> {
+    func updateInfo(gameID: String, board: StateType, info: GameInfo) -> Result<GameType, Error> {
         do {
             guard let currentPlayer = TypeConverter.playerTypeToString(info.currentPlayer),
                         let gameState = TypeConverter.gameStateToString(info.gameState),
@@ -141,7 +141,8 @@ class GameDao: GameDaoProtocol {
                 return .failure(GameInfoError("Failed to extract or convert data from Redis"))
             }
             _ = try redis.hmset(["currentPlayer": currentPlayer, "gameState": gameState, "winner": winnerFormatted], in: "\(gameID):info").wait()
-            return .success(info)
+            let gameInfo = Game(id: gameID, currentPlayer: info.currentPlayer, gameState: info.gameState, state: board, winner: info.winner)
+            return .success(gameInfo)
         } catch {
             return .failure(error)
         }
@@ -155,5 +156,5 @@ protocol GameDaoProtocol {
     func addPlayerMove(gameID: String, move: Move) -> Result<StateType, Error>
     func getPlayerMoves(gameID: String, move: Move) -> Result<Moves, Error>
     func getInfo(gameID: String) -> Result<GameType, Error>
-    func updateInfo(gameID: String, info: GameInfo) -> Result<GameInfo, Error>
+    func updateInfo(gameID: String, board: StateType, info: GameInfo) -> Result<GameType, Error>
 }

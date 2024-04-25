@@ -36,13 +36,29 @@ class GameUseCases: GameUseCasesB {
     }
 
     func makeMove(gameID: String, position: CellPosition, player: PlayerType) -> Result<GameType, Error> {
+
         let newBoardState = gameRepo.updateBoard(gameID, position, player)
         guard let newBoardState = newBoardState.data else {
             return .failure(Error("something went wrong when trying to retrieve board state"))
         }
+
         let checkWinnerAndDraw = gameLogic.checkForWinner(newBoardState)
+
+        var gameState: GameState
+        var winner: PlayerType?
+        switch checkWinnerAndDraw {
+            case .success(true, let winningSymbol):
+                gameState = .won
+                winner = PlayerType(symbol: winningSymbol)
+            case .success(false, nil):
+                gameState = .inProgress
+            case .failure(let error):
+                return .failure(error)
+        }
+
+
         let nextPlayer = gameLogic.getNextPlayer(player)
-        return gameRepo.getGameState(gameID)
+        return gameRepo.updateGameState(gameID, newBoardState, GameInfo(currentPlayer: nextPlayer, gameState: gameState, winner: winner))
     }
 
 }

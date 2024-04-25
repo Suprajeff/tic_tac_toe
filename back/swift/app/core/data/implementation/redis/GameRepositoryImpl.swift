@@ -50,4 +50,8 @@ class GameRepositoryImpl: GameRepository {
         return redisData.gameDao.getInfo(gameID)
     }
 
+    func updateGameState(gameID: String, board: StateType, info: GameInfo) -> Result<GameType, Error> {
+        return redisData.gameDao.updateInfo(gameID, board, info)
+    }
+
 }

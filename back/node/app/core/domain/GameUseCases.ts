@@ -3,7 +3,8 @@ import {GameType} from "../model/GameType";
 import {PlayerType} from "../model/PlayerType";
 import {GameRepository} from "../data/repository/GameRepository";
 import {CellPosition} from "../model/CellPosition";
-import { GameLogic } from "../service/gameLogic/GameLogic";
+import {GameLogic} from "../service/gameLogic/GameLogic";
+import {GameState} from "../model/GameState";
 
 interface GameUseCasesB {
     initializeGame(): Promise<Result<GameType>>;
@@ -38,11 +39,18 @@ class GameUseCases implements GameUseCasesB {
     }
 
     async makeMove(gameID: string, position: CellPosition, player: PlayerType): Promise<Result<GameType>> {
+
         const newBoardState = await this.gameRepo.updateBoard(gameID, position, player)
         if(newBoardState.status !== 'success'){return error('something went wrong when trying to retrieve board state')}
+
         const checkWinnerAndDraw = this.gameProcess.checkForWinner(newBoardState.data)
+        if(checkWinnerAndDraw.status !== 'success'){return error('something went wrong when trying to check for victory')}
+        const gameState: GameState = checkWinnerAndDraw.data ? GameState.Won : GameState.InProgress
+
         const nextPlayer = this.gameProcess.getNextPlayer(player)
-        return await this.gameRepo.getGameState(gameID)
+        if(nextPlayer.status !== 'success'){return error('something went wrong when trying to retrieve next player')}
+
+        return await this.gameRepo.updateGameState(gameID, newBoardState.data, {currentPlayer: nextPlayer, gameState: gameState, winner: checkWinnerAndDraw.data})
     }
 
 }

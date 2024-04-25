@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"go-ttt/app/core/database/redis/entity"
 	"go-ttt/app/core/model"
 )
 
@@ -12,4 +13,5 @@ type GameRepository interface {
 	GetCurrentPlayer(ctx context.Context, gameID string) (*model.PlayerType, error)
 	GetBoardState(ctx context.Context, gameID string) (*model.StateType, error)
 	GetGameState(ctx context.Context, gameID string) (*model.GameType, error)
+	UpdateGameState(ctx context.Context, gameID string, board *model.StateType, info *entity.GameInfo) (*model.GameType, error)
 }

@@ -101,14 +101,15 @@ class GameDao implements GameDaoProtocol {
         }
     }
 
-    async updateInfo(gameID: string, info: GameInfo): Promise<Result<GameInfo>> {
+    async updateInfo(gameID: string, board: StateType, info: GameInfo): Promise<Result<GameType>> {
+        
         await this.redis.hSet(`${gameID}:info`, {
             currentPlayer: String(info.currentPlayer.symbol),
             gameState: String(info.gameState),
             winner: String(info.winner)
         })
 
-        return {status: "success", data: {currentPlayer: info.currentPlayer, gameState: info.gameState, winner: info.winner}}
+        return {status: "success", data: {id: gameID, currentPlayer: info.currentPlayer, gameState: info.gameState, state: board, winner: info.winner}}
 
     }
 
@@ -120,7 +121,7 @@ interface GameDaoProtocol {
     addPlayerMove(gameID: string,move: Move): Promise<Result<StateType>>
     getPlayerMoves(gameID: string, move: Move): Promise<Result<Moves>>
     getInfo(gameID: string): Promise<Result<GameType>>
-    updateInfo(gameID: string, info: GameInfo): Promise<Result<GameInfo>>
+    updateInfo(gameID: string, board: StateType, info: GameInfo): Promise<Result<GameType>>
 }
 
 export {GameDao}

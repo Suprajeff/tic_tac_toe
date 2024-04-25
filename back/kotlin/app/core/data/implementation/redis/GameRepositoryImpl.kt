@@ -44,4 +44,8 @@ class GameRepositoryImpl(private val redisData: RedisDataProtocol): GameReposito
         return redisData.gameDao.getInfo(gameID)
     }
 
+    override fun updateGameState(gameID: String, board: StateType, info: GameInfo): Result<GameType, Error> {
+        return redisData.gameDao.updateInfo(gameID, board, info)
+    }
+
 }

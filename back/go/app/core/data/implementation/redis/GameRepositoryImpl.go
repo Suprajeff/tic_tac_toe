@@ -48,3 +48,7 @@ func (r *GameRepositoryImpl) GetBoardState(ctx context.Context, gameID string) (
 func (r *GameRepositoryImpl) GetGameState(ctx context.Context, gameID string) (*model.GameType, error) {
 	return r.data.GetInfo(ctx, gameID)
 }
+
+func (r *GameRepositoryImpl) UpdateGameState(ctx context.Context, gameID string, board *model.StateType, info *entity.GameInfo) (*model.GameType, error) {
+	return r.data.UpdateInfo(ctx, gameID, board, info)
+}

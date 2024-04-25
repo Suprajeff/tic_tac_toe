@@ -28,13 +28,23 @@ class GameUseCases(private val gameRepo: GameRepository, private val gameLogic: 
     }
 
     override fun makeMove(gameID: String, position: CellPosition, player: PlayerType): Result<GameType> {
+
         val newBoardState = gameRepo.updateBoard(gameID, position, player)
+
         if (newBoardState.status != "success") {
             return Result.failure(GameType("something went wrong when trying to retrieve board state"))
         }
-        val checkWinnerAndDraw = gameLogic.checkForWinner(newBoardState.data!!)
+
+        val checkWinnerAndDraw = gameLogic.checkForWinner(newBoardState.data)
+
+        val gameState = if (checkWinnerAndDraw.data) {
+            GameState.Won
+        } else {
+            GameState.InProgress
+        }
+
         val nextPlayer = gameLogic.getNextPlayer(player)
-        return gameRepo.getGameState(gameID)
+        return gameRepo.updateGameState(gameID, newBoardState, GameInfo(nextPlayer, gameState, checkWinnerAndDraw.data))
     }
 
 }
