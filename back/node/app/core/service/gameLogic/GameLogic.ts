@@ -3,18 +3,20 @@ import { PlayerType } from "../model/PlayerType";
 import {BoardType} from "../model/BoardType";
 import {StateType} from "../model/StateType";
 import {randomUUID} from "crypto";
+import { CellPosition } from "../model/CellPosition";
+import { CellType } from "../model/CellType";
 
 interface GameLogicB {
     generateNewID(): Result<string>;
     generateNewBoard(): BoardType;
     randomPlayer(): Result<PlayerType>;
     getNextPlayer(currentPlayer: PlayerType): Result<PlayerType>;
-    checkForWinner(boardState: StateType): Result<boolean, PlayerType?>;
+    checkForWinner(boardState: StateType): Result<CellType>;
 }
 
 class GameLogic implements GameLogicB {
 
-    checkForWinner(boardState: StateType): Result<boolean, PlayerType?> {
+    checkForWinner(boardState: StateType): Result<CellType> {
 
         const winningCombinations: CellPosition[][] = [
             ['TL', 'T', 'TR'], ['L', 'C', 'R'], ['BL', 'B', 'BR'], // Rows
@@ -33,11 +35,11 @@ class GameLogic implements GameLogicB {
             const cell3 = cells[pos3];
 
             if (cell1 && cell1 === cell2 && cell2 === cell3) {
-                return success(true, cell1);
+                return success(cell1);
             }
         }
 
-        return success(false, null)
+        return success(null)
 
     }
 
@@ -62,8 +64,11 @@ class GameLogic implements GameLogicB {
     }
 
     randomPlayer(): Result<PlayerType> {
-        const [symbol] = ['X', 'O'].sort(() => Math.random() - 0.5);
-        return symbol ? success({ symbol }) : error("could not get player");
+        const players: NonNullable<CellType>[] = ['X', 'O']
+        const [symbol ] = players.sort(() => Math.random() - 0.5);
+        return symbol ? success({symbol}) : error("could not get player");
     }
 
 }
+
+export {GameLogic}
