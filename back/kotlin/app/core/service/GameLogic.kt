@@ -3,7 +3,7 @@ interface GameLogicB {
     fun generateNewBoard(): Result<BoardType>
     fun randomPlayer(): Result<PlayerType>
     fun getNextPlayer(currentPlayer: PlayerType): Result<PlayerType>
-    fun checkForWinner(state: StateType): Result<PlayerType>
+    fun checkForWinner(state: StateType): Result<Boolean, CellType?>
 }
 
 class GameLogic(): GameLogicB {
@@ -28,7 +28,39 @@ class GameLogic(): GameLogicB {
         return Result.Success(PlayerType(nextSymbol))
     }
 
-    override fun checkForWinner(state: StateType): Result<PlayerType> {
+    override fun checkForWinner(state: StateType): Result<Boolean, CellType?> {
+
+        val winningCombinations: List<List<CellPosition>> = listOf(
+            listOf(CellPosition.TL, CellPosition.T, CellPosition.TR), // Rows
+            listOf(CellPosition.L, CellPosition.C, CellPosition.R),
+            listOf(CellPosition.BL, CellPosition.B, CellPosition.BR),
+            listOf(CellPosition.TL, CellPosition.L, CellPosition.BL), // Columns
+            listOf(CellPosition.T, CellPosition.C, CellPosition.B),
+            listOf(CellPosition.TR, CellPosition.R, CellPosition.BR),
+            listOf(CellPosition.TL, CellPosition.C, CellPosition.BR), // Diagonals
+            listOf(CellPosition.TR, CellPosition.C, CellPosition.BL)
+        )
+
+        val cells: Map<CellPosition, CellType> = when (boardState) {
+            is State.BoardState -> when (val boardType = boardState.board) {
+                is BoardType.ArrayBoard -> boardType.cells.flatten().mapIndexed { index, cellType -> CellPosition.values()[index] to cellType }.toMap()
+                is BoardType.DictionaryBoard -> boardType.cells
+            }
+            is State.MovesState -> boardState.moves.flatMap { (player, positions) -> positions.map { it to player } }.toMap()
+        }
+
+        for (combination in winningCombinations) {
+            val (pos1, pos2, pos3) = combination
+            val cell1 = cells[pos1]
+            val cell2 = cells[pos2]
+            val cell3 = cells[pos3]
+
+            if (cell1 != null && cell2 != null && cell3 != null && cell1 == cell2 && cell2 == cell3) {
+                return Result.success(true, cell1)
+            }
+        }
+
+        return Result.success(false, null)
 
     }
 
