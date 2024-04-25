@@ -3,7 +3,7 @@ import {GameType} from "../model/GameType";
 import {PlayerType} from "../model/PlayerType";
 import {GameRepository} from "../data/repository/GameRepository";
 import {CellPosition} from "../model/CellPosition";
-import { GameLogic } from "../service/GameLogic";
+import { GameLogic } from "../service/gameLogic/GameLogic";
 
 interface GameUseCasesB {
     initializeGame(): Promise<Result<GameType>>;
@@ -42,6 +42,7 @@ class GameUseCases implements GameUseCasesB {
         if(newBoardState.status !== 'success'){return error('something went wrong when trying to retrieve board state')}
         const checkWinnerAndDraw = this.gameProcess.checkForWinner(newBoardState.data)
         const nextPlayer = this.gameProcess.getNextPlayer(player)
+        return await this.gameRepo.getGameState(gameID)
     }
 
 }

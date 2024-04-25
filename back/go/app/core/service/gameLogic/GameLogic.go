@@ -9,11 +9,11 @@ import (
 )
 
 type GameLogicB interface {
-	generateNewID() (string, error)
-	generateNewBoard() (*model.BoardType, error)
-	randomPlayer() (*model.PlayerType, error)
-	getNextPlayer(currentPlayer *model.PlayerType) (*model.PlayerType, error)
-	checkForWinner(state model.StateType) (bool, *model.PlayerType, error)
+	GenerateNewID() (string, error)
+	GenerateNewBoard() (*model.BoardType, error)
+	RandomPlayer() (*model.PlayerType, error)
+	GetNextPlayer(currentPlayer *model.PlayerType) (*model.PlayerType, error)
+	CheckForWinner(state model.StateType) (bool, *model.PlayerType, error)
 }
 
 type GameLogic struct{}
@@ -22,7 +22,7 @@ func NewGameLogic() GameLogicB {
 	return &GameLogic{}
 }
 
-func (gl *GameLogic) generateNewID() (string, error) {
+func (gl *GameLogic) GenerateNewID() (string, error) {
 	newID, err := uuid.NewRandom()
 	if err != nil {
 		return "", err
@@ -30,7 +30,7 @@ func (gl *GameLogic) generateNewID() (string, error) {
 	return newID.String(), nil
 }
 
-func (gl *GameLogic) generateNewBoard() (*model.BoardType, error) {
+func (gl *GameLogic) GenerateNewBoard() (*model.BoardType, error) {
 	board := &model.ArrayBoard{
 			Cells: [][]*model.CellType{
 				{nil, nil, nil},
@@ -44,7 +44,7 @@ func (gl *GameLogic) generateNewBoard() (*model.BoardType, error) {
 	return &boardAsBoardType, nil
 }
 
-func (gl *GameLogic) randomPlayer() (*model.PlayerType, error) {
+func (gl *GameLogic) RandomPlayer() (*model.PlayerType, error) {
 	symbols := []string{"X", "O"}
 		rand.Shuffle(len(symbols), func(i, j int) {
 			symbols[i], symbols[j] = symbols[j], symbols[i]
@@ -54,7 +54,7 @@ func (gl *GameLogic) randomPlayer() (*model.PlayerType, error) {
 		return &player, nil
 }
 
-func (gl *GameLogic) getNextPlayer(currentPlayer *model.PlayerType) (*model.PlayerType, error) {
+func (gl *GameLogic) GetNextPlayer(currentPlayer *model.PlayerType) (*model.PlayerType, error) {
 	var nextSymbol string
 	if currentPlayer.Symbol == "X" {
 		nextSymbol = "O"
@@ -65,7 +65,7 @@ func (gl *GameLogic) getNextPlayer(currentPlayer *model.PlayerType) (*model.Play
 	return &nextPlayer, nil
 }
 
-func (gl *GameLogic) checkForWinner(state model.StateType) (bool, *model.PlayerType, error) {
+func (gl *GameLogic) CheckForWinner(state model.StateType) (bool, *model.PlayerType, error) {
 
 	winningCombinations := [][]model.CellPosition{
 		{model.TL, model.T, model.TR}, // Rows
