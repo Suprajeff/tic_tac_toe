@@ -9,22 +9,22 @@ class GameRepositoryImpl: GameRepository {
     }
     
     func createNewGame(newKey: String, board: BoardType, player: PlayerType) -> Result<GameType, Error> {
-        return redisData.gameDao.setGame(newKey, board, player)
+        return redisData.gameDao.setGame(newKey: newKey, board: board, player: player)
     }
     
     func resetGame(gameID: String, board: BoardType, player: PlayerType) -> Result<GameType, Error>  {
-        return redisData.gameDao.resetGame(gameID, board, player)
+        return redisData.gameDao.resetGame(gameID: gameID, board: board, player: player)
     }
     
     func updateBoard(gameID: String, position: CellPosition, player: PlayerType) -> Result<StateType, Error> {
-        return redisData.gameDao.addPlayerMove(gameID, PlayerMove(player: player, position: position))
+        return redisData.gameDao.addPlayerMove(gameID: gameID, PlayerMove(player: player, position: position))
     }
     
     func getCurrentPlayer(gameID: String) -> Result<PlayerType, Error> {
-        switch redisData.gameDao.getInfo(gameID) {
+        switch redisData.gameDao.getInfo(gameID: gameID) {
                 case .success(let data):
                     print("Data:", data)
-                    return .success(data.currentPlayer.symbol)
+                    return .success(data.currentPlayer)
                 case .error(let error):
                     print("Error:", error)
                     return .failure(error)
@@ -34,7 +34,7 @@ class GameRepositoryImpl: GameRepository {
     }
     
     func getBoardState(gameID: String) -> Result<StateType, Error> {
-        switch redisData.gameDao.getInfo(gameID) {
+        switch redisData.gameDao.getInfo(gameID: gameID) {
             case .success(let data):
                 print("Data:", data)
                 return .success(data.state)
@@ -47,11 +47,11 @@ class GameRepositoryImpl: GameRepository {
     }
 
     func getGameState(gameID: String) -> Result<GameType, Error> {
-        return redisData.gameDao.getInfo(gameID)
+        return redisData.gameDao.getInfo(gameID: gameID)
     }
 
     func updateGameState(gameID: String, board: StateType, info: GameInfo) -> Result<GameType, Error> {
-        return redisData.gameDao.updateInfo(gameID, board, info)
+        return redisData.gameDao.updateInfo(gameID: gameID, board: board, info: info)
     }
 
 }

@@ -75,7 +75,8 @@ class GameDao implements GameDaoProtocol {
         const info = await this.redis.hmGet(`${gameID}:info`, ["currentPlayer", "gameState", "winner"]);
         const currentPlayerSymbol = info[0] as NonNullable<CellType>;
         const gameState = info[1] as GameState;
-        const winner = info[2] as PlayerType | undefined;
+        const winner = info[2] as NonNullable<CellType> | undefined;
+        const playerWinner: PlayerType | undefined = winner ? {symbol: winner} : undefined
         const xMoves: CellPosition[] = await this.redis.sMembers(`${gameID}:moves:X`) as CellPosition[]
         const oMoves: CellPosition[] = await this.redis.sMembers(`${gameID}:moves:O`) as CellPosition[]
         return {
@@ -85,7 +86,7 @@ class GameDao implements GameDaoProtocol {
                 currentPlayer: {symbol: currentPlayerSymbol},
                 gameState: gameState,
                 state: {X: xMoves, O: oMoves},
-                winner: winner
+                winner: playerWinner
             }
         }
     }

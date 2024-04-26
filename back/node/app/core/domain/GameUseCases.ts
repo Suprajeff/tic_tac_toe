@@ -44,13 +44,15 @@ class GameUseCases implements GameUseCasesB {
         if(newBoardState.status !== 'success'){return error('something went wrong when trying to retrieve board state')}
 
         const checkWinnerAndDraw = this.gameProcess.checkForWinner(newBoardState.data)
-        if(checkWinnerAndDraw.status !== 'success'){return error('something went wrong when trying to check for victory')}
-        const gameState: GameState = checkWinnerAndDraw.data ? GameState.Won : GameState.InProgress
+        if(checkWinnerAndDraw.status === 'error'){return error('something went wrong when trying to check for victory')}
+
+        const gameState: GameState = checkWinnerAndDraw.status === 'success' ? GameState.Won : GameState.InProgress
+        const winner: PlayerType | undefined = checkWinnerAndDraw.status === 'success' ? checkWinnerAndDraw.data : undefined
 
         const nextPlayer = this.gameProcess.getNextPlayer(player)
         if(nextPlayer.status !== 'success'){return error('something went wrong when trying to retrieve next player')}
 
-        return await this.gameRepo.updateGameState(gameID, newBoardState.data, {currentPlayer: nextPlayer, gameState: gameState, winner: checkWinnerAndDraw.data})
+        return await this.gameRepo.updateGameState(gameID, newBoardState.data, {currentPlayer: nextPlayer.data, gameState: gameState, winner: winner})
     }
 
 }

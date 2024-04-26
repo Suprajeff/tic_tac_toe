@@ -1,4 +1,4 @@
-import {Result, success, error} from "../../common/result/Result";
+import {Result, success, error, notFound} from "../../common/result/Result";
 import { PlayerType } from "../../model/PlayerType";
 import {BoardType} from "../../model/BoardType";
 import {StateType} from "../../model/StateType";
@@ -11,12 +11,12 @@ interface GameLogicB {
     generateNewBoard(): BoardType;
     randomPlayer(): Result<PlayerType>;
     getNextPlayer(currentPlayer: PlayerType): Result<PlayerType>;
-    checkForWinner(boardState: StateType): Result<CellType>;
+    checkForWinner(boardState: StateType): Result<PlayerType>;
 }
 
 class GameLogic implements GameLogicB {
 
-    checkForWinner(boardState: StateType): Result<CellType> {
+    checkForWinner(boardState: StateType): Result<PlayerType> {
 
         const winningCombinations: CellPosition[][] = [
             ['TL', 'T', 'TR'], ['L', 'C', 'R'], ['BL', 'B', 'BR'], // Rows
@@ -24,22 +24,38 @@ class GameLogic implements GameLogicB {
             ['TL', 'C', 'BR'], ['TR', 'C', 'BL'] // Diagonals
         ];
 
-        const cells = 'cells' in boardState
-            ? boardState.cells
-            : Object.fromEntries(Object.entries(boardState).flatMap(([player, moves]) => moves.map(pos => [pos, player])));
 
-        for (const combination of winningCombinations) {
-            const [pos1, pos2, pos3] = combination;
-            const cell1 = cells[pos1];
-            const cell2 = cells[pos2];
-            const cell3 = cells[pos3];
+        if ('cells' in boardState) {
 
-            if (cell1 && cell1 === cell2 && cell2 === cell3) {
-                return success(cell1);
+            const cells = boardState.cells;
+
+            for (const combination of winningCombinations) {
+                const [pos1, pos2, pos3] = combination;
+                const cell1 = cells[pos1];
+                const cell2 = cells[pos2];
+                const cell3 = cells[pos3];
+
+                if (cell1 && cell1 === cell2 && cell2 === cell3) {
+                    return success(true, cell1);
+                }
             }
-        }
 
-        return success(null)
+            return success(false, null)
+
+        } else {
+
+            const playersMoves = boardState;
+
+            const winningPlayer = ['X', 'O'].find(player => {
+                const moves = playersMoves[player as CellType];
+                return winningCombinations.some(combination => {
+                    return combination.every(pos => moves.includes(pos));
+                });
+            });
+
+            return winningPlayer ? success(true, winningPlayer) : success(false, null)
+
+        }
 
     }
 

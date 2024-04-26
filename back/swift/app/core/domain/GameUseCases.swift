@@ -23,7 +23,7 @@ class GameUseCases: GameUseCasesB {
         guard let newKey = newKey.data, let player = player.data else {
             return .failure(Error("something went wrong"))
         }
-        return gameRepo.createNewGame(newKey, board, player)
+        return gameRepo.createNewGame(newKey: newKey, board: board, player: player)
     }
 
     func resetGame(gameID: String) -> Result<GameType, Error> {
@@ -32,14 +32,14 @@ class GameUseCases: GameUseCasesB {
         guard let player = player.data else {
             return .failure(Error("something went wrong"))
         }
-        return gameRepo.resetGame(gameID, board, player)
+        return gameRepo.resetGame(gameID: gameID, board: board, player: player)
     }
 
     func makeMove(gameID: String, position: CellPosition, player: PlayerType) -> Result<GameType, Error> {
 
-        let newBoardState = gameRepo.updateBoard(gameID, position, player)
+        let newBoardState = gameRepo.updateBoard(gameID: gameID, position: position, player: player)
         guard let newBoardState = newBoardState.data else {
-            return .failure(Error("something went wrong when trying to retrieve board state"))
+            return .failure("something went wrong when trying to retrieve board state")
         }
 
         let checkWinnerAndDraw = gameLogic.checkForWinner(newBoardState)
@@ -48,17 +48,17 @@ class GameUseCases: GameUseCasesB {
         var winner: PlayerType?
         switch checkWinnerAndDraw {
             case .success(true, let winningSymbol):
-                gameState = .won
+                gameState = .Won
                 winner = PlayerType(symbol: winningSymbol)
             case .success(false, nil):
-                gameState = .inProgress
+                gameState = .InProgress
             case .failure(let error):
                 return .failure(error)
         }
 
 
-        let nextPlayer = gameLogic.getNextPlayer(player)
-        return gameRepo.updateGameState(gameID, newBoardState, GameInfo(currentPlayer: nextPlayer, gameState: gameState, winner: winner))
+        let nextPlayer = gameLogic.getNextPlayer(currentPlayer: player)
+        return gameRepo.updateGameState(gameID: gameID, board: newBoardState, info: GameInfo(currentPlayer: nextPlayer, gameState: gameState, winner: winner))
     }
 
 }
