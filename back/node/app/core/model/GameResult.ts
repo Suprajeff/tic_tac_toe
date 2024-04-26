@@ -1,7 +1,7 @@
 import {PlayerType} from "./PlayerType";
 
 type GameResult = {
-    winner: PlayerType
+    winner: PlayerType | null
     draw: boolean
 }
 

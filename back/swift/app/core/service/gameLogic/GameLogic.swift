@@ -5,7 +5,7 @@ protocol GameLogicB {
     func generateNewBoard() -> Result<BoardType, Error>
     func randomPlayer() -> Result<PlayerType, Error>
     func getNextPlayer(currentPlayer: PlayerType) -> Result<PlayerType, Error>
-    func checkForWinner(state: StateType) -> Result<CellType?, Error>
+    func checkForWinner(state: StateType) -> Result<GameResult, Error>
 }
 
 class GameLogic: GameLogicB {
@@ -38,35 +38,19 @@ class GameLogic: GameLogicB {
         return .success(PlayerType(symbol: nextSymbol))
     }
 
-    func checkForWinner(state: StateType) -> Result<CellType?, Error> {
-
-        let cells: [CellPosition: CellType?]
+    func checkForWinner(state: StateType) -> Result<GameResult, Error> {
 
         switch state {
         case .board(let boardType):
             switch boardType.cells {
             case .arrayOfArrays(let arrayOfArrays):
-                cells = Dictionary(arrayOfArrays.flatMap { $0 }.enumerated().map { ($1.0, $1.1) }, uniquingKeysWith: { _, last in last })
+                return checker.checkForVictoryOrDrawA(arrayOfArrays)
             case .dictionary(let dictionary):
-                cells = dictionary
+                return checker.checkForVictoryOrDrawB(dictionary)
             }
         case .moves(let playerMoves):
-            cells = Dictionary(playerMoves.flatMap { (player, moves) in moves.map { ($0, player) } }, uniquingKeysWith: { _, last in last })
+            return checker.checkForVictoryOrDrawC(playerMoves)
         }
-
-        for combination in winningCombinationsForDictionary {
-            let [pos1, pos2, pos3] = combination
-            guard let cell1 = cells[pos1],
-                let cell2 = cells[pos2],
-                let cell3 = cells[pos3],
-                cell1 == cell2,
-                cell2 == cell3 else {
-                continue
-            }
-            return .success(cell1)
-        }
-
-        return .success(nil)
 
     }
 

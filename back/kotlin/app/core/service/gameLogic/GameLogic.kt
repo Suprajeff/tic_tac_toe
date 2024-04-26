@@ -3,7 +3,7 @@ interface GameLogicB {
     fun generateNewBoard(): Result<BoardType>
     fun randomPlayer(): Result<PlayerType>
     fun getNextPlayer(currentPlayer: PlayerType): Result<PlayerType>
-    fun checkForWinner(state: StateType): Result<Boolean, CellType?>
+    fun checkForWinner(state: StateType): Result<GameResult>
 }
 
 class GameLogic(private val checker: GameStateCheckerB): GameLogicB {
@@ -28,28 +28,19 @@ class GameLogic(private val checker: GameStateCheckerB): GameLogicB {
         return Result.Success(PlayerType(nextSymbol))
     }
 
-    override fun checkForWinner(state: StateType): Result<Boolean, CellType?> {
+    override fun checkForWinner(state: StateType): Result<GameResult> {
 
-        val cells: Map<CellPosition, CellType> = when (boardState) {
-            is State.BoardState -> when (val boardType = boardState.board) {
-                is BoardType.ArrayBoard -> boardType.cells.flatten().mapIndexed { index, cellType -> CellPosition.values()[index] to cellType }.toMap()
-                is BoardType.DictionaryBoard -> boardType.cells
+        return when (state) {
+            is State.BoardState -> {
+                when (val boardType = state.board) {
+                    is BoardType.ArrayBoard -> checkForVictoryOrDrawA(boardType.cells)
+                    is BoardType.DictionaryBoard -> checkForVictoryOrDrawB(boardType.cells)
+                }
             }
-            is State.MovesState -> boardState.moves.flatMap { (player, positions) -> positions.map { it to player } }.toMap()
-        }
-
-        for (combination in winningCombinationsForDictionary) {
-            val (pos1, pos2, pos3) = combination
-            val cell1 = cells[pos1]
-            val cell2 = cells[pos2]
-            val cell3 = cells[pos3]
-
-            if (cell1 != null && cell2 != null && cell3 != null && cell1 == cell2 && cell2 == cell3) {
-                return Result.success(true, cell1)
+            is State.MovesState -> {
+                checkForVictoryOrDrawC(state.moves)
             }
         }
-
-        return Result.success(false, null)
 
     }
 

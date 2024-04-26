@@ -56,17 +56,17 @@ class GameUseCases: GameUseCasesB {
         var winner: PlayerType?
 
         switch checkWinnerAndDraw {
-            case .success(let winningSymbol):
-                if let symbol = winningSymbol {
-                    winner = PlayerType(symbol: symbol)
+            case .success(let result):
+                if(result.winner){
+                    winner = result.winner
                     gameState = .Won
                 } else {
-                    gameState = .InProgress
+                    gameState = .Draw
                 }
             case .failure(let error):
                 return .failure(error)
             case .notFound:
-                return .notFound
+                gameState = .InProgress
         }
 
 

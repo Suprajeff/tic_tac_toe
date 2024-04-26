@@ -1,14 +1,13 @@
 import { Result, notFound, success } from "../../common/result/Result";
 import { CellPosition } from "../../model/CellPosition";
 import { CellType } from "../../model/CellType";
-import { PlayerType } from "../../model/PlayerType";
 import {GameResult} from "../../model/GameResult";
 import { winningCombinationsForArray, winningCombinationsForDictionary } from "./WinningCombinations";
 
 interface GameStateCheckerB {
     checkForVictoryOrDrawA(cells: CellType[][]): Result<GameResult>;
     checkForVictoryOrDrawB(cells: Record<CellPosition, CellType>): Result<GameResult>;
-    checkForVictoryOrDrawC(playersHands: Record<NonNullable<CellType>, CellPosition[]>): Result<GameResult>;
+    checkForVictoryOrDrawC(playersMoves: Record<NonNullable<CellType>, CellPosition[]>): Result<GameResult>;
 }
 
 class GameStateChecker implements GameStateCheckerB {
@@ -25,7 +24,8 @@ class GameStateChecker implements GameStateCheckerB {
             }
         }
 
-        return notFound;
+        const cellAvailable= cells.some(row => row.some(cell => cell === null));
+        return cellAvailable ? notFound : success({ winner: null, draw: true });
 
     }
 
@@ -42,13 +42,13 @@ class GameStateChecker implements GameStateCheckerB {
             }
         }
 
-        return notFound
+        const cellAvailable = Object.values(cells).some(cell => cell === null)
+        return cellAvailable ? notFound : success({ winner: null, draw: true });
 
     }
 
-    checkForVictoryOrDrawC(playersHands: Record<NonNullable<CellType>, CellPosition[]>): Result<GameResult> {
+    checkForVictoryOrDrawC(playersMoves: Record<NonNullable<CellType>, CellPosition[]>): Result<GameResult> {
 
-        const playersMoves = playersHands;
         const playersSymbols: NonNullable<CellType>[] = ['X', 'O']
 
         const winningPlayer = playersSymbols.find(player  => {
@@ -58,7 +58,9 @@ class GameStateChecker implements GameStateCheckerB {
             });
         });
 
-        return winningPlayer ? success({winner: {symbol: winningPlayer}, draw: false}) : notFound
+        if(winningPlayer) {return  success({winner: {symbol: winningPlayer}, draw: false})}
+        const cellAvailable = 9 - (playersMoves.X.length + playersMoves.O.length);
+        return cellAvailable ? notFound : success({ winner: null, draw: true });
 
     }
 

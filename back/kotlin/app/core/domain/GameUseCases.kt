@@ -37,14 +37,27 @@ class GameUseCases(private val gameRepo: GameRepository, private val gameLogic: 
 
         val checkWinnerAndDraw = gameLogic.checkForWinner(newBoardState.data)
 
-        val gameState = if (checkWinnerAndDraw.data) {
-            GameState.Won
-        } else {
-            GameState.InProgress
-        }
+        var gameState: GameState
+        var winner: PlayerType?
+
+        checkWinnerAndDraw.fold(
+            onSuccess = {
+                if(it.data.winner){
+                    gameState = GameState.WON
+                    winner = it.data.winner
+                } else if(it.data.draw){
+                    gameState = GameState.DRAW
+                } else {
+                    gameState = GameState.IN_PROGRESS
+                }
+            },
+            onFailure = {
+
+            }
+        )
 
         val nextPlayer = gameLogic.getNextPlayer(player)
-        return gameRepo.updateGameState(gameID, newBoardState, GameInfo(nextPlayer, gameState, checkWinnerAndDraw.data))
+        return gameRepo.updateGameState(gameID, newBoardState, GameInfo(nextPlayer, gameState, winner))
     }
 
 }
