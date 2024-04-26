@@ -34,12 +34,6 @@ class GameLogic: GameLogicB {
 
     func checkForWinner(state: StateType) -> Result<CellType?, Error> {
 
-        let winningCombinations: [[CellPosition]] = [
-            [.TL, .T, .TR], [.L, .C, .R], [.BL, .B, .BR], // Rows
-            [.TL, .L, .BL], [.T, .C, .B], [.TR, .R, .BR], // Columns
-            [.TL, .C, .BR], [.TR, .C, .BL] // Diagonals
-        ]
-
         let cells: [CellPosition: CellType?]
 
         switch state {
@@ -54,7 +48,7 @@ class GameLogic: GameLogicB {
             cells = Dictionary(playerMoves.flatMap { (player, moves) in moves.map { ($0, player) } }, uniquingKeysWith: { _, last in last })
         }
 
-        for combination in winningCombinations {
+        for combination in winningCombinationsForDictionary {
             let [pos1, pos2, pos3] = combination
             guard let cell1 = cells[pos1],
                 let cell2 = cells[pos2],

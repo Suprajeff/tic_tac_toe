@@ -30,17 +30,6 @@ class GameLogic(): GameLogicB {
 
     override fun checkForWinner(state: StateType): Result<Boolean, CellType?> {
 
-        val winningCombinations: List<List<CellPosition>> = listOf(
-            listOf(CellPosition.TL, CellPosition.T, CellPosition.TR), // Rows
-            listOf(CellPosition.L, CellPosition.C, CellPosition.R),
-            listOf(CellPosition.BL, CellPosition.B, CellPosition.BR),
-            listOf(CellPosition.TL, CellPosition.L, CellPosition.BL), // Columns
-            listOf(CellPosition.T, CellPosition.C, CellPosition.B),
-            listOf(CellPosition.TR, CellPosition.R, CellPosition.BR),
-            listOf(CellPosition.TL, CellPosition.C, CellPosition.BR), // Diagonals
-            listOf(CellPosition.TR, CellPosition.C, CellPosition.BL)
-        )
-
         val cells: Map<CellPosition, CellType> = when (boardState) {
             is State.BoardState -> when (val boardType = boardState.board) {
                 is BoardType.ArrayBoard -> boardType.cells.flatten().mapIndexed { index, cellType -> CellPosition.values()[index] to cellType }.toMap()
@@ -49,7 +38,7 @@ class GameLogic(): GameLogicB {
             is State.MovesState -> boardState.moves.flatMap { (player, positions) -> positions.map { it to player } }.toMap()
         }
 
-        for (combination in winningCombinations) {
+        for (combination in winningCombinationsForDictionary) {
             val (pos1, pos2, pos3) = combination
             val cell1 = cells[pos1]
             val cell2 = cells[pos2]

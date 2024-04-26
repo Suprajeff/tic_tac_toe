@@ -67,17 +67,6 @@ func (gl *GameLogic) GetNextPlayer(currentPlayer *model.PlayerType) (*model.Play
 
 func (gl *GameLogic) CheckForWinner(state model.StateType) (bool, *model.PlayerType, error) {
 
-	winningCombinations := [][]model.CellPosition{
-		{model.TL, model.T, model.TR}, // Rows
-		{model.L, model.C, model.R},
-		{model.BL, model.B, model.BR},
-		{model.TL, model.L, model.BL}, // Columns
-		{model.T, model.C, model.B},
-		{model.TR, model.R, model.BR},
-		{model.TL, model.C, model.BR}, // Diagonals
-		{model.TR, model.C, model.BL},
-	}
-
 	var cells map[model.CellPosition]model.CellType
 
 	switch state := state.(type) {
@@ -105,7 +94,7 @@ func (gl *GameLogic) CheckForWinner(state model.StateType) (bool, *model.PlayerT
 			return false, nil, errors.New("invalid state type")
 	}
 
-	for _, combination := range winningCombinations {
+	for _, combination := range WinningCombinationsForDictionary {
 		pos1, pos2, pos3 := combination[0], combination[1], combination[2]
 		cell1, ok1 := cells[pos1]
 		cell2, ok2 := cells[pos2]

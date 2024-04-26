@@ -3,8 +3,8 @@ import { PlayerType } from "../../model/PlayerType";
 import {BoardType} from "../../model/BoardType";
 import {StateType} from "../../model/StateType";
 import {randomUUID} from "crypto";
-import { CellPosition } from "../../model/CellPosition";
 import { CellType } from "../../model/CellType";
+import { winningCombinationsForArray, winningCombinationsForDictionary } from "./WinningCombinations";
 
 interface GameLogicB {
     generateNewID(): Result<string>;
@@ -18,31 +18,13 @@ class GameLogic implements GameLogicB {
 
     checkForWinner(boardState: StateType): Result<PlayerType> {
 
-        const winningCombinations: CellPosition[][] = [
-            ['TL', 'T', 'TR'], ['L', 'C', 'R'], ['BL', 'B', 'BR'], // Rows
-            ['TL', 'L', 'BL'], ['T', 'C', 'B'], ['TR', 'R', 'BR'], // Columns
-            ['TL', 'C', 'BR'], ['TR', 'C', 'BL'] // Diagonals
-        ];
-
-        const winningCombinationsArray: [number, number, number][] = [
-            [0, 1, 2], // Row 1
-            [3, 4, 5], // Row 2
-            [6, 7, 8], // Row 3
-            [0, 3, 6], // Column 1
-            [1, 4, 7], // Column 2
-            [2, 5, 8], // Column 3
-            [0, 4, 8], // Diagonal 1
-            [2, 4, 6]  // Diagonal 2
-        ];
-
-
         if ('cells' in boardState) {
 
             const cells = boardState.cells;
 
             if(Array.isArray(cells)){
 
-                for (const [a, b, c] of winningCombinationsArray) {
+                for (const [a, b, c] of winningCombinationsForArray) {
                     const cell1 = cells[Math.floor(a / 3)][a % 3];
                     const cell2 = cells[Math.floor(b / 3)][b % 3];
                     const cell3 = cells[Math.floor(c / 3)][c % 3];
@@ -56,7 +38,7 @@ class GameLogic implements GameLogicB {
 
             } else {
 
-                for (const combination of winningCombinations) {
+                for (const combination of winningCombinationsForDictionary) {
                     const [pos1, pos2, pos3] = combination;
                     const cell1 = cells[pos1];
                     const cell2 = cells[pos2];
@@ -78,7 +60,7 @@ class GameLogic implements GameLogicB {
 
             const winningPlayer = playersSymbols.find(player  => {
                 const moves = playersMoves[player];
-                return winningCombinations.some(combination => {
+                return winningCombinationsForDictionary.some(combination => {
                     return combination.every(pos => moves.includes(pos));
                 });
             });
