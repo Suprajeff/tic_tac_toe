@@ -24,36 +24,66 @@ class GameLogic implements GameLogicB {
             ['TL', 'C', 'BR'], ['TR', 'C', 'BL'] // Diagonals
         ];
 
+        const winningCombinationsArray: [number, number, number][] = [
+            [0, 1, 2], // Row 1
+            [3, 4, 5], // Row 2
+            [6, 7, 8], // Row 3
+            [0, 3, 6], // Column 1
+            [1, 4, 7], // Column 2
+            [2, 5, 8], // Column 3
+            [0, 4, 8], // Diagonal 1
+            [2, 4, 6]  // Diagonal 2
+        ];
+
 
         if ('cells' in boardState) {
 
             const cells = boardState.cells;
 
-            for (const combination of winningCombinations) {
-                const [pos1, pos2, pos3] = combination;
-                const cell1 = cells[pos1];
-                const cell2 = cells[pos2];
-                const cell3 = cells[pos3];
+            if(Array.isArray(cells)){
 
-                if (cell1 && cell1 === cell2 && cell2 === cell3) {
-                    return success(true, cell1);
+                for (const [a, b, c] of winningCombinationsArray) {
+                    const cell1 = cells[Math.floor(a / 3)][a % 3];
+                    const cell2 = cells[Math.floor(b / 3)][b % 3];
+                    const cell3 = cells[Math.floor(c / 3)][c % 3];
+
+                    if (cell1 !== null && cell1 === cell2 && cell2 === cell3) {
+                    return success({symbol: cell1});
+                    }
                 }
-            }
 
-            return success(false, null)
+                return notFound;
+
+            } else {
+
+                for (const combination of winningCombinations) {
+                    const [pos1, pos2, pos3] = combination;
+                    const cell1 = cells[pos1];
+                    const cell2 = cells[pos2];
+                    const cell3 = cells[pos3];
+
+                    if (cell1 && cell1 === cell2 && cell2 === cell3) {
+                        return success({symbol: cell1});
+                    }
+                }
+
+                return notFound
+
+            }
 
         } else {
 
             const playersMoves = boardState;
+            const playersSymbols: NonNullable<CellType>[] = ['X', 'O']
 
-            const winningPlayer = ['X', 'O'].find(player => {
-                const moves = playersMoves[player as CellType];
+            const winningPlayer = playersSymbols.find(player  => {
+                const moves = playersMoves[player];
                 return winningCombinations.some(combination => {
                     return combination.every(pos => moves.includes(pos));
                 });
             });
 
-            return winningPlayer ? success(true, winningPlayer) : success(false, null)
+            return winningPlayer ? success({symbol: winningPlayer}) : notFound
 
         }
 
