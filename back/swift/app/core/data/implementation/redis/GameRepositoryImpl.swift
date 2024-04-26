@@ -17,7 +17,7 @@ class GameRepositoryImpl: GameRepository {
     }
     
     func updateBoard(gameID: String, position: CellPosition, player: PlayerType) -> Result<StateType, Error> {
-        return redisData.gameDao.addPlayerMove(gameID: gameID, PlayerMove(player: player, position: position))
+        return redisData.gameDao.addPlayerMove(gameID: gameID, move: Move(player: player, position: position))
     }
     
     func getCurrentPlayer(gameID: String) -> Result<PlayerType, Error> {
@@ -25,7 +25,7 @@ class GameRepositoryImpl: GameRepository {
                 case .success(let data):
                     print("Data:", data)
                     return .success(data.currentPlayer)
-                case .error(let error):
+                case .failure(let error):
                     print("Error:", error)
                     return .failure(error)
                 case .notFound:
@@ -38,7 +38,7 @@ class GameRepositoryImpl: GameRepository {
             case .success(let data):
                 print("Data:", data)
                 return .success(data.state)
-            case .error(let error):
+            case .failure(let error):
                 print("Error:", error)
                 return .failure(error)
             case .notFound:

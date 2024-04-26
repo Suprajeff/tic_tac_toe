@@ -5,7 +5,7 @@ protocol GameLogicB {
     func generateNewBoard() -> Result<BoardType, Error>
     func randomPlayer() -> Result<PlayerType, Error>
     func getNextPlayer(currentPlayer: PlayerType) -> Result<PlayerType, Error>
-    func checkForWinner(state: StateType) -> Result<Bool, CellType?>
+    func checkForWinner(state: StateType) -> Result<CellType?, Error>
 }
 
 class GameLogic: GameLogicB {
@@ -16,23 +16,23 @@ class GameLogic: GameLogicB {
     }
 
     func generateNewBoard() -> Result<BoardType, Error> {
-        return Array(repeating: Array(repeating: nil, count: 3), count: 3)
+        return .success(BoardType(cells: .arrayOfArrays(Array(repeating: Array(repeating: nil, count: 3), count: 3))))
     }
 
     func randomPlayer() -> Result<PlayerType, Error> {
-        let symbols = ["X", "O"].shuffled()
+        let symbols = [CellType.X, CellType.O].shuffled()
         guard let symbol = symbols.first else {
-            return .failure(GameError.couldNotGetPlayer)
+            return .failure(CustomError("Could not get symbol"))
         }
         return .success(PlayerType(symbol: symbol))
     }
 
     func getNextPlayer(currentPlayer: PlayerType) -> Result<PlayerType, Error> {
-        let nextSymbol = currentPlayer.symbol == "X" ? "O" : "X"
+        let nextSymbol = currentPlayer.symbol == CellType.X ? CellType.O : CellType.X
         return .success(PlayerType(symbol: nextSymbol))
     }
 
-    func checkForWinner(state: StateType) -> Result<Bool, CellType?> {
+    func checkForWinner(state: StateType) -> Result<CellType?, Error> {
 
         let winningCombinations: [[CellPosition]] = [
             [.TL, .T, .TR], [.L, .C, .R], [.BL, .B, .BR], // Rows
@@ -40,9 +40,9 @@ class GameLogic: GameLogicB {
             [.TL, .C, .BR], [.TR, .C, .BL] // Diagonals
         ]
 
-        let cells: [CellPosition: CellType]
+        let cells: [CellPosition: CellType?]
 
-        switch boardState {
+        switch state {
         case .board(let boardType):
             switch boardType.cells {
             case .arrayOfArrays(let arrayOfArrays):
@@ -63,10 +63,10 @@ class GameLogic: GameLogicB {
                 cell2 == cell3 else {
                 continue
             }
-            return .success(true, cell1)
+            return .success(cell1)
         }
 
-        return .success(false, nil)
+        return .success(nil)
 
     }
 

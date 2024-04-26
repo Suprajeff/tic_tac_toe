@@ -13,10 +13,10 @@ class GameDao: GameDaoProtocol {
 
         do {
             guard let starter = TypeConverter.playerTypeToString(player) else {
-                return .failure(GameInfoError("Failed to extract or convert data from Redis"))
+                return .failure(CustomError("Failed to extract or convert data from Redis"))
             }
             _ = try redis.hmset(["currentPlayer": starter, "gameState": "IN_PROGRESS"], in: "\(newKey):info").wait()
-            let newGame = GameType(id: newKey, currentPlayer: player, gameState: .InProgress, state: board, winner: nil)
+            let newGame = GameType(id: newKey, currentPlayer: player, gameState: .InProgress, state: .board(board), winner: nil)
             return .success(newGame)
         } catch {
             return .failure(error)
@@ -30,10 +30,10 @@ class GameDao: GameDaoProtocol {
             _ = try redis.delete(["\(gameID):moves:X", "\(gameID):moves:O"]).wait()
             _ = try redis.hdel(["winner"], from: "\(gameID):info").wait()
             guard let starter = TypeConverter.playerTypeToString(player) else {
-                return .failure(GameInfoError("Failed to extract or convert data from Redis"))
+                return .failure(CustomError("Failed to extract or convert data from Redis"))
             }
             _ = try redis.hmset(["currentPlayer": starter, "gameState": "IN_PROGRESS"], in: "\(gameID):info").wait()
-            let newGame = GameType(id: gameID, currentPlayer: player, gameState: .InProgress, state: board, winner: nil)
+            let newGame = GameType(id: gameID, currentPlayer: player, gameState: .InProgress, state: .board(board), winner: nil)
             return .success(newGame)
         } catch {
             return .failure(error)
@@ -44,7 +44,7 @@ class GameDao: GameDaoProtocol {
     func addPlayerMove(gameID: String, move: Move) -> Result<StateType, Error> {
         do {
             let cellPosition = TypeConverter.cellPositiontoString(move.position)
-            let newMove = try redis.sadd(cellPosition, to: "\(gameID):moves:\(move.player)").wait()
+            _ = try redis.sadd(cellPosition, to: "\(gameID):moves:\(move.player)").wait()
             let xPositions = try redis.smembers(of: "\(gameID):moves:X").wait()
             let oPositions = try redis.smembers(of: "\(gameID):moves:O").wait()
 
@@ -67,8 +67,12 @@ class GameDao: GameDaoProtocol {
                 }
             }
 
-            let moves = StateType([.X: xCellPositions, .O: oCellPositions])
-            return .success(moves)
+            let moves: PlayersMoves = [
+                CellType.X: xCellPositions,
+                CellType.O: oCellPositions
+            ]
+
+            return .success(StateType.moves(moves))
         } catch {
             return .failure(error)
         }
@@ -123,9 +127,9 @@ class GameDao: GameDaoProtocol {
                   let gameState = TypeConverter.stringToGameState(gameStateString),
                   let winnerString = TypeConverter.extractString(from: info[2]),
                   let winner = TypeConverter.stringToPlayerType(winnerString) else {
-                return .failure(GameInfoError("Failed to extract or convert data from Redis"))
+                return .failure(CustomError("Failed to extract or convert data from Redis"))
             }
-            let gameInfo = Game(id: gameID, currentPlayer: currentPlayer, gameState: gameState, state: [.X: xCellPositions, .O: oCellPositions], winner: winner)
+            let gameInfo = GameType(id: gameID, currentPlayer: currentPlayer, gameState: gameState, state: .moves([.X: xCellPositions, .O: oCellPositions]), winner: winner)
             return .success(gameInfo)
         } catch {
             return .failure(error)
@@ -138,10 +142,10 @@ class GameDao: GameDaoProtocol {
                         let gameState = TypeConverter.gameStateToString(info.gameState),
                         let winner = info.winner,
                         let winnerFormatted = TypeConverter.playerTypeToString(winner) else {
-                return .failure(GameInfoError("Failed to extract or convert data from Redis"))
+                return .failure(CustomError("Failed to extract or convert data from Redis"))
             }
             _ = try redis.hmset(["currentPlayer": currentPlayer, "gameState": gameState, "winner": winnerFormatted], in: "\(gameID):info").wait()
-            let gameInfo = Game(id: gameID, currentPlayer: info.currentPlayer, gameState: info.gameState, state: board, winner: info.winner)
+            let gameInfo = GameType(id: gameID, currentPlayer: info.currentPlayer, gameState: info.gameState, state: board, winner: info.winner)
             return .success(gameInfo)
         } catch {
             return .failure(error)

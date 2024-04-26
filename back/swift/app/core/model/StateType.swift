@@ -2,7 +2,7 @@ import Foundation
 
 enum State {
     case board(BoardType)
-    case moves(PlayerMoves)
+    case moves(PlayersMoves)
 }
 
 typealias StateType = State

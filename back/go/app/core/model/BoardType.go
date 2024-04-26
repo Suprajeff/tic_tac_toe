@@ -10,7 +10,7 @@ Cells [][]*CellType
 func (*ArrayBoard) boardMember() {}
 
 type DictionaryBoard struct {
-Cells map[CellPosition]CellType
+Cells map[CellPosition]*CellType
 }
 
 func (*DictionaryBoard) boardMember() {}
