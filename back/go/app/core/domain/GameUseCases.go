@@ -78,7 +78,7 @@ func (uc *GameUseCasesImpl) makeMove(ctx context.Context, gameID string, positio
 		return nil, err
 	}
 
-	victory, winner, err := uc.gameProcess.CheckForWinner(*newBoardState)
+	result, err := uc.gameProcess.CheckForWinner(*newBoardState)
 	if err != nil {
 		return nil, err
 	}
@@ -89,14 +89,17 @@ func (uc *GameUseCasesImpl) makeMove(ctx context.Context, gameID string, positio
 	}
 
 	gameState := model.InProgress
-	if victory {
+	if result.Winner != nil {
 		gameState = model.Won
+	}
+	if(result.Draw){
+		gameState = model.Draw
 	}
 
 	var gameInfo = entity.GameInfo{
 		GameState: gameState,
 		CurrentPlayer: *nextPlayer,
-		Winner: winner,
+		Winner: result.Winner,
 	}
 
 	return uc.gameRepo.UpdateGameState(ctx, gameID, newBoardState, &gameInfo)

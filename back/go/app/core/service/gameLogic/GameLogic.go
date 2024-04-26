@@ -2,10 +2,9 @@ package service
 
 import (
 	"errors"
-	"fmt"
+	"github.com/google/uuid"
 	"go-ttt/app/core/model"
 	"math/rand"
-	"github.com/google/uuid"
 )
 
 type GameLogicB interface {
@@ -13,7 +12,7 @@ type GameLogicB interface {
 	GenerateNewBoard() (*model.BoardType, error)
 	RandomPlayer() (*model.PlayerType, error)
 	GetNextPlayer(currentPlayer *model.PlayerType) (*model.PlayerType, error)
-	CheckForWinner(state model.StateType) (bool, *model.PlayerType, error)
+	CheckForWinner(state model.StateType) (*model.GameResult, error)
 }
 
 type GameLogic struct{
@@ -69,45 +68,34 @@ func (gl *GameLogic) GetNextPlayer(currentPlayer *model.PlayerType) (*model.Play
 	return &nextPlayer, nil
 }
 
-func (gl *GameLogic) CheckForWinner(state model.StateType) (bool, *model.PlayerType, error) {
-
-	var cells map[model.CellPosition]model.CellType
+func (gl *GameLogic) CheckForWinner(state model.StateType) (*model.GameResult, error) {
 
 	switch state := state.(type) {
 		case *model.BoardState:
 			switch board := state.BoardType.(type) {
 			case *model.ArrayBoard:
-				cells = make(map[model.CellPosition]model.CellType)
-				for i, row := range board.Cells {
-					for j, cell := range row {
-						pos := model.CellPosition(fmt.Sprintf("%d%d", i, j))
-						cells[pos] = *cell
-					}
+				result, err := gl.checker.CheckForVictoryOrDrawA(board.Cells)
+				if err != nil {
+					return nil, err
 				}
+				return result, nil
 			case *model.DictionaryBoard:
-				cells = board.Cells
+				result, err := gl.checker.CheckForVictoryOrDrawB(board.Cells)
+				if err != nil {
+					return nil, err
+				}
+				return result, nil
 			}
 		case *model.MovesState:
-				cells = make(map[model.CellPosition]model.CellType)
-				for player, moves := range state.PlayersMoves {
-					for _, pos := range moves {
-						cells[pos] = player
-					}
-				}
+			result, err := gl.checker.CheckForVictoryOrDrawC(state.PlayersMoves)
+			if err != nil {
+				return nil, err
+			}
+			return result, nil
 		default:
-			return false, nil, errors.New("invalid state type")
+			return nil, errors.New("invalid state type")
 	}
 
-	for _, combination := range WinningCombinationsForDictionary {
-		pos1, pos2, pos3 := combination[0], combination[1], combination[2]
-		cell1, ok1 := cells[pos1]
-		cell2, ok2 := cells[pos2]
-		cell3, ok3 := cells[pos3]
-		if ok1 && ok2 && ok3 && cell1 == cell2 && cell2 == cell3 {
-		return true, &model.PlayerType{Symbol: cell1}, nil
-		}
-	}
-
-	return false, nil, nil
+	return nil, errors.New("invalid state type")
 
 }
