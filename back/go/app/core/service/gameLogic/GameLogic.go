@@ -16,10 +16,14 @@ type GameLogicB interface {
 	CheckForWinner(state model.StateType) (bool, *model.PlayerType, error)
 }
 
-type GameLogic struct{}
+type GameLogic struct{
+	checker GameStateCheckerB
+}
 
-func NewGameLogic() GameLogicB {
-	return &GameLogic{}
+func NewGameLogic(gameStateChecker GameStateCheckerB) GameLogicB {
+	return &GameLogic{
+		checker: gameStateChecker,
+	}
 }
 
 func (gl *GameLogic) GenerateNewID() (string, error) {

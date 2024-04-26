@@ -6,7 +6,7 @@ interface GameLogicB {
     fun checkForWinner(state: StateType): Result<Boolean, CellType?>
 }
 
-class GameLogic(): GameLogicB {
+class GameLogic(private val checker: GameStateCheckerB): GameLogicB {
 
     override fun generateNewID(): Result<String> {
         val newID = UUID.randomUUID().toString()

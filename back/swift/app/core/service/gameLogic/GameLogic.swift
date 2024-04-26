@@ -10,6 +10,12 @@ protocol GameLogicB {
 
 class GameLogic: GameLogicB {
 
+    private let checker: GameStateCheckerB
+
+    init(gameStateChecker: GameStateCheckerB) {
+        self.checker = gameStateChecker
+    }
+
     func generateNewID() -> Result<String, Error> {
         let newID = UUID().uuidString
         return .success(newID)
