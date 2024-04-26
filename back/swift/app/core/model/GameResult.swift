@@ -2,5 +2,5 @@ import Foundation
 
 struct GameResult {
     var winner: PlayerType?
-    var draw: bool
+    var draw: Bool
 }

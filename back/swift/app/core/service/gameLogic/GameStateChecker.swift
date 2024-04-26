@@ -1,16 +1,16 @@
 import Foundation
 
 protocol GameStateCheckerB {
-    func checkForVictoryOrDrawA(cells: [[CellType?]]) -> Result<GameResult>;
-    func checkForVictoryOrDrawB(cells: [CellPosition: CellType?]) -> Result<GameResult>;
-    func checkForVictoryOrDrawC(playersMoves: [CellType: [CellPosition]]) -> Result<GameResult>;
+    func checkForVictoryOrDrawA(cells: [[CellType?]]) -> Result<GameResult, Error>;
+    func checkForVictoryOrDrawB(cells: [CellPosition: CellType?]) -> Result<GameResult, Error>;
+    func checkForVictoryOrDrawC(playersMoves: [CellType: [CellPosition]]) -> Result<GameResult, Error>;
 }
 
 class GameStateChecker: GameStateCheckerB {
 
-    func checkForVictoryOrDrawA(cells: [[CellType?]]) -> Result<GameResult> {
+    func checkForVictoryOrDrawA(cells: [[CellType?]]) -> Result<GameResult, Error> {
 
-        for (a, b, c) in WinningCombinationsForArray {
+        for (a, b, c) in winningCombinationsForArray {
 
             let cell1 = cells[a / 3][a % 3]
             let cell2 = cells[b / 3][b % 3]
@@ -28,11 +28,11 @@ class GameStateChecker: GameStateCheckerB {
             }
         }
 
-        return cellAvailable ? .notFound : success(GameResult(winner: nil, draw: true))
+        return cellAvailable ? .notFound : .success(GameResult(winner: nil, draw: true))
 
     }
 
-    func checkForVictoryOrDrawB(cells: [CellPosition: CellType?]) -> Result<GameResult> {
+    func checkForVictoryOrDrawB(cells: [CellPosition: CellType?]) -> Result<GameResult, Error> {
 
         for combination in winningCombinationsForDictionary {
 
@@ -43,8 +43,8 @@ class GameStateChecker: GameStateCheckerB {
                 continue
             }
 
-            if cell1 == cell2, cell2 == cell3 {
-                return .success(GameResult(winner: PlayerType(symbol: cell1), draw: false))
+            if let cellSymbol = cell1, cell1 == cell2, cell2 == cell3 {
+                return .success(GameResult(winner: PlayerType(symbol: cellSymbol), draw: false))
             }
 
         }
@@ -54,7 +54,7 @@ class GameStateChecker: GameStateCheckerB {
 
     }
 
-    func checkForVictoryOrDrawC(playersMoves: [CellType: [CellPosition]]) -> Result<GameResult> {
+    func checkForVictoryOrDrawC(playersMoves: [CellType: [CellPosition]]) -> Result<GameResult, Error> {
         
         let playersSymbols: [CellType] = [.X, .O]
 
@@ -67,8 +67,11 @@ class GameStateChecker: GameStateCheckerB {
             return .success(GameResult(winner: PlayerType(symbol: winningPlayer), draw: false))
         }
 
-        let cellAvailable = 9 - (playersMoves[.X]?.count ?? 0 + playersMoves[.O]?.count ?? 0)
-        return cellAvailable === 0 ? .success(GameResult(winner: nil, draw: true)) : .notFound
+        var cellAvailable: Int = 9
+        if let xMoves = playersMoves[.X], let oMoves = playersMoves[.O] {
+            cellAvailable -= (xMoves.count + oMoves.count)
+        }
+        return cellAvailable == 0 ? .success(GameResult(winner: nil, draw: true)) : .notFound
 
     }
 

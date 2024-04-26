@@ -44,12 +44,12 @@ class GameLogic: GameLogicB {
         case .board(let boardType):
             switch boardType.cells {
             case .arrayOfArrays(let arrayOfArrays):
-                return checker.checkForVictoryOrDrawA(arrayOfArrays)
+                return checker.checkForVictoryOrDrawA(cells: arrayOfArrays)
             case .dictionary(let dictionary):
-                return checker.checkForVictoryOrDrawB(dictionary)
+                return checker.checkForVictoryOrDrawB(cells: dictionary)
             }
         case .moves(let playerMoves):
-            return checker.checkForVictoryOrDrawC(playerMoves)
+            return checker.checkForVictoryOrDrawC(playersMoves: playerMoves)
         }
 
     }

@@ -57,7 +57,7 @@ class GameUseCases: GameUseCasesB {
 
         switch checkWinnerAndDraw {
             case .success(let result):
-                if(result.winner){
+                if(result.winner != nil){
                     winner = result.winner
                     gameState = .Won
                 } else {
