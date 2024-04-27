@@ -8,5 +8,17 @@ class GameController {
         self.useCases = gameUseCases
     }
     
+    func startGame(_ req: Request) async throws -> Response {
+
+    }
+
+    func restartGame(_ req: Request) async throws -> Response {
+
+    }
+
+    func makeMove(_ req: Request) async throws -> Response {
+
+    }
+
 }
 
