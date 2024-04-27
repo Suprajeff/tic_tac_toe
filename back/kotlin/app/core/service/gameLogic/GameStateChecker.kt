@@ -14,12 +14,12 @@ class GameStateChecker(): GameStateCheckerB {
             val cell3 = cells[c / 3][c % 3]
 
             if (cell1 != null && cell1 == cell2 && cell2 == cell3) {
-            return Result.success(GameResult(PlayerType(cell1), false))
+            return Result.Success(GameResult(PlayerType(cell1), false))
             }
         }
 
         val cellAvailable = cells.any { row -> row.any { cell -> cell == null } }
-        return if (cellAvailable) Result.notFound() else Result.success(GameResult(null, true))
+        return if (cellAvailable) Result.NotFound else Result.Success(GameResult(null, true))
 
     }
 
@@ -31,12 +31,12 @@ class GameStateChecker(): GameStateCheckerB {
             val cell3 = cells[pos3]
 
             if (cell1 != null && cell1 == cell2 && cell2 == cell3) {
-            return Result.success(GameResult(PlayerType(cell1), false))
+            return Result.Success(GameResult(PlayerType(cell1), false))
             }
         }
 
         val cellAvailable = cells.values.any { it == null }
-        return if (cellAvailable) Result.notFound() else Result.success(GameResult(null, true))
+        return if (cellAvailable) Result.NotFound else Result.Success(GameResult(null, true))
 
     }
 
@@ -52,13 +52,13 @@ class GameStateChecker(): GameStateCheckerB {
         }
 
         return if (winningPlayer != null) {
-            Result.success(GameResult(PlayerType(winningPlayer), false))
+            Result.Success(GameResult(PlayerType(winningPlayer), false))
         } else {
-            val totalMoves = 9 - (playersMoves[CellType.X]?.size ?: 0 + playersMoves[CellType.O]?.size ?: 0)
-            if (totalMoves > 0) {
-                Result.success(GameResult(null, false))
+            val cellAvailable = 9 - ((playersMoves[CellType.X]?.size ?: 0) + (playersMoves[CellType.O]?.size ?: 0))
+            if (cellAvailable === 0) {
+                Result.Success(GameResult(null, true))
             } else {
-                Result.success(GameResult(null, true))
+                Result.NotFound
             }
         }
 

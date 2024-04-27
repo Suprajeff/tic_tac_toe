@@ -1,3 +1,5 @@
+import io.lettuce.core.*
+
 class RedisData(commands: RedisCommands<String, String>) : RedisDataProtocol {
     override val gameDao: GameDao = GameDao(commands)
 }

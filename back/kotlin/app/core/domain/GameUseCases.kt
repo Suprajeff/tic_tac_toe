@@ -7,57 +7,88 @@ interface GameUseCasesB {
 class GameUseCases(private val gameRepo: GameRepository, private val gameLogic: GameLogicB): GameUseCasesB {
 
     override fun initializeGame(): Result<GameType> {
-        val newKey = gameLogic.generateNewID()
-        val board = gameLogic.generateNewBoard()
-        val player = gameLogic.randomPlayer()
-        return if (player.status != "success") {
-            Result.failure(GameType("something went wrong"))
-        } else {
-            gameRepo.createNewGame(newKey.data!!, board, player.data)
+
+        val newKeyResult = gameLogic.generateNewID()
+        val boardResult = gameLogic.generateNewBoard()
+        val playerResult = gameLogic.randomPlayer()
+
+        when {
+            newKeyResult is Result.Success<String> && boardResult is Result.Success<BoardType> && playerResult is Result.Success<PlayerType> -> {
+                return gameRepo.createNewGame(newKeyResult.data, State.BoardState(boardResult.data), playerResult.data)
+            }
+            else -> {
+                val errors = buildString {
+                    if (newKeyResult !is Result.Success<String>) {
+                        appendln("Error generating new ID: ${(newKeyResult as Result.Error).exception}")
+                    }
+                    if (boardResult !is Result.Success<BoardType>) {
+                        appendln("Error generating new board: ${(boardResult as Result.Error).exception}")
+                    }
+                    if (playerResult !is Result.Success<PlayerType>) {
+                        appendln("Error getting random player: ${(playerResult as Result.Error).exception}")
+                    }
+                }
+                return Result.Error(IllegalStateException("Game initialization failed: $errors"))
+            }
         }
+
     }
 
     override fun resetGame(gameID: String): Result<GameType> {
-        val board = gameLogic.generateNewBoard()
-        val player = gameLogic.randomPlayer()
-        return if (player.status != "success") {
-            Result.failure(GameType("something went wrong"))
-        } else {
-            gameRepo.resetGame(gameID, board, player.data!!)
+
+        val boardResult = gameLogic.generateNewBoard()
+        val playerResult = gameLogic.randomPlayer()
+
+
+        when {
+            boardResult is Result.Success<BoardType> && playerResult is Result.Success<PlayerType> -> {
+                return gameRepo.resetGame(gameID, State.BoardState(boardResult.data), playerResult.data)
+            }
+            else -> {
+                val errors = buildString {
+                    if (boardResult !is Result.Success<BoardType>) {
+                        appendln("Error generating new board: ${(boardResult as Result.Error).exception}")
+                    }
+                    if (playerResult !is Result.Success<PlayerType>) {
+                        appendln("Error getting random player: ${(playerResult as Result.Error).exception}")
+                    }
+                }
+                return Result.Error(IllegalStateException("Game initialization failed: $errors"))
+            }
         }
+
     }
 
     override fun makeMove(gameID: String, position: CellPosition, player: PlayerType): Result<GameType> {
 
-        val newBoardState = gameRepo.updateBoard(gameID, position, player)
-
-        if (newBoardState.status != "success") {
-            return Result.failure(GameType("something went wrong when trying to retrieve board state"))
+        val newBoardStateResult = gameRepo.updateBoard(gameID, position, player)
+        if (newBoardStateResult !is Result.Success<StateType>) {
+            return Result.Error(IllegalStateException("Error getting board: ${(newBoardStateResult as Result.Error).exception}"))
         }
 
-        val checkWinnerAndDraw = gameLogic.checkForWinner(newBoardState.data)
+        val checkWinnerAndDrawResult = gameLogic.checkForWinner(newBoardStateResult.data)
+        if (checkWinnerAndDrawResult !is Result.Success<GameResult>) {
+            return Result.Error(IllegalStateException("Error checking for winner: ${(checkWinnerAndDrawResult as Result.Error).exception}"))
+        }
 
         var gameState: GameState
-        var winner: PlayerType?
+        var winner: PlayerType? = null
 
-        checkWinnerAndDraw.fold(
-            onSuccess = {
-                if(it.data.winner){
-                    gameState = GameState.WON
-                    winner = it.data.winner
-                } else if(it.data.draw){
-                    gameState = GameState.DRAW
-                } else {
-                    gameState = GameState.IN_PROGRESS
-                }
-            },
-            onFailure = {
+        if (checkWinnerAndDrawResult.data.winner != null){
+            gameState = GameState.WON
+            winner = checkWinnerAndDrawResult.data.winner
+        } else if(checkWinnerAndDrawResult.data.draw){
+            gameState = GameState.DRAW
+        } else {
+            gameState = GameState.IN_PROGRESS
+        }
 
-            }
-        )
+        val nextPlayerResult = gameLogic.getNextPlayer(player)
+        if (nextPlayerResult !is Result.Success<PlayerType>) {
+            return Result.Error(IllegalStateException("Error getting player: ${(nextPlayerResult as Result.Error).exception}"))
+        }
 
-        val nextPlayer = gameLogic.getNextPlayer(player)
-        return gameRepo.updateGameState(gameID, newBoardState, GameInfo(nextPlayer, gameState, winner))
+        return gameRepo.updateGameState(gameID, newBoardStateResult.data, GameInfo(gameState, nextPlayerResult.data, winner))
     }
 
 }

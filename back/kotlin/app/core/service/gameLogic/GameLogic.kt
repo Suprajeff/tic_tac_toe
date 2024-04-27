@@ -1,3 +1,5 @@
+import java.util.UUID
+
 interface GameLogicB {
     fun generateNewID(): Result<String>
     fun generateNewBoard(): Result<BoardType>
@@ -14,17 +16,17 @@ class GameLogic(private val checker: GameStateCheckerB): GameLogicB {
     }
 
     override fun generateNewBoard(): Result<BoardType> {
-        return Array(3) { Array(3) { null } }
+        return Result.Success(BoardType.ArrayBoard(Array(3) { Array(3) { null } }))
     }
 
     override fun randomPlayer(): Result<PlayerType> {
-        val symbols = listOf("X", "O").shuffled()
-        val symbol = symbols.firstOrNull() ?: return Result.Failure(GameError.CouldNotGetPlayer)
+        val symbols = listOf(CellType.X, CellType.O).shuffled()
+        val symbol = symbols.firstOrNull() ?: return Result.Error(IllegalStateException("Could not get symbol"))
         return Result.Success(PlayerType(symbol))
     }
 
     override fun getNextPlayer(currentPlayer: PlayerType): Result<PlayerType> {
-        val nextSymbol = if (currentPlayer.symbol == "X") "O" else "X"
+        val nextSymbol = if (currentPlayer.symbol == CellType.X) CellType.O else CellType.X
         return Result.Success(PlayerType(nextSymbol))
     }
 
@@ -33,12 +35,12 @@ class GameLogic(private val checker: GameStateCheckerB): GameLogicB {
         return when (state) {
             is State.BoardState -> {
                 when (val boardType = state.board) {
-                    is BoardType.ArrayBoard -> checkForVictoryOrDrawA(boardType.cells)
-                    is BoardType.DictionaryBoard -> checkForVictoryOrDrawB(boardType.cells)
+                    is BoardType.ArrayBoard -> checker.checkForVictoryOrDrawA(boardType.cells)
+                    is BoardType.DictionaryBoard -> checker.checkForVictoryOrDrawB(boardType.cells)
                 }
             }
             is State.MovesState -> {
-                checkForVictoryOrDrawC(state.moves)
+                checker.checkForVictoryOrDrawC(state.moves)
             }
         }
 

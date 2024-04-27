@@ -26,3 +26,9 @@ tasks.withType<KotlinCompile> {
 application {
     mainClassName = "app/appKt"
 }
+
+kotlin {
+    sourceSets.main {
+        kotlin.srcDirs("app")
+    }
+}

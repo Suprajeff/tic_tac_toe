@@ -1,3 +1,8 @@
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.CoroutineDispatcher
+
+
 object CoroutineScopesModule {    
     private var scope: CoroutineScope? = null
     private val scopeLock = Any()

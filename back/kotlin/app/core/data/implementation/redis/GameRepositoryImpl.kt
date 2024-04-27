@@ -1,22 +1,22 @@
 class GameRepositoryImpl(private val redisData: RedisDataProtocol): GameRepository {
     
-    override fun createNewGame(newKey: string, board: BoardType, player: PlayerType): Result<GameType, Error> {
+    override fun createNewGame(newKey: String, board: StateType, player: PlayerType): Result<GameType> {
         return redisData.gameDao.setGame(newKey, board, player)
     }
     
-    override fun resetGame(gameID: string, board: BoardType, player: PlayerType): Result<GameType, Error> {
+    override fun resetGame(gameID: String, board: StateType, player: PlayerType): Result<GameType> {
         return redisData.gameDao.resetGame(gameID, board, player)
     }
     
-    override fun updateBoard(gameID: string, position: CellPosition, player: PlayerType): Result<StateType, Error>{
-        return redisData.gameDao.addPlayerMove(gameID, PlayerMove(player, position))
+    override fun updateBoard(gameID: String, position: CellPosition, player: PlayerType): Result<StateType>{
+        return redisData.gameDao.addPlayerMove(gameID, Move(player, position))
     }
     
-    override fun getCurrentPlayer(gameID: string): Result<PlayerType, Error> {
+    override fun getCurrentPlayer(gameID: String): Result<PlayerType> {
         return when (val result = redisData.gameDao.getInfo(gameID)) {
             is Result.Success -> {
                 println("Data: ${result.data}")
-                Result.Success(result.data.currentPlayer.symbol)
+                Result.Success(result.data.currentPlayer)
             }
             is Result.Error -> {
                 println("Error: ${result.exception}")
@@ -26,7 +26,7 @@ class GameRepositoryImpl(private val redisData: RedisDataProtocol): GameReposito
         }
     }
     
-    override fun getBoardState(gameID: string): Result<StateType, Error>{
+    override fun getBoardState(gameID: String): Result<StateType>{
         return when (val result = redisData.gameDao.getInfo(gameID)) {
                 is Result.Success -> {
                     println("Data: ${result.data}")
@@ -40,11 +40,11 @@ class GameRepositoryImpl(private val redisData: RedisDataProtocol): GameReposito
             }
     }
 
-    override fun getGameState(gameID: string): Result<GameType, Error>{
+    override fun getGameState(gameID: String): Result<GameType>{
         return redisData.gameDao.getInfo(gameID)
     }
 
-    override fun updateGameState(gameID: String, board: StateType, info: GameInfo): Result<GameType, Error> {
+    override fun updateGameState(gameID: String, board: StateType, info: GameInfo): Result<GameType> {
         return redisData.gameDao.updateInfo(gameID, board, info)
     }
 
