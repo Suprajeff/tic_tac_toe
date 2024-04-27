@@ -3,9 +3,8 @@ import {GameType} from "../model/GameType";
 import {PlayerType} from "../model/PlayerType";
 import {GameRepository} from "../data/repository/GameRepository";
 import {CellPosition} from "../model/CellPosition";
-import {GameLogic} from "../service/gameLogic/GameLogic";
+import {GameLogic} from "../service/game/GameLogic";
 import {GameState} from "../model/GameState";
-import {GameResult} from "../model/GameResult";
 
 interface GameUseCasesB {
     initializeGame(): Promise<Result<GameType>>;
@@ -67,3 +66,5 @@ class GameUseCases implements GameUseCasesB {
     }
 
 }
+
+export {GameUseCasesB, GameUseCases}

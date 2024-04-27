@@ -5,7 +5,7 @@ import (
 	"go-ttt/app/core/data/repository"
 	"go-ttt/app/core/database/redis/entity"
 	"go-ttt/app/core/model"
-	service "go-ttt/app/core/service/gameLogic"
+	service "go-ttt/app/core/service/game"
 )
 
 type GameUseCases interface {
