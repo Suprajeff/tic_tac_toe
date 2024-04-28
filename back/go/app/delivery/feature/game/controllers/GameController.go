@@ -118,8 +118,8 @@ func (gc *GameController) MakeMove(w http.ResponseWriter, r *http.Request) {
 	gc.sResponse.successR(
 		&types.HttpResponseChannel{Response: w},
 		&types.JsonData{Data: map[string]interface{}{"data": result}},
-		statusCode: types.OK,
-		room:       nil,
+		types.OK,
+		nil,
 	)
 
 }
