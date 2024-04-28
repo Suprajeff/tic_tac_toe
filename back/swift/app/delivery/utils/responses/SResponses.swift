@@ -27,6 +27,7 @@ class GameResponses {
             case .json(let jsonData):
                 if let room = room {
                    // Send to all connected user
+                    print(room)
                 } else {
                     guard let data = try? JSONEncoder().encode(jsonData) else {
                         print("Failed to encode JSON data")
