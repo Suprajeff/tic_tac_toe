@@ -1,7 +1,7 @@
 package endpoints
 
 import (
-	game "go-ttt/app/feature/game/controllers"
+	game "go-ttt/app/delivery/feature/game/controllers"
 	"github.com/gorilla/mux"
 )
 

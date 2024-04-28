@@ -26,3 +26,5 @@ class GameResponses {
     }  
     
 }
+
+export {GameResponses}
