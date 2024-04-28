@@ -38,6 +38,7 @@ class GameResponses {
             case .html(let htmlString):
                 if let room = room {
                     // Send to all connected user
+                    print(room)
                 } else {
                     webSocket.send(htmlString)
                 }

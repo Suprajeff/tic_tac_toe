@@ -6,6 +6,7 @@ import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.server.*
 import io.ktor.websocket.*
+import io.ktor.http.cio.websocket.*
 
 class GameResponses() {
     
@@ -33,16 +34,18 @@ class GameResponses() {
                 when (data) {
                     is SData.Json -> {
                         if (room != null) {
-                            res.session.broadcast(data.data.toString(), room)
+                            // need to implement logic to send to all connected users
+//                            res.session.broadcast(data.data.toString(), room)
                         } else {
-                            res.session.send(data.data.toString())
+                            res.session.send(Frame.Text(data.data.toString()))
                         }
                     }
                     is SData.Html -> {
                         if (room != null) {
-                            res.session.broadcast(data.data, room)
+                        // need to implement logic to send to all connected users
+                            //res.session.broadcast(data.data, room)
                         } else {
-                            res.session.send(data.data)
+                            res.session.send(Frame.Text(data.data.toString()))
                         }
                     }
                 }
