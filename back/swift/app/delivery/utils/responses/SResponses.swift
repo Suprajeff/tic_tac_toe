@@ -1,4 +1,5 @@
 import Vapor
+import WebSocketKit
 
 class GameResponses {
     
@@ -25,15 +26,19 @@ class GameResponses {
             switch data {
             case .json(let jsonData):
                 if let room = room {
-                    webSocket.emit("json", jsonData, to: .room(room))
+                   // Send to all connected user
                 } else {
-                    webSocket.emit("json", jsonData)
+                    guard let data = try? JSONEncoder().encode(jsonData) else {
+                        print("Failed to encode JSON data")
+                        return
+                    }
+                    webSocket.send(ByteBuffer(data: data), opcode: .binary)
                 }
             case .html(let htmlString):
                 if let room = room {
-                    webSocket.emit("html", htmlString, to: .room(room))
+                    // Send to all connected user
                 } else {
-                    webSocket.emit("html", htmlString)
+                    webSocket.send(htmlString)
                 }
             }
         }
@@ -41,28 +46,23 @@ class GameResponses {
     }
 
     func informationR(res: SChannel, data: SData, statusCode: Status.Informational? = nil, room: String? = nil) {
-        if let statusCode = statusCode {
-            let code = statusCode.rawValue
-            sendResponse(res, data, code, room)
-        } else {
-            sendResponse(res, data, nil, room)
-        }
+        sendResponse(res, data, statusCode?.httpResponseStatus, room)
     }
 
     func successR(res: SChannel, data: SData, statusCode: Status.Success? = nil, room: String? = nil) {
-        sendResponse(res, data, statusCode?.rawValue, room)
+        sendResponse(res, data, statusCode?.httpResponseStatus, room)
     }
 
     func redirectionR(res: SChannel, data: SData, statusCode: Status.Redirection? = nil, room: String? = nil) {
-        sendResponse(res, data, statusCode?.rawValue, room)
+        sendResponse(res, data, statusCode?.httpResponseStatus, room)
     }
 
     func clientErrR(res: SChannel, data: SData, statusCode: Status.ClientError? = nil, room: String? = nil) {
-        sendResponse(res, data, statusCode?.rawValue, room)
+        sendResponse(res, data, statusCode?.httpResponseStatus, room)
     }
 
     func serverErrR(res: SChannel, data: SData, statusCode: Status.ServerError? = nil, room: String? = nil) {
-        sendResponse(res, data, statusCode?.rawValue, room)
+        sendResponse(res, data, statusCode?.httpResponseStatus, room)
     }
 }
 

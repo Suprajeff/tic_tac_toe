@@ -1,4 +1,5 @@
 import Foundation
+import Vapor
 
 struct Status {
     
@@ -76,4 +77,34 @@ struct Status {
         case NETWORK_AUTHENTICATION_REQUIRED = 511
     }
     
+}
+
+extension Status.Informational {
+    var httpResponseStatus: HTTPResponseStatus {
+        return HTTPResponseStatus(statusCode: self.rawValue)
+    }
+}
+
+extension Status.Success {
+    var httpResponseStatus: HTTPResponseStatus {
+        return HTTPResponseStatus(statusCode: self.rawValue)
+    }
+}
+
+extension Status.Redirection {
+    var httpResponseStatus: HTTPResponseStatus {
+        return HTTPResponseStatus(statusCode: self.rawValue)
+    }
+}
+
+extension Status.ClientError {
+    var httpResponseStatus: HTTPResponseStatus {
+        return HTTPResponseStatus(statusCode: self.rawValue)
+    }
+}
+
+extension Status.ServerError {
+    var httpResponseStatus: HTTPResponseStatus {
+        return HTTPResponseStatus(statusCode: self.rawValue)
+    }
 }

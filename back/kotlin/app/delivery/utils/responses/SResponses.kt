@@ -1,8 +1,11 @@
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.ContentType
 import io.ktor.response.respondText
-
-
+import io.ktor.websocket.*
+import io.ktor.application.*
+import io.ktor.http.*
+import io.ktor.server.*
+import io.ktor.websocket.*
 
 class GameResponses() {
     
@@ -48,22 +51,28 @@ class GameResponses() {
     }
 
     suspend fun informationR(res: SChannel, data: SData, statusCode: Status.Informational? = null, room: String? = null) {
-        sendResponse(res, data, statusCode, room)
+        sendResponse(res, data, statusCode?.toHttpStatusCode(), room)
     }
 
     suspend fun successR(res: SChannel, data: SData, statusCode: Status.Success? = null, room: String? = null) {
-        sendResponse(res, data, statusCode, room)
+        sendResponse(res, data, statusCode?.toHttpStatusCode(), room)
     }
 
     suspend fun redirectionR(res: SChannel, data: SData, statusCode: Status.Redirection? = null, room: String? = null) {
-        sendResponse(res, data, statusCode, room)
+        sendResponse(res, data, statusCode?.toHttpStatusCode(), room)
     }
 
     suspend fun clientErrR(res: SChannel, data: SData, statusCode: Status.ClientError? = null, room: String? = null) {
-        sendResponse(res, data, statusCode, room)
+        sendResponse(res, data, statusCode?.toHttpStatusCode(), room)
     }
 
     suspend fun serverErrR(res: SChannel, data: SData, statusCode: Status.ServerError? = null, room: String? = null) {
-        sendResponse(res, data, statusCode, room)
+        sendResponse(res, data, statusCode?.toHttpStatusCode(), room)
     }
 }
+
+fun Status.Informational.toHttpStatusCode(): HttpStatusCode = HttpStatusCode.fromValue(this.value)
+fun Status.Success.toHttpStatusCode(): HttpStatusCode = HttpStatusCode.fromValue(this.value)
+fun Status.Redirection.toHttpStatusCode(): HttpStatusCode = HttpStatusCode.fromValue(this.value)
+fun Status.ClientError.toHttpStatusCode(): HttpStatusCode = HttpStatusCode.fromValue(this.value)
+fun Status.ServerError.toHttpStatusCode(): HttpStatusCode = HttpStatusCode.fromValue(this.value)
