@@ -56,7 +56,7 @@ func (gr *GameResponses) informationR(res types.SChannel, data types.SData, stat
 	gr.sendResponse(res, data, statusCode, room)
 }
 
-func (gr *GameResponses) successR(res types.SChannel, data types.SData, statusCode *types.Success, room *string) {
+func (gr *GameResponses) SuccessR(res types.SChannel, data types.SData, statusCode *types.Success, room *string) {
 	gr.sendResponse(res, data, statusCode, room)
 }
 
@@ -68,7 +68,7 @@ func (gr *GameResponses) clientErrR(res types.SChannel, data types.SData, status
 	gr.sendResponse(res, data, statusCode, room)
 }
 
-func (gr *GameResponses) serverErrR(res types.SChannel, data types.SData, statusCode *types.ServerError, room *string) {
+func (gr *GameResponses) ServerErrR(res types.SChannel, data types.SData, statusCode *types.ServerError, room *string) {
 	gr.sendResponse(res, data, statusCode, room)
 }
 

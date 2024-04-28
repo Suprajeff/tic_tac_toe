@@ -9,9 +9,9 @@ import (
 )
 
 type GameUseCases interface {
-	initializeGame(ctx context.Context) (*model.GameType, error)
-	resetGame(ctx context.Context, gameID string) (*model.GameType, error)
-	makeMove(ctx context.Context, gameID string, position *model.CellPosition, player *model.PlayerType) (*model.GameType, error)
+	InitializeGame(ctx context.Context) (*model.GameType, error)
+	ResetGame(ctx context.Context, gameID string) (*model.GameType, error)
+	MakeMove(ctx context.Context, gameID string, position *model.CellPosition, player *model.PlayerType) (*model.GameType, error)
 }
 type GameUseCasesImpl struct {
 	gameRepo repository.GameRepository
@@ -25,7 +25,7 @@ func NewGameUseCases(repo repository.GameRepository, logic service.GameLogicB) G
 	}
 }
 
-func (uc *GameUseCasesImpl) initializeGame(ctx context.Context) (*model.GameType, error) {
+func (uc *GameUseCasesImpl) InitializeGame(ctx context.Context) (*model.GameType, error) {
 
 	newKey, err := uc.gameProcess.GenerateNewID()
 	if err != nil {
@@ -50,7 +50,7 @@ func (uc *GameUseCasesImpl) initializeGame(ctx context.Context) (*model.GameType
 	return uc.gameRepo.CreateNewGame(ctx, newKey, &boardStateAsStateType, player)
 }
 
-func (uc *GameUseCasesImpl) resetGame(ctx context.Context, gameID string) (*model.GameType, error) {
+func (uc *GameUseCasesImpl) ResetGame(ctx context.Context, gameID string) (*model.GameType, error) {
 
 	board, err := uc.gameProcess.GenerateNewBoard()
 	if err != nil {
@@ -71,7 +71,7 @@ func (uc *GameUseCasesImpl) resetGame(ctx context.Context, gameID string) (*mode
 	return uc.gameRepo.ResetGame(ctx, gameID, &boardStateAsStateType, player)
 }
 
-func (uc *GameUseCasesImpl) makeMove(ctx context.Context, gameID string, position *model.CellPosition, player *model.PlayerType) (*model.GameType, error) {
+func (uc *GameUseCasesImpl) MakeMove(ctx context.Context, gameID string, position *model.CellPosition, player *model.PlayerType) (*model.GameType, error) {
 
 	newBoardState, err := uc.gameRepo.UpdateBoard(ctx, gameID, position, player)
 	if err != nil {
