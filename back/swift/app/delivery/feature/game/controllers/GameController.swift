@@ -1,4 +1,5 @@
 import Foundation
+import Vapor
 
 class GameController {
     
@@ -8,15 +9,15 @@ class GameController {
         self.useCases = gameUseCases
     }
     
-    func startGame(_ req: Request) async throws -> Response {
+    func startGame(_ req: Request) -> Response {
 
     }
 
-    func restartGame(_ req: Request) async throws -> Response {
+    func restartGame(_ req: Request) -> Response {
 
     }
 
-    func makeMove(_ req: Request) async throws -> Response {
+    func makeMove(_ req: Request) -> Response {
 
     }
 

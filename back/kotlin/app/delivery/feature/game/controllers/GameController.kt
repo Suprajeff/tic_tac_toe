@@ -1,13 +1,12 @@
-import io.ktor.server.routing.*
+import io.ktor.server.*
 import io.ktor.http.*
-import io.ktor.server.application.*
-import io.ktor.server.request.*
-import io.ktor.server.response.*
+import io.ktor.application.*
+import io.ktor.routing.*
 
-class GameController(private val useCases: GameUseCasesB) {
+class GameController(private val useCases: GameUseCasesB, private val responses: GameResponses) {
     
     suspend fun startGame(call: ApplicationCall) {
-
+        
     }
 
     suspend fun restartGame(call: ApplicationCall) {

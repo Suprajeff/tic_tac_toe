@@ -1,18 +1,38 @@
-import io.ktor.server.application.*
-import io.ktor.server.routing.*
+import io.ktor.server.*
+import io.ktor.http.*
+import io.ktor.application.*
+import io.ktor.routing.*
+import kotlinx.coroutines.*
 
-class GameEndpoints(private val controller: GameController){
+class GameEndpoints(private val controller: GameController) {
     
-    fun Route(routing: Routing) {
-        routing.post("/start") {
-            controller.startGame(call)
+    fun Application.gameRoutes() {
+
+        routing {
+
+            post("/start") {
+                val call = call
+                launch {
+                    controller.startGame(call)
+                }
+            }
+
+            post("/restart") {
+                val call = call
+                launch {
+                    controller.restartGame(call)
+                }
+            }
+
+            post("/move") {
+                val call = call
+                launch {
+                    controller.makeMove(call)
+                }
+            }
+
         }
-        routing.post("/restart") {
-            controller.restartGame(call)
-        }
-        routing.post("/move") {
-            controller.makeMove(call)
-        }
+
     }
     
 }

@@ -1,5 +1,5 @@
 import {Request, Response} from "express"
-import { GameUseCasesB } from "../../../core/domain/GameUseCases";
+import { GameUseCasesB } from "../../../../core/domain/GameUseCases";
 
 class GameController {
     

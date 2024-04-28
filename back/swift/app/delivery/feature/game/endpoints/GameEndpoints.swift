@@ -1,28 +1,27 @@
 import Foundation
 import Vapor
-import App
 
 class GameEndpoints {
     
     private let controller: GameController
-    private let router: Router
+    private let router: RoutesBuilder
     
-    init(gameController: GameController, router: Router){
+    init(gameController: GameController, router: RoutesBuilder){
         self.controller = gameController
         self.router = router
         initializeRoutes()
     }
     
     private func initializeRoutes() {
-        router.post("start") { req -> EventLoopFuture<Response> in
+        router.post("start") { req -> Response in
             return self.controller.startGame(req)
         }
 
-        router.post("restart") { req -> EventLoopFuture<Response> in
+        router.post("restart") { req -> Response in
             return self.controller.restartGame(req)
         }
 
-        router.post("move") { req -> EventLoopFuture<Response> in
+        router.post("move") { req -> Response in
             return self.controller.makeMove(req)
         }
     }
