@@ -15,6 +15,7 @@ repositories {
 dependencies {
     implementation("io.ktor:ktor-server-core:1.6.8")
     implementation("io.ktor:ktor-server-netty:1.6.8")
+    implementation("io.ktor:ktor-websockets:1.6.8")
     implementation("io.lettuce:lettuce-core:6.3.2.RELEASE")
     testImplementation("org.jetbrains.kotlin:kotlin-test:1.5.31")
 }

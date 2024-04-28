@@ -13,13 +13,13 @@ class GameController {
         const result = await this.useCases.initializeGame()
         switch (result.status) {
             case 'success':
-                this.sResponse.successR(res, result.data, 200, format, channel)
+                this.sResponse.successR(res, result.data, 200)
                 break
             case 'error':
-                this.sResponse.serverErrR(res, null,500, format, channel)
+                this.sResponse.serverErrR(res, null,500)
                 break
             case 'notFound':
-                this.sResponse.clientErrR(res, null,400, format, channel)
+                this.sResponse.clientErrR(res, null,400)
                 break
         }
     }
@@ -29,13 +29,13 @@ class GameController {
         const result = await this.useCases.resetGame(gameID)
         switch (result.status) {
             case 'success':
-                this.sResponse.successR(res, result.data, 200, format, channel)
+                this.sResponse.successR(res, result.data, 200)
                 break
             case 'error':
-                this.sResponse.serverErrR(res, null,500, format, channel)
+                this.sResponse.serverErrR(res, null,500)
                 break
             case 'notFound':
-                this.sResponse.clientErrR(res, null,400, format, channel)
+                this.sResponse.clientErrR(res, null,400)
                 break
         }
     }
@@ -47,13 +47,13 @@ class GameController {
         const result = await this.useCases.makeMove(gameID, position, player)
         switch (result.status) {
             case 'success':
-                this.sResponse.successR(res, result.data, 200, format, channel)
+                this.sResponse.successR(res, result.data, 200)
                 break
             case 'error':
-                this.sResponse.serverErrR(res, null,500, format, channel)
+                this.sResponse.serverErrR(res, null,500)
                 break
             case 'notFound':
-                this.sResponse.clientErrR(res, null,400, format, channel)
+                this.sResponse.clientErrR(res, null,400)
                 break
         }
     }
