@@ -1,8 +1,6 @@
 import { Response } from "express";
-import {Format} from "./types/Format";
-import {Channel} from "./types/Channel";
 import { Status } from "./types/Status";
-import {SRepOption} from "./types/Public";
+import { Socket } from "socket.io";
 
 class GameResponses {
     
