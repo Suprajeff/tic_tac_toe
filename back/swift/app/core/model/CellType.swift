@@ -1,6 +1,6 @@
 import Foundation
 
-enum CellType {
+enum CellType: String, Codable {
     case X, O
 }
 

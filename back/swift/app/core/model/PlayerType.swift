@@ -1,5 +1,5 @@
 import Foundation
 
-struct PlayerType {
+struct PlayerType: Codable {
     var symbol: CellType
 }

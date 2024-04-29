@@ -1,10 +1,10 @@
 import Foundation
 
-enum BoardCells {
+enum BoardCells: Codable {
     case arrayOfArrays([[CellType?]])
     case dictionary([CellPosition: CellType?])
 }
 
-struct BoardType {
+struct BoardType: Codable {
     var cells: BoardCells
 }

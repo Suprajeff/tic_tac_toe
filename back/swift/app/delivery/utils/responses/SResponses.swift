@@ -3,68 +3,89 @@ import WebSocketKit
 
 class GameResponses {
     
-    private func sendResponse(_ res: SChannel, _ data: SData, _ statusCode: HTTPResponseStatus? = nil, _ room: String? = nil) {
+    private func sendHTTPResponse(data: SData, statusCode: HTTPResponseStatus) -> Response {
 
-        switch res {
-        case .httpResponse(let response):
-            switch data {
+        let response = Response(status: statusCode)
+
+        switch data {
             case .json(let jsonData):
-                if let statusCode = statusCode {
-                    response.status = statusCode
-                }
                 response.headers.contentType = .json
                 try? response.content.encode(jsonData)
             case .html(let htmlString):
-                if let statusCode = statusCode {
-                    response.status = statusCode
-                }
                 response.headers.contentType = .html
                 response.body = .init(string: htmlString)
-            }
-
-        case .webSocker(let webSocket):
-            switch data {
-            case .json(let jsonData):
-                if let room = room {
-                   // Send to all connected user
-                    print(room)
-                } else {
-                    guard let data = try? JSONEncoder().encode(jsonData) else {
-                        print("Failed to encode JSON data")
-                        return
-                    }
-                    webSocket.send(ByteBuffer(data: data), opcode: .binary)
-                }
-            case .html(let htmlString):
-                if let room = room {
-                    // Send to all connected user
-                    print(room)
-                } else {
-                    webSocket.send(htmlString)
-                }
-            }
         }
 
+        return response
+
     }
 
-    func informationR(res: SChannel, data: SData, statusCode: Status.Informational? = nil, room: String? = nil) {
-        sendResponse(res, data, statusCode?.httpResponseStatus, room)
+    private func sendSocketResponse(socket: WebSocket, data: SData, room: String? = nil) {
+
+    switch data {
+
+        case .json(let jsonData):
+            if let room = room {
+               // Send to all connected user
+                print(room)
+            } else {
+                guard let data = try? JSONEncoder().encode(jsonData) else {
+                    print("Failed to encode JSON data")
+                    return
+                }
+                socket.send(ByteBuffer(data: data), opcode: .binary)
+            }
+
+        case .html(let htmlString):
+            if let room = room {
+                // Send to all connected user
+                print(room)
+            } else {
+                socket.send(htmlString)
+            }
+
     }
 
-    func successR(res: SChannel, data: SData, statusCode: Status.Success? = nil, room: String? = nil) {
-        sendResponse(res, data, statusCode?.httpResponseStatus, room)
     }
 
-    func redirectionR(res: SChannel, data: SData, statusCode: Status.Redirection? = nil, room: String? = nil) {
-        sendResponse(res, data, statusCode?.httpResponseStatus, room)
+    func informationR(data: SData, statusCode: Status.Informational) -> Response {
+        sendHTTPResponse(data: data, statusCode: statusCode.httpResponseStatus)
     }
 
-    func clientErrR(res: SChannel, data: SData, statusCode: Status.ClientError? = nil, room: String? = nil) {
-        sendResponse(res, data, statusCode?.httpResponseStatus, room)
+    func informationR(socket: WebSocket, data: SData, room: String? = nil) {
+        sendSocketResponse(socket: socket, data: data, room: room)
     }
 
-    func serverErrR(res: SChannel, data: SData, statusCode: Status.ServerError? = nil, room: String? = nil) {
-        sendResponse(res, data, statusCode?.httpResponseStatus, room)
+    func successR(data: SData, statusCode: Status.Success) -> Response {
+        sendHTTPResponse(data: data, statusCode: statusCode.httpResponseStatus)
+    }
+
+    func successR(socket: WebSocket, data: SData, room: String? = nil) {
+        sendSocketResponse(socket: socket, data: data, room: room)
+    }
+
+    func redirectionR(data: SData, statusCode: Status.Redirection) -> Response {
+        sendHTTPResponse(data: data, statusCode: statusCode.httpResponseStatus)
+    }
+
+    func redirectionR(socket: WebSocket, data: SData, room: String? = nil) {
+        sendSocketResponse(socket: socket, data: data, room: room)
+    }
+
+    func clientErrR(data: SData, statusCode: Status.ClientError) -> Response {
+        sendHTTPResponse(data: data, statusCode: statusCode.httpResponseStatus)
+    }
+
+    func clientErrR(socket: WebSocket, data: SData, room: String? = nil) {
+        sendSocketResponse(socket: socket, data: data, room: room)
+    }
+
+    func serverErrR(data: SData, statusCode: Status.ServerError) -> Response {
+        sendHTTPResponse(data: data, statusCode: statusCode.httpResponseStatus)
+    }
+
+    func serverErrR(socket: WebSocket, data: SData, room: String? = nil) {
+        sendSocketResponse(socket: socket, data: data, room: room)
     }
 }
 

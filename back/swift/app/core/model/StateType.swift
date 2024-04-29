@@ -1,6 +1,6 @@
 import Foundation
 
-enum State {
+enum State: Codable {
     case board(BoardType)
     case moves(PlayersMoves)
 }

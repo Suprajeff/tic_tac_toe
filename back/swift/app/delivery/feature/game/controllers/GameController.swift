@@ -13,61 +13,86 @@ class GameController {
     
     func startGame(_ req: Request) -> Response {
 
-        return useCases.initializeGame().flatMap { result in
-            switch result.status {
-            case .success:
-                return self.sResponses.successR(res: .httpResponse(req.response), data: .json(JSONData(result.data)), statusCode: .OK)
-            case .error:
-                return self.sResponses.serverErrR(res: .httpResponse(req.response), data: .json(JSONData(Data())), statusCode: .INTERNAL_SERVER_ERROR)
-            case .notFound:
-                return self.sResponses.clientErrR(res: .httpResponse(req.response), data: .json(JSONData(Data())), statusCode: .BAD_REQUEST)
+        switch useCases.initializeGame() {
+        case .success(let data):
+            do {
+                let jsonData = try JSONEncoder().encode(data)
+                return self.sResponses.successR(data: .json(JSONData(jsonData)), statusCode: .OK)
+            } catch {
+                let errorMessage = "Error encoding GameType to JSON: \(error)"
+                return self.sResponses.serverErrR(data: .json(JSONData(errorMessage)), statusCode: .INTERNAL_SERVER_ERROR)
             }
+        case .failure(let error):
+            let errorMessage = "Something went wrong: \(error.localizedDescription)"
+            return self.sResponses.serverErrR(data: .json(JSONData(errorMessage)), statusCode: .INTERNAL_SERVER_ERROR)
+        case .notFound:
+            return self.sResponses.clientErrR(JSONData("Not found"), statusCode: .BAD_REQUEST)
         }
 
     }
 
     func restartGame(_ req: Request) -> Response {
 
-        guard let gameID = req.data["gameID"]?.string else {
-                return req.eventLoop.makeFailedFuture(Abort(.badRequest))
+        let gameData = try req.content.decode(GameIDData.self)
+
+        let gameID = gameData.gameID
+
+        guard !gameID.isEmpty else {
+            throw Abort(.badRequest)
         }
 
-        return useCases.resetGame(gameID).flatMap { result in
-            switch result.status {
-            case .success:
-                return self.sResponses.successR(res: .httpResponse(req.response), data: .json(JSONData(result.data)), statusCode: .OK)
-            case .error:
-                return self.sResponses.serverErrR(res: .httpResponse(req.response), data: .json(JSONData(Data())), statusCode: .INTERNAL_SERVER_ERROR)
-            case .notFound:
-                return self.sResponses.clientErrR(res: .httpResponse(req.response), data: .json(JSONData(Data())), statusCode: .BAD_REQUEST)
-            }
+        switch useCases.resetGame(gameID: gameID) {
+        case .success(let data):
+            do {
+                let jsonData = try JSONEncoder().encode(data)
+                    return self.sResponses.successR(data: .json(JSONData(jsonData)), statusCode: .OK)
+                } catch {
+                    print("Error encoding GameType to JSON: \(error)")
+                    return self.sResponses.serverErrR(data: "Error encoding GameType to JSON", statusCode: .INTERNAL_SERVER_ERROR)
+                }
+        case .failure(let error):
+            return self.sResponses.serverErrR(data: "Something went wrong", statusCode: .INTERNAL_SERVER_ERROR)
+        case .notFound:
+            return self.sResponses.clientErrR(data: "Not found", statusCode: .BAD_REQUEST)
         }
 
 
     }
 
-    func makeMove(_ req: Request) -> Response {
+    func makeMove(_ req: Request) -> Response  {
 
-        guard let gameID = req.data["gameID"]?.string,
-                    let positionData = req.data["positionData"]?.string,
-                    let playerData = req.data["playerData"]?.string,
-                    let position = try? JSONDecoder().decode(CellPosition.self, from: Data(positionData.utf8)),
-                    let player = try? JSONDecoder().decode(PlayerType.self, from: Data(playerData.utf8)) else {
-                return req.eventLoop.makeFailedFuture(Abort(.badRequest))
-        }
+        let gameData = try req.content.decode(GameData.self)
 
-        return useCases.makeMove(gameID, position, player).flatMap { result in
-            switch result.status {
-            case .success:
-                return self.sResponses.successR(res: .httpResponse(req.response), data: .json(JSONData(result.data)), statusCode: .OK)
-            case .error:
-                return self.sResponses.serverErrR(res: .httpResponse(req.response), data: .json(JSONData(Data())), statusCode: .INTERNAL_SERVER_ERROR)
-            case .notFound:
-                return self.sResponses.clientErrR(res: .httpResponse(req.response), data: .json(JSONData(Data())), statusCode: .BAD_REQUEST)
-            }
+        let gameID = gameData.gameID
+        let position = gameData.position
+        let player = PlayerType(symbol: gameData.playerSymbol)
+
+        switch useCases.makeMove(gameID: gameID, position: position, player: player) {
+        case .success(let data):
+            do {
+                let jsonData = try JSONEncoder().encode(data)
+                    return self.sResponses.successR(data: .json(JSONData(jsonData)), statusCode: .OK)
+                } catch {
+                    print("Error encoding GameType to JSON: \(error)")
+                    return self.sResponses.serverErrR(data: "Error encoding GameType to JSON", statusCode: .INTERNAL_SERVER_ERROR)
+                }
+        case .failure(let error):
+            return self.sResponses.serverErrR(data: "Something went wrong", statusCode: .INTERNAL_SERVER_ERROR)
+        case .notFound:
+            return self.sResponses.clientErrR(data: "Not found", statusCode: .BAD_REQUEST)
         }
 
     }
 
+}
+
+struct GameIDData: Content, Codable {
+    let gameID: String
+}
+
+struct GameData: Content, Codable {
+    let gameID: String
+    let position: CellPosition
+    let playerSymbol: CellType
 }
 
