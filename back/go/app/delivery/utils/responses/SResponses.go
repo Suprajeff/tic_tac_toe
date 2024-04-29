@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"github.com/gorilla/websocket"
 	"go-ttt/app/delivery/utils/responses/types"
-	"net/http"
 )
 
 type GameResponses struct{}

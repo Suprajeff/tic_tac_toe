@@ -17,7 +17,7 @@ type GameController struct {
 func NewGameController(gameUseCases repository.GameUseCases, gameResponses responses.GameResponses) *GameController {
 	return &GameController{
 		useCases: gameUseCases,
-		sResponse: gameResponses
+		sResponse: gameResponses,
 	}
 }
 
@@ -27,20 +27,11 @@ func (gc *GameController) StartGame(w http.ResponseWriter, r *http.Request) {
 
 	result, err := gc.useCases.InitializeGame(ctx)
 	if err != nil {
-		gc.sResponse.ServerErrR(
-			&types.HttpResponseChannel{Response: w},
-			&types.JsonData{Data: nil},
-			types.INTERNAL_SERVER_ERROR,
-			nil
-		)
+		gc.handleError(w, err)
 		return
 	}
 
-	gc.sResponse.SuccessR(
-		&types.HttpResponseChannel{Response: w},
-		&types.JsonData{Data: map[string]interface{}{"data": result}},
-		&types.OK
-	)
+	gc.sendSuccessResponse(w, result)
 
 }
 
@@ -50,7 +41,7 @@ func (gc *GameController) RestartGame(w http.ResponseWriter, r *http.Request) {
 
 	err := r.ParseForm()
 	if err != nil {
-		http.Error(w, "Failed to parse form data", http.StatusInternalServerError)
+		gc.handleError(w, err)
 		return
 	}
 
@@ -58,22 +49,11 @@ func (gc *GameController) RestartGame(w http.ResponseWriter, r *http.Request) {
 
 	result, err := gc.useCases.ResetGame(ctx, gameID)
 	if err != nil {
-		gc.sResponse.ServerErrR(
-			&types.HttpResponseChannel{Response: w},
-			&types.JsonData{Data: nil},
-			types.INTERNAL_SERVER_ERROR,
-			nil
-		)
+		gc.handleError(w, err)
 		return
 	}
 
-	gc.sResponse.SuccessR(
-		&types.HttpResponseChannel{Response: w},
-		&types.JsonData{Data: map[string]interface{}{"data": result}},
-		&types.OK,
-		nil
-	)
-
+	gc.sendSuccessResponse(w, result)
 
 }
 
@@ -83,7 +63,7 @@ func (gc *GameController) MakeMove(w http.ResponseWriter, r *http.Request) {
 
 	err := r.ParseForm()
 	if err != nil {
-		http.Error(w, "Failed to parse form data", http.StatusInternalServerError)
+		gc.handleError(w, err)
 		return
 	}
 
@@ -95,32 +75,42 @@ func (gc *GameController) MakeMove(w http.ResponseWriter, r *http.Request) {
 	var player model.PlayerType
 
 	if err := json.Unmarshal([]byte(positionData), &position); err != nil {
-		http.Error(w, "Failed to unmarshal position data", http.StatusInternalServerError)
+		gc.handleError(w, err)
 		return
 	}
 
 	if err := json.Unmarshal([]byte(playerData), &player); err != nil {
-		http.Error(w, "Failed to unmarshal player data", http.StatusInternalServerError)
+		gc.handleError(w, err)
 		return
 	}
 
 	result, err := gc.useCases.MakeMove(ctx, gameID, &position, &player)
 	if err != nil {
-		gc.sResponse.serverErrR(
-			&types.HttpResponseChannel{Response: w},
-			&types.JsonData{Data: nil},
-			types.INTERNAL_SERVER_ERROR,
-			nil,
-		)
+		gc.handleError(w, err)
 		return
 	}
 
-	gc.sResponse.successR(
+	gc.sendSuccessResponse(w, result)
+
+}
+
+func (gc *GameController) handleError(w http.ResponseWriter, err error) {
+	var statusCode types.ServerError = types.InternalServerError
+	gc.sResponse.ServerErrR(
 		&types.HttpResponseChannel{Response: w},
-		&types.JsonData{Data: map[string]interface{}{"data": result}},
-		types.OK,
+		&types.JsonData{Data: nil},
+		&statusCode,
 		nil,
 	)
+}
 
+func (gc *GameController) sendSuccessResponse(w http.ResponseWriter, data interface{}) {
+	var statusCode types.Success = types.Ok
+	gc.sResponse.SuccessR(
+		&types.HttpResponseChannel{Response: w},
+		&types.JsonData{Data: map[string]interface{}{"data": data}},
+		&statusCode,
+		nil,
+	)
 }
 

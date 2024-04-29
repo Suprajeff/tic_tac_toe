@@ -3,83 +3,83 @@ package types
 type Informational int
 
 const (
-	CONTINUE Informational = 100
-	SWITCHING_PROTOCOLS = 101
-	PROCESSING = 102
+	Continue           Informational = 100
+	SwitchingProtocols Informational = 101
+	Processing         Informational = 102
 )
 
 type Success int
 
 const (
-	OK Success = 200
-	CREATED = 201
-	ACCEPTED = 202
-	NON_AUTHORITATIVE_INFORMATION = 203
-	NO_CONTENT = 204
-	RESET_CONTENT = 205
-	PARTIAL_CONTENT = 206
-	MULTI_STATUS = 207
-	ALREADY_REPORTED = 208
-	IM_USED = 226
+	Ok Success = 200
+	Created Success = 201
+	Accepted                    Success = 202
+	NonAuthoritativeInformation Success = 203
+	NoContent       Success = 204
+	ResetContent   Success = 205
+	PartialContent   Success = 206
+	MultiStatus     Success = 207
+	AlreadyReported Success = 208
+	ImUsed          Success = 226
 )
 
 type Redirection int
 
 const (
-	MULTIPLE_CHOICES Redirection = 300
-	MOVED_PERMANENTLY = 301
-	FOUND = 302
-	SEE_OTHER = 303
-	NOT_MODIFIED = 304
-	USE_PROXY = 305
-	TEMPORARY_REDIRECT = 307
-	PERMANENT_REDIRECT = 308
+	MultipleChoices  Redirection = 300
+	MovedPermanently Redirection = 301
+	FOUND        Redirection = 302
+	SeeOther    Redirection = 303
+	NotModified        Redirection = 304
+	UseProxy           Redirection = 305
+	TemporaryRedirect Redirection = 307
+	PermanentRedirect Redirection = 308
 )
 
 type ClientError int
 
 const (
-	BAD_REQUEST ClientError = 400
-	UNAUTHORIZED = 401
-	PAYMENT_REQUIRED = 402
-	FORBIDDEN = 403
-	NOT_FOUND = 404
-	METHOD_NOT_ALLOWED = 405
-	NOT_ACCEPTABLE = 406
-	PROXY_AUTHENTICATION_REQUIRED = 407
-	REQUEST_TIMEOUT = 408
-	CONFLICT = 409
-	GONE = 410
-	LENGTH_REQUIRED = 411
-	PRECONDITION_FAILED = 412
-	PAYLOAD_TOO_LARGE = 413
-	URI_TOO_LONG = 414
-	UNSUPPORTED_MEDIA_TYPE = 415
-	RANGE_NOT_SATISFIABLE = 416
-	EXPECTATION_FAILED = 417
-	MISDIRECTED_REQUEST = 421
-	UNPROCESSABLE_ENTITY = 422
-	LOCKED = 423
-	FAILED_DEPENDENCY = 424
-	UPGRADE_REQUIRED = 426
-	PRECONDITION_REQUIRED = 428
-	TOO_MANY_REQUESTS = 429
-	REQUEST_HEADER_FIELDS_TOO_LARGE = 431
-	UNAVAILABLE_FOR_LEGAL_REASONS = 451
+	BadRequest   ClientError = 400
+	Unauthorized    ClientError = 401
+	PaymentRequired ClientError = 402
+	Forbidden          ClientError = 403
+	NotFound         ClientError = 404
+	MethodNotAllowed              ClientError = 405
+	NotAcceptable               ClientError = 406
+	ProxyAuthenticationRequired ClientError = 407
+	RequestTimeout              ClientError = 408
+	Conflict                    ClientError = 409
+	Gone                ClientError = 410
+	LengthRequired     ClientError = 411
+	PreconditionFailed ClientError = 412
+	PayloadTooLarge    ClientError = 413
+	UriTooLong         ClientError = 414
+	UnsupportedMediaType ClientError = 415
+	RangeNotSatisfiable  ClientError = 416
+	ExpectationFailed      ClientError = 417
+	MisdirectedRequest    ClientError = 421
+	UnprocessableEntity ClientError = 422
+	Locked              ClientError = 423
+	FailedDependency ClientError = 424
+	UpgradeRequired  ClientError = 426
+	PreconditionRequired ClientError = 428
+	TooManyRequests      ClientError = 429
+	RequestHeaderFieldsTooLarge ClientError = 431
+	UnavailableForLegalReasons  ClientError = 451
 )
 
 type ServerError int
 
 const (
-	INTERNAL_SERVER_ERROR ServerError = 500
-	NOT_IMPLEMENTED = 501
-	BAD_GATEWAY = 502
-	SERVICE_UNAVAILABLE = 503
-	GATEWAY_TIMEOUT = 504
-	HTTP_VERSION_NOT_SUPPORTED = 505
-	VARIANT_ALSO_NEGOTIATES = 506
-	INSUFFICIENT_STORAGE = 507
-	LOOP_DETECTED = 508
-	NOT_EXTENDED = 510
-	NETWORK_AUTHENTICATION_REQUIRED = 511
+	InternalServerError ServerError = 500
+	NotImplemented      ServerError = 501
+	BadGateway         ServerError = 502
+	ServiceUnavailable         ServerError = 503
+	GatewayTimeout          ServerError = 504
+	HttpVersionNotSupported ServerError = 505
+	VariantAlsoNegotiates ServerError = 506
+	InsufficientStorage ServerError = 507
+	LoopDetected                    ServerError = 508
+	NotExtended                   ServerError = 510
+	NetworkAuthenticationRequired ServerError = 511
 )
