@@ -1,0 +1,39 @@
+package database
+
+import (
+	"context"
+	"fmt"
+	"github.com/go-redis/redis/v8"
+	"log"
+	"os"
+)
+
+type Client struct {
+	*redis.Client
+}
+
+func NewRedisClient() *Client {
+
+	redisHost := os.Getenv("REDIS_HOST")
+	if redisHost == "" {
+		redisHost = "localhost" // Default to "localhost"
+	}
+	addr := fmt.Sprintf("%s:6379", redisHost)
+
+	client := redis.NewClient(&redis.Options{
+		Addr:     addr,
+		Password: "",
+		DB:       0,
+	})
+
+	return &Client{client}
+}
+
+func (c *Client) Connect() {
+	ctx := context.Background()
+	pong, err := c.Ping(ctx).Result()
+	if err != nil {
+		log.Fatalf("Error connecting to Redis: %v", err)
+	}
+	fmt.Println(pong)
+}
