@@ -1,8 +1,8 @@
 package endpoints
 
 import (
-	game "go-ttt/app/delivery/feature/game/controllers"
 	"github.com/gorilla/mux"
+	game "go-ttt/app/delivery/feature/game/controllers"
 )
 
 func GameEndpoints(r *mux.Router, controller *game.GameController) {

@@ -12,24 +12,7 @@ class GameController(private val useCases: GameUseCasesB, private val responses:
     suspend fun startGame(call: ApplicationCall) {
         
         val result = useCases.initializeGame()
-
-        when {
-             result is Result.Success<GameType> -> responses.successR(
-                res = SChannel.HttpResponse(call),
-                data = SData.Json(mapOf("data" to result.data)),
-                statusCode = Status.Success.OK
-            )
-            result is Result.Error -> responses.serverErrR(
-                res = SChannel.HttpResponse(call),
-                data = SData.Json(emptyMap()),
-                statusCode = Status.ServerError.INTERNAL_SERVER_ERROR
-            )
-            result is Result.NotFound -> responses.clientErrR(
-                res = SChannel.HttpResponse(call),
-                data = SData.Json(emptyMap()),
-                statusCode = Status.ClientError.NOT_FOUND
-            )
-        }
+        handleResult(result, call)
 
     }
 
@@ -41,23 +24,7 @@ class GameController(private val useCases: GameUseCasesB, private val responses:
         val gameID = parsedData.gameID
 
         val result = useCases.resetGame(gameID)
-        when  {
-            result is Result.Success<GameType> -> responses.successR(
-                res = SChannel.HttpResponse(call),
-                data = SData.Json(mapOf("data" to result.data)),
-                statusCode = Status.Success.OK
-            )
-            result is Result.Error -> responses.serverErrR(
-                res = SChannel.HttpResponse(call),
-                data = SData.Json(emptyMap()),
-                statusCode = Status.ServerError.INTERNAL_SERVER_ERROR
-            )
-            result is Result.NotFound -> responses.clientErrR(
-                res = SChannel.HttpResponse(call),
-                data = SData.Json(emptyMap()),
-                statusCode = Status.ClientError.NOT_FOUND
-            )
-        }
+        handleResult(result, call)
 
     }
 
@@ -71,6 +38,11 @@ class GameController(private val useCases: GameUseCasesB, private val responses:
         val player = PlayerType(symbol = parsedData.playerSymbol)
 
         val result = useCases.makeMove(gameID, position, player)
+        handleResult(result, call)
+
+    }
+
+    private suspend fun handleResult(result: Result<GameType>, call: ApplicationCall) {
         when {
             result is Result.Success<GameType> -> responses.successR(
                 res = SChannel.HttpResponse(call),
@@ -88,17 +60,6 @@ class GameController(private val useCases: GameUseCasesB, private val responses:
                 statusCode = Status.ClientError.NOT_FOUND
             )
         }
-
     }
-    
+
 }
-
-@Serializable
-data class GameIDData(val gameID: String)
-
-@Serializable
-data class GameData(
-    val gameID: String,
-    val position: CellPosition,
-    val playerSymbol: CellType
-)
