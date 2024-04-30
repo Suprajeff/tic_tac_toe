@@ -14,46 +14,37 @@ class GameController {
     func startGame(_ req: Request) -> Response {
 
         switch useCases.initializeGame() {
-        case .success(let data):
-            do {
-                let jsonData = try JSONEncoder().encode(data)
-                return self.sResponses.successR(data: .json(JSONData(jsonData)), statusCode: .OK)
-            } catch {
-                let errorMessage = "Error encoding GameType to JSON: \(error)"
-                return self.sResponses.serverErrR(data: .json(JSONData(errorMessage)), statusCode: .INTERNAL_SERVER_ERROR)
-            }
-        case .failure(let error):
-            let errorMessage = "Something went wrong: \(error.localizedDescription)"
-            return self.sResponses.serverErrR(data: .json(JSONData(errorMessage)), statusCode: .INTERNAL_SERVER_ERROR)
-        case .notFound:
-            return self.sResponses.clientErrR(JSONData("Not found"), statusCode: .BAD_REQUEST)
+            case .success(let data):
+                return handleResult(data: data, successHandler: self.sResponses.successR)
+            case .failure(let error):
+                return handleError(error: error, errorHandler: self.sResponses.serverErrR)
+            case .notFound:
+                return self.sResponses.clientErrR(data: .json(JSONData("Not found")), statusCode: .BAD_REQUEST)
         }
 
     }
 
     func restartGame(_ req: Request) -> Response {
 
-        let gameData = try req.content.decode(GameIDData.self)
+        do {
 
-        let gameID = gameData.gameID
+            let gameData = try req.content.decode(GameIDData.self)
 
-        guard !gameID.isEmpty else {
-            throw Abort(.badRequest)
-        }
+            if gameData.gameID.isEmpty {
+                return self.sResponses.clientErrR(data: .json(JSONData("Game ID cannot be empty")), statusCode: .BAD_REQUEST)
+            }
 
-        switch useCases.resetGame(gameID: gameID) {
-        case .success(let data):
-            do {
-                let jsonData = try JSONEncoder().encode(data)
-                    return self.sResponses.successR(data: .json(JSONData(jsonData)), statusCode: .OK)
-                } catch {
-                    print("Error encoding GameType to JSON: \(error)")
-                    return self.sResponses.serverErrR(data: "Error encoding GameType to JSON", statusCode: .INTERNAL_SERVER_ERROR)
-                }
-        case .failure(let error):
-            return self.sResponses.serverErrR(data: "Something went wrong", statusCode: .INTERNAL_SERVER_ERROR)
-        case .notFound:
-            return self.sResponses.clientErrR(data: "Not found", statusCode: .BAD_REQUEST)
+            switch useCases.resetGame(gameID: gameData.gameID) {
+                case .success(let data):
+                    return handleResult(data: data, successHandler: self.sResponses.successR)
+                case .failure(let error):
+                    return handleError(error: error, errorHandler: self.sResponses.serverErrR)
+                case .notFound:
+                    return self.sResponses.clientErrR(data: .json(JSONData("Not found")), statusCode: .BAD_REQUEST)
+            }
+
+        } catch {
+            return self.sResponses.clientErrR(data: .json(JSONData("Error decoding request data: \(error.localizedDescription)")), statusCode: .BAD_REQUEST)
         }
 
 
@@ -61,27 +52,52 @@ class GameController {
 
     func makeMove(_ req: Request) -> Response  {
 
-        let gameData = try req.content.decode(GameData.self)
+        do {
 
-        let gameID = gameData.gameID
-        let position = gameData.position
-        let player = PlayerType(symbol: gameData.playerSymbol)
+            let gameData = try req.content.decode(GameData.self)
 
-        switch useCases.makeMove(gameID: gameID, position: position, player: player) {
-        case .success(let data):
-            do {
-                let jsonData = try JSONEncoder().encode(data)
-                    return self.sResponses.successR(data: .json(JSONData(jsonData)), statusCode: .OK)
-                } catch {
-                    print("Error encoding GameType to JSON: \(error)")
-                    return self.sResponses.serverErrR(data: "Error encoding GameType to JSON", statusCode: .INTERNAL_SERVER_ERROR)
-                }
-        case .failure(let error):
-            return self.sResponses.serverErrR(data: "Something went wrong", statusCode: .INTERNAL_SERVER_ERROR)
-        case .notFound:
-            return self.sResponses.clientErrR(data: "Not found", statusCode: .BAD_REQUEST)
+            if gameData.gameID.isEmpty {
+                return self.sResponses.clientErrR(data: .json(JSONData("Game ID cannot be empty")), statusCode: .BAD_REQUEST)
+            }
+
+//            guard let position = gameData.position else {
+//                return self.sResponses.clientErrR(data: .json(JSONData("Position cannot be nil")), statusCode: .BAD_REQUEST)
+//            }
+//
+//            guard let playerSymbol = gameData.playerSymbol else {
+//                return self.sResponses.clientErrR(data: .json(JSONData("Player symbol cannot be nil")), statusCode: .BAD_REQUEST)
+//            }
+
+            let player = PlayerType(symbol: gameData.playerSymbol)
+
+            switch useCases.makeMove(gameID: gameData.gameID, position: gameData.position, player: player) {
+                case .success(let data):
+                    return handleResult(data: data, successHandler: self.sResponses.successR)
+                case .failure(let error):
+                    return handleError(error: error, errorHandler: self.sResponses.serverErrR)
+                case .notFound:
+                    return self.sResponses.clientErrR(data: .json(JSONData("Not found")), statusCode: .BAD_REQUEST)
+            }
+
+        }  catch {
+        return self.sResponses.clientErrR(data: .json(JSONData("Error decoding request data: \(error.localizedDescription)")), statusCode: .BAD_REQUEST)
         }
 
+    }
+
+    private func handleResult<T: Encodable>(data: T, successHandler: (_ data: SData, _ statusCode: Status.Success) -> Response) -> Response {
+        do {
+            let jsonData = try JSONEncoder().encode(data)
+            return successHandler(.json(JSONData(jsonData)), .OK)
+        } catch {
+            let errorMessage = "Error encoding data to JSON: \(error)"
+            return self.sResponses.serverErrR(data: .json(JSONData(errorMessage)), statusCode: .INTERNAL_SERVER_ERROR)
+        }
+    }
+
+    private func handleError(error: Error, errorHandler: (_ data: SData, _ statusCode: Status.ServerError) -> Response) -> Response {
+        let errorMessage = "Something went wrong: \(error.localizedDescription)"
+        return errorHandler(.json(JSONData(errorMessage)), .INTERNAL_SERVER_ERROR)
     }
 
 }
