@@ -68,3 +68,5 @@ class GameRepositoryImpl implements GameRepository {
     }
 
 }
+
+export {GameRepositoryImpl}

@@ -8,6 +8,10 @@ import (
 
 type GameResponses struct{}
 
+func NewGameResponses() GameResponses {
+	return GameResponses{}
+}
+
 func (gr GameResponses) sendResponse(res types.SChannel, data types.SData, statusCode interface{}, room *string) {
 	switch channel := res.(type) {
 	case *types.HttpResponseChannel:

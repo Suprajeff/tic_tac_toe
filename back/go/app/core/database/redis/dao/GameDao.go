@@ -22,8 +22,8 @@ type GameDaoProtocol interface {
 	UpdateInfo(ctx context.Context, gameID string, board *model.StateType, info *entity.GameInfo) (*model.GameType, error)
 }
 
-func NewGameDao(rData *redisInstance.Data) GameDaoProtocol {
-	return &GameDao{Data:rData}
+func NewGameDao(rData *redisInstance.Data) GameDao {
+	return GameDao{Data:rData}
 }
 
 func (dao *GameDao) SetGame(ctx context.Context, newKey string, board *model.StateType, player *model.PlayerType) (*model.GameType, error) {
@@ -242,7 +242,7 @@ func (dao *GameDao) UpdateInfo(ctx context.Context, gameID string, board *model.
 		CurrentPlayer: info.CurrentPlayer,
 		GameState: info.GameState,
 		State: *board,
-		Winner: info.Winner
+		Winner: info.Winner,
 	}, nil
 }
 
