@@ -1,4 +1,5 @@
 import Foundation
+import Vapor
 
 struct GameIDData: Content, Codable {
     let gameID: String

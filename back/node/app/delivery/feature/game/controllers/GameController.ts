@@ -12,7 +12,7 @@ class GameController {
     
     async startGame(res: Response) {
         const result = await this.useCases.initializeGame()
-        this.handleResult(result, res)
+        this.handleResult(result, res.status(200))
     }
     
     async restartGame(req: Request, res: Response) {
