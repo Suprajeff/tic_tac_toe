@@ -1,8 +1,8 @@
-import { Result, notFound, success } from "../../common/result/Result";
-import { CellPosition } from "../../model/CellPosition";
-import { CellType } from "../../model/CellType";
-import {GameResult} from "../../model/GameResult";
-import { winningCombinationsForArray, winningCombinationsForDictionary } from "./WinningCombinations";
+import { Result, notFound, success } from "../../common/result/Result.js";
+import { CellPosition } from "../../model/CellPosition.js";
+import { CellType } from "../../model/CellType.js";
+import {GameResult} from "../../model/GameResult.js";
+import { winningCombinationsForArray, winningCombinationsForDictionary } from "./WinningCombinations.js";
 
 interface GameStateCheckerB {
     checkForVictoryOrDrawA(cells: CellType[][]): Result<GameResult>;

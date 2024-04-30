@@ -1,10 +1,10 @@
-import {error, Result} from "../common/result/Result";
-import {GameType} from "../model/GameType";
-import {PlayerType} from "../model/PlayerType";
-import {GameRepository} from "../data/repository/GameRepository";
-import {CellPosition} from "../model/CellPosition";
-import {GameLogic} from "../service/game/GameLogic";
-import {GameState} from "../model/GameState";
+import {error, Result} from "../common/result/Result.js";
+import {GameType} from "../model/GameType.js";
+import {PlayerType} from "../model/PlayerType.js";
+import {GameRepository} from "../data/repository/GameRepository.js";
+import {CellPosition} from "../model/CellPosition.js";
+import {GameLogic} from "../service/game/GameLogic.js";
+import {GameState} from "../model/GameState.js";
 
 interface GameUseCasesB {
     initializeGame(): Promise<Result<GameType>>;

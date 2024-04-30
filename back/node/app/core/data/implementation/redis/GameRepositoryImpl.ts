@@ -1,12 +1,12 @@
-import {GameRepository} from "../../repository/GameRepository";
-import {BoardType} from "../../../model/BoardType";
-import {PlayerType} from "../../../model/PlayerType";
-import {GameType} from "../../../model/GameType";
-import {Result, error, notFound, success} from "../../../common/result/Result";
-import {CellPosition} from "../../../model/CellPosition";
-import {RedisData} from "../../../database/redis/RedisData";
-import {StateType} from "../../../model/StateType";
-import { GameInfo } from "../../../database/redis/entity/GameInfo";
+import {GameRepository} from "../../repository/GameRepository.js";
+import {BoardType} from "../../../model/BoardType.js";
+import {PlayerType} from "../../../model/PlayerType.js";
+import {GameType} from "../../../model/GameType.js";
+import {Result, error, notFound, success} from "../../../common/result/Result.js";
+import {CellPosition} from "../../../model/CellPosition.js";
+import {RedisData} from "../../../database/redis/RedisData.js";
+import {StateType} from "../../../model/StateType.js";
+import { GameInfo } from "../../../database/redis/entity/GameInfo.js";
 
 class GameRepositoryImpl implements GameRepository {
     

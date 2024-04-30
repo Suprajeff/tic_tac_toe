@@ -1,6 +1,6 @@
-import { GameState } from "./GameState";
-import { PlayerType } from "./PlayerType";
-import {StateType} from "./StateType";
+import { GameState } from "./GameState.js";
+import { PlayerType } from "./PlayerType.js";
+import {StateType} from "./StateType.js";
 
 type GameType = {
     id: string;

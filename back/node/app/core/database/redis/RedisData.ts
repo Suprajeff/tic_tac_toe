@@ -1,5 +1,5 @@
 import {RedisClientType} from "redis";
-import {GameDao} from "./dao/GameDao";
+import {GameDao} from "./dao/GameDao.js";
 
 class RedisData {
 

@@ -1,5 +1,5 @@
-import { BoardType } from "./BoardType";
-import { PlayersMoves } from "./PlayersMoves";
+import { BoardType } from "./BoardType.js";
+import { PlayersMoves } from "./PlayersMoves.js";
 
 type StateType = BoardType | PlayersMoves
 

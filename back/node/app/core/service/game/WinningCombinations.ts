@@ -1,4 +1,4 @@
-import { CellPosition } from "../../model/CellPosition";
+import { CellPosition } from "../../model/CellPosition.js";
 
 const winningCombinationsForDictionary: CellPosition[][] = [
     ['TL', 'T', 'TR'], ['L', 'C', 'R'], ['BL', 'B', 'BR'], // Rows

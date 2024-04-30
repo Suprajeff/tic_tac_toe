@@ -1,10 +1,10 @@
 import {Request, Response} from "express"
-import { GameUseCasesB } from "../../../../core/domain/GameUseCases";
-import {GameResponses} from "../../../utils/responses/SResponses";
-import {CellPosition} from "../../../../core/model/CellPosition";
-import {PlayerType} from "../../../../core/model/PlayerType";
-import { Result } from "../../../../core/common/result/Result";
-import { GameType } from "../../../../core/model/GameType";
+import { GameUseCasesB } from "../../../../core/domain/GameUseCases.js";
+import {GameResponses} from "../../../utils/responses/SResponses.js";
+import {CellPosition} from "../../../../core/model/CellPosition.js";
+import {PlayerType} from "../../../../core/model/PlayerType.js";
+import { Result } from "../../../../core/common/result/Result.js";
+import { GameType } from "../../../../core/model/GameType.js";
 
 class GameController {
     

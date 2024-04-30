@@ -1,4 +1,4 @@
-import { CellType } from "./CellType";
+import { CellType } from "./CellType.js";
 
 type PlayerType = {
     symbol: NonNullable<CellType>;

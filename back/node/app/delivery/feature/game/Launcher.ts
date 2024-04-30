@@ -1,13 +1,13 @@
-import { createRedisClient } from "../../../connections/infrastructure/database/redis";
-import { RedisData } from "../../../core/database/redis/RedisData";
-import {GameRepositoryImpl} from "../../../core/data/implementation/redis/GameRepositoryImpl";
-import {GameStateChecker} from "../../../core/service/game/GameStateChecker";
-import {GameLogic} from "../../../core/service/game/GameLogic";
-import {GameUseCases} from "../../../core/domain/GameUseCases";
-import {GameResponses} from "../../utils/responses/SResponses";
-import {GameController} from "./controllers/GameController";
-import {GameEndpoints} from "./endpoints/GameEndpoints";
-import { createExpressRouter, createExpressServer } from "../../../connections/infrastructure/server/express";
+import { createRedisClient } from "../../../connections/infrastructure/database/redis.js";
+import { RedisData } from "../../../core/database/redis/RedisData.js";
+import {GameRepositoryImpl} from "../../../core/data/implementation/redis/GameRepositoryImpl.js";
+import {GameStateChecker} from "../../../core/service/game/GameStateChecker.js";
+import {GameLogic} from "../../../core/service/game/GameLogic.js";
+import {GameUseCases} from "../../../core/domain/GameUseCases.js";
+import {GameResponses} from "../../utils/responses/SResponses.js";
+import {GameController} from "./controllers/GameController.js";
+import {GameEndpoints} from "./endpoints/GameEndpoints.js";
+import { createExpressRouter, createExpressServer } from "../../../connections/infrastructure/server/express.js";
 
 const init = async () =>{
 
@@ -32,7 +32,7 @@ const init = async () =>{
     new GameEndpoints(gameController, router);
 
     // Start Express Server ============================================================================
-    const server = createExpressServer([], router);
+    createExpressServer([], router);
 
     // Ensure you call `client.quit()` when you are done with Redis
     process.on('exit', () => {

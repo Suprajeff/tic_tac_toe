@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { Status } from "./types/Status";
+import { Status } from "./types/Status.js";
 import { Socket } from "socket.io";
-import {SocketR} from "./types/SocketIO";
+import {SocketR} from "./types/SocketIO.js";
 
 class GameResponses {
     

@@ -1,11 +1,11 @@
-import {Result, success, error, notFound} from "../../common/result/Result";
-import { PlayerType } from "../../model/PlayerType";
-import {BoardType} from "../../model/BoardType";
-import {StateType} from "../../model/StateType";
+import {Result, success, error, notFound} from "../../common/result/Result.js";
+import { PlayerType } from "../../model/PlayerType.js";
+import {BoardType} from "../../model/BoardType.js";
+import {StateType} from "../../model/StateType.js";
 import {randomUUID} from "crypto";
-import { CellType } from "../../model/CellType";
-import {GameResult} from "../../model/GameResult";
-import {GameStateCheckerB} from "./GameStateChecker";
+import { CellType } from "../../model/CellType.js";
+import {GameResult} from "../../model/GameResult.js";
+import {GameStateCheckerB} from "./GameStateChecker.js";
 
 interface GameLogicB {
     generateNewID(): Result<string>;

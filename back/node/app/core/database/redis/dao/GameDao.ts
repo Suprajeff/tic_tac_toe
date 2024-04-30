@@ -1,14 +1,14 @@
 import {RedisClientType} from "redis";
-import { Move, Moves } from "../entity/Move";
-import { GameInfo } from "../entity/GameInfo";
-import {Result} from "../../../common/result/Result";
-import {CellPosition} from "../../../model/CellPosition";
-import {GameState} from "../../../model/GameState";
-import {CellType} from "../../../model/CellType";
-import {PlayerType} from "../../../model/PlayerType";
-import {BoardType} from "../../../model/BoardType";
-import {GameType} from "../../../model/GameType";
-import {StateType} from "../../../model/StateType";
+import { Move, Moves } from "../entity/Move.js";
+import { GameInfo } from "../entity/GameInfo.js";
+import {Result} from "../../../common/result/Result.js";
+import {CellPosition} from "../../../model/CellPosition.js";
+import {GameState} from "../../../model/GameState.js";
+import {CellType} from "../../../model/CellType.js";
+import {PlayerType} from "../../../model/PlayerType.js";
+import {BoardType} from "../../../model/BoardType.js";
+import {GameType} from "../../../model/GameType.js";
+import {StateType} from "../../../model/StateType.js";
 
 class GameDao implements GameDaoProtocol {
     

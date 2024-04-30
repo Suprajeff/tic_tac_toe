@@ -1,4 +1,4 @@
-import {GameController} from "../controllers/GameController";
+import {GameController} from "../controllers/GameController.js";
 import {Router} from "express";
 
 class GameEndpoints {

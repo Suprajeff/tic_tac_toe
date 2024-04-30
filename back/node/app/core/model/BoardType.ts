@@ -1,5 +1,5 @@
-import { CellType } from "./CellType";
-import {CellPosition} from "./CellPosition";
+import { CellType } from "./CellType.js";
+import {CellPosition} from "./CellPosition.js";
 
 type BoardType = {
     cells: CellType[][] | Record<CellPosition, CellType>;

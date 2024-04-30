@@ -1,6 +1,5 @@
-import { CellType } from "../../../model/CellType";
-import { GameState } from "../../../model/GameState";
-import { PlayerType } from "../../../model/PlayerType";
+import { GameState } from "../../../model/GameState.js";
+import { PlayerType } from "../../../model/PlayerType.js";
 
 type GameInfo = {
     currentPlayer: PlayerType;

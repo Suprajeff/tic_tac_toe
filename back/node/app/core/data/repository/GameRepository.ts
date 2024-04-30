@@ -1,10 +1,10 @@
-import {PlayerType} from "../../model/PlayerType";
-import {BoardType} from "../../model/BoardType";
-import {GameType} from "../../model/GameType";
-import { Result } from "../../common/result/Result";
-import {CellPosition} from "../../model/CellPosition";
-import {StateType} from "../../model/StateType";
-import {GameInfo} from "../../database/redis/entity/GameInfo";
+import {PlayerType} from "../../model/PlayerType.js";
+import {BoardType} from "../../model/BoardType.js";
+import {GameType} from "../../model/GameType.js";
+import { Result } from "../../common/result/Result.js";
+import {CellPosition} from "../../model/CellPosition.js";
+import {StateType} from "../../model/StateType.js";
+import {GameInfo} from "../../database/redis/entity/GameInfo.js";
 
 interface GameRepository {
     createNewGame(newKey: string, board: BoardType, player: PlayerType): Promise<Result<GameType>>;
