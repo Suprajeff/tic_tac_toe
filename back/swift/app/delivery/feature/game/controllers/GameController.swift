@@ -19,7 +19,7 @@ class GameController {
             case .failure(let error):
                 return handleError(error: error, errorHandler: self.sResponses.serverErrR)
             case .notFound:
-                return self.sResponses.clientErrR(data: .json(JSONData("Not found")), statusCode: .BAD_REQUEST)
+                return handleNotFound(message: "Not found", notFoundHandler: self.sResponses.clientErrR)
         }
 
     }
@@ -31,7 +31,7 @@ class GameController {
             let gameData = try req.content.decode(GameIDData.self)
 
             if gameData.gameID.isEmpty {
-                return self.sResponses.clientErrR(data: .json(JSONData("Game ID cannot be empty")), statusCode: .BAD_REQUEST)
+                return handleNotFound(message: "Game ID cannot be empty", notFoundHandler: self.sResponses.clientErrR)
             }
 
             switch useCases.resetGame(gameID: gameData.gameID) {
@@ -40,11 +40,11 @@ class GameController {
                 case .failure(let error):
                     return handleError(error: error, errorHandler: self.sResponses.serverErrR)
                 case .notFound:
-                    return self.sResponses.clientErrR(data: .json(JSONData("Not found")), statusCode: .BAD_REQUEST)
+                    return handleNotFound(message: "Not found", notFoundHandler: self.sResponses.clientErrR)
             }
 
         } catch {
-            return self.sResponses.clientErrR(data: .json(JSONData("Error decoding request data: \(error.localizedDescription)")), statusCode: .BAD_REQUEST)
+            return handleError(error: error, errorHandler: self.sResponses.serverErrR)
         }
 
 
@@ -57,16 +57,8 @@ class GameController {
             let gameData = try req.content.decode(GameData.self)
 
             if gameData.gameID.isEmpty {
-                return self.sResponses.clientErrR(data: .json(JSONData("Game ID cannot be empty")), statusCode: .BAD_REQUEST)
+                return handleNotFound(message: "Game ID cannot be empty", notFoundHandler: self.sResponses.clientErrR)
             }
-
-//            guard let position = gameData.position else {
-//                return self.sResponses.clientErrR(data: .json(JSONData("Position cannot be nil")), statusCode: .BAD_REQUEST)
-//            }
-//
-//            guard let playerSymbol = gameData.playerSymbol else {
-//                return self.sResponses.clientErrR(data: .json(JSONData("Player symbol cannot be nil")), statusCode: .BAD_REQUEST)
-//            }
 
             let player = PlayerType(symbol: gameData.playerSymbol)
 
@@ -76,11 +68,11 @@ class GameController {
                 case .failure(let error):
                     return handleError(error: error, errorHandler: self.sResponses.serverErrR)
                 case .notFound:
-                    return self.sResponses.clientErrR(data: .json(JSONData("Not found")), statusCode: .BAD_REQUEST)
+                    return handleNotFound(message: "Not found", notFoundHandler: self.sResponses.clientErrR)
             }
 
         }  catch {
-        return self.sResponses.clientErrR(data: .json(JSONData("Error decoding request data: \(error.localizedDescription)")), statusCode: .BAD_REQUEST)
+            return handleError(error: error, errorHandler: self.sResponses.serverErrR)
         }
 
     }
@@ -100,15 +92,9 @@ class GameController {
         return errorHandler(.json(JSONData(errorMessage)), .INTERNAL_SERVER_ERROR)
     }
 
-}
+    private func handleNotFound(message: String, notFoundHandler: (_ data: SData, _ statusCode: Status.ClientError) -> Response) -> Response {
+        return notFoundHandler(.json(JSONData(message)), .BAD_REQUEST)
+    }
 
-struct GameIDData: Content, Codable {
-    let gameID: String
-}
-
-struct GameData: Content, Codable {
-    let gameID: String
-    let position: CellPosition
-    let playerSymbol: CellType
 }
 
