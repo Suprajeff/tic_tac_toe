@@ -12,13 +12,13 @@ public func redisSetup(_ app: Application) throws {
         }
         redisHost = productionRedisHost
     case .development, .testing:
-        redisHost = "localhost"
+        redisHost = "redis"
     default:
-        redisHost = "localhost"
+        redisHost = "redis"
     }
     
     app.redis.configuration = try RedisConfiguration(
-        hostname: redisHost,
+        hostname: "redis",
         port: 6379,
         password: nil
     )

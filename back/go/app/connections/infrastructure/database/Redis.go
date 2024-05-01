@@ -16,12 +16,12 @@ func NewRedisClient() *Client {
 
 	redisHost := os.Getenv("REDIS_HOST")
 	if redisHost == "" {
-		redisHost = "localhost" // Default to "localhost"
+		redisHost = "redis" // Default to "localhost"
 	}
-	addr := fmt.Sprintf("%s:6379", redisHost)
+//	addr := fmt.Sprintf("%s:6379", redisHost)
 
 	client := redis.NewClient(&redis.Options{
-		Addr:     addr,
+		Addr:     "redis:6379",
 		Password: "",
 		DB:       0,
 	})

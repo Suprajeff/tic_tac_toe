@@ -11,7 +11,7 @@ class GameController {
         self.sResponses = gameResponses
     }
     
-    func startGame(_ req: Request) -> Response {
+    func startGame(_ req: Request) -> EventLoopFuture<Response> {
 
         switch useCases.initializeGame() {
             case .success(let data):
@@ -24,7 +24,7 @@ class GameController {
 
     }
 
-    func restartGame(_ req: Request) -> Response {
+    func restartGame(_ req: Request) -> EventLoopFuture<Response> {
 
         do {
 
@@ -50,7 +50,7 @@ class GameController {
 
     }
 
-    func makeMove(_ req: Request) -> Response  {
+    func makeMove(_ req: Request) -> EventLoopFuture<Response>  {
 
         do {
 
@@ -77,7 +77,7 @@ class GameController {
 
     }
 
-    private func handleResult<T: Encodable>(data: T, successHandler: (_ data: SData, _ statusCode: Status.Success) -> Response) -> Response {
+    private func handleResult<T: Encodable>(data: T, successHandler: (_ data: SData, _ statusCode: Status.Success) -> EventLoopFuture<Response>) -> EventLoopFuture<Response> {
         do {
             let jsonData = try JSONEncoder().encode(data)
             return successHandler(.json(JSONData(jsonData)), .OK)
@@ -87,12 +87,12 @@ class GameController {
         }
     }
 
-    private func handleError(error: Error, errorHandler: (_ data: SData, _ statusCode: Status.ServerError) -> Response) -> Response {
+    private func handleError(error: Error, errorHandler: (_ data: SData, _ statusCode: Status.ServerError) -> EventLoopFuture<Response>) -> EventLoopFuture<Response> {
         let errorMessage = "Something went wrong: \(error.localizedDescription)"
         return errorHandler(.json(JSONData(errorMessage)), .INTERNAL_SERVER_ERROR)
     }
 
-    private func handleNotFound(message: String, notFoundHandler: (_ data: SData, _ statusCode: Status.ClientError) -> Response) -> Response {
+    private func handleNotFound(message: String, notFoundHandler: (_ data: SData, _ statusCode: Status.ClientError) -> EventLoopFuture<Response>) -> EventLoopFuture<Response> {
         return notFoundHandler(.json(JSONData(message)), .BAD_REQUEST)
     }
 

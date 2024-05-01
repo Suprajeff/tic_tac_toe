@@ -2,7 +2,8 @@ version: '3'
 services:
   nodejs:
     image: node-ttt
-    command: tail -f /dev/null
+    # command: tail -f /dev/null
+    command: npm start
     volumes:
       - ./back/node:/app
     ports:

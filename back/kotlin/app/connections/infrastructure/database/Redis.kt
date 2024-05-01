@@ -6,7 +6,7 @@ import io.lettuce.core.*
 import io.lettuce.core.api.sync.RedisCommands
 import io.lettuce.core.api.StatefulRedisConnection
 
-fun createRedisClient(redisHost: String = "localhost"): RedisCommands<String, String> {
+fun createRedisClient(redisHost: String = "redis"): RedisCommands<String, String> {
     val uri = RedisURI.Builder
         .redis(redisHost, 6379)
         .build()

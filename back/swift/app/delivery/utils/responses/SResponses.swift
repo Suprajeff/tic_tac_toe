@@ -3,8 +3,10 @@ import WebSocketKit
 
 class GameResponses {
     
-    private func sendHTTPResponse(data: SData, statusCode: HTTPResponseStatus) -> Response {
+    private func sendHTTPResponse(data: SData, statusCode: HTTPResponseStatus) -> EventLoopFuture<Response> {
 
+        let eventLoopGroup = MultiThreadedEventLoopGroup(numberOfThreads: 1)
+        let eventLoop = eventLoopGroup.next()
         let response = Response(status: statusCode)
 
         switch data {
@@ -16,7 +18,7 @@ class GameResponses {
                 response.body = .init(string: htmlString)
         }
 
-        return response
+        return eventLoop.makeSucceededFuture(response)
 
     }
 
@@ -48,7 +50,7 @@ class GameResponses {
 
     }
 
-    func informationR(data: SData, statusCode: Status.Informational) -> Response {
+    func informationR(data: SData, statusCode: Status.Informational) -> EventLoopFuture<Response> {
         sendHTTPResponse(data: data, statusCode: statusCode.httpResponseStatus)
     }
 
@@ -56,7 +58,7 @@ class GameResponses {
         sendSocketResponse(socket: socket, data: data, room: room)
     }
 
-    func successR(data: SData, statusCode: Status.Success) -> Response {
+    func successR(data: SData, statusCode: Status.Success) -> EventLoopFuture<Response> {
         sendHTTPResponse(data: data, statusCode: statusCode.httpResponseStatus)
     }
 
@@ -64,7 +66,7 @@ class GameResponses {
         sendSocketResponse(socket: socket, data: data, room: room)
     }
 
-    func redirectionR(data: SData, statusCode: Status.Redirection) -> Response {
+    func redirectionR(data: SData, statusCode: Status.Redirection) -> EventLoopFuture<Response> {
         sendHTTPResponse(data: data, statusCode: statusCode.httpResponseStatus)
     }
 
@@ -72,7 +74,7 @@ class GameResponses {
         sendSocketResponse(socket: socket, data: data, room: room)
     }
 
-    func clientErrR(data: SData, statusCode: Status.ClientError) -> Response {
+    func clientErrR(data: SData, statusCode: Status.ClientError) -> EventLoopFuture<Response> {
         sendHTTPResponse(data: data, statusCode: statusCode.httpResponseStatus)
     }
 
@@ -80,7 +82,7 @@ class GameResponses {
         sendSocketResponse(socket: socket, data: data, room: room)
     }
 
-    func serverErrR(data: SData, statusCode: Status.ServerError) -> Response {
+    func serverErrR(data: SData, statusCode: Status.ServerError) -> EventLoopFuture<Response> {
         sendHTTPResponse(data: data, statusCode: statusCode.httpResponseStatus)
     }
 

@@ -4,12 +4,12 @@ import {REDIS_HOST} from "../../config/environment.js";
 
 export const createRedisClient = () => {
 
-    const redisHost: string = REDIS_HOST || 'localhost';
+    const redisHost: string = REDIS_HOST || 'redis';
 
     console.log(`Connecting to Redis at ${redisHost}`);
 
     const client: RedisClientType = redis.createClient({
-        url: `redis://${redisHost}:6379`
+        url: `redis://redis:6379`
     })
 
     client.on('ready', () => console.log('Server connected to Redis'));

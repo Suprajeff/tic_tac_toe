@@ -22,15 +22,15 @@ class GameEndpoints: RouteCollection {
     }
 
     func startGame(req: Request) throws -> EventLoopFuture<Response> {
-        return try controller.startGame(req)
+        return controller.startGame(req)
     }
 
     func restartGame(req: Request) throws -> EventLoopFuture<Response> {
-        return try controller.restartGame(req)
+        return controller.restartGame(req)
     }
 
     func makeMove(req: Request) throws -> EventLoopFuture<Response> {
-        return try controller.makeMove(req)
+        return controller.makeMove(req)
     }
 
 //    router.post("start") { req -> Response in
