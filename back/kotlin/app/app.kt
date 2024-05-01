@@ -1,5 +1,17 @@
 import java.io.File
 
 fun main() {
-    println("Kotlin Ok!")
+
+    val redisClient: RedisCommands<String, String>? = try {
+        createRedisClient()
+    } catch (e: Exception) {
+        println("Error creating Redis client: ${e.message}")
+        return
+    }
+
+    redisClient?.let {
+        val redisData = RedisData(it)
+        lauchGameFeature(redisData)
+    }
+
 }
