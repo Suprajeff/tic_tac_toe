@@ -19,9 +19,13 @@ func launchGameFeature(_ app: Application) throws {
 
     let gameController = GameController(gameUseCases: gameUseCases, gameResponses: gameResponses)
 
-    let gameEndpoints = GameEndpoints(gameController: gameController, router: app.routes)
+    let gameEndpoints = GameEndpoints(gameController: gameController)
 
-    app.register(collection: gameEndpoints)
+    do{
+        try app.register(collection: gameEndpoints)
+    } catch {
+        print(error)
+    }
 
 }
 

@@ -10,6 +10,9 @@ class GameController {
     
     constructor(private useCases: GameUseCasesB, private sResponse: GameResponses) {}
     
+    async helloWorld(req: Request, res: Response) {
+        res.status(200).send("Hello, Node!");
+    }
     async startGame(res: Response) {
         const result = await this.useCases.initializeGame()
         this.handleResult(result, res.status(200))

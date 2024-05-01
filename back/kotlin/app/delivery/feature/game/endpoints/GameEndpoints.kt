@@ -1,14 +1,19 @@
 import io.ktor.server.*
 import io.ktor.http.*
 import io.ktor.application.*
+import io.ktor.response.*
 import io.ktor.routing.*
 import kotlinx.coroutines.*
 
-class GameEndpoints(private val controller: GameController) {
+class GameEndpoints(private val controller: GameController, private val application: Application) {
     
-    fun Application.gameRoutes() {
+    fun gameRoutes() {
 
-        routing {
+        application.routing {
+
+            get("/hello") {
+                call.respondText("Hello Kotlin!")
+            }
 
             post("/start") {
                 val call = call

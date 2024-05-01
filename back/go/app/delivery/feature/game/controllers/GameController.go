@@ -21,6 +21,13 @@ func NewGameController(gameUseCases repository.GameUseCases, gameResponses respo
 	}
 }
 
+func (gc *GameController) HelloGo(w http.ResponseWriter, r *http.Request) {
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Hello, Go!"))
+
+}
+
 func (gc *GameController) StartGame(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()

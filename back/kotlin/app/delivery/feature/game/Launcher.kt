@@ -1,8 +1,10 @@
 import io.lettuce.core.RedisClient
 import io.lettuce.core.api.sync.RedisCommands
 import io.lettuce.core.api.async.RedisAsyncCommands
+import io.ktor.application.*
+import io.ktor.routing.*
 
-fun lauchGameFeature(redisData: RedisData){
+fun launchGameFeature(application: Application, redisData: RedisData, ){
 
     val gameRepository = GameRepositoryImpl(redisData)
 
@@ -14,6 +16,6 @@ fun lauchGameFeature(redisData: RedisData){
 
     val gameController = GameController(gameUseCases, gameResponses)
 
-    val gameRoutes = GameEndpoints(gameController)
+    val gameRoutes = GameEndpoints(gameController, application).gameRoutes()
 
 }

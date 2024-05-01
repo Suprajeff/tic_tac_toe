@@ -11,9 +11,14 @@ class GameEndpoints: RouteCollection {
 
     func boot(routes: RoutesBuilder) throws {
         let gameRoutes = routes.grouped("game")
+        gameRoutes.get("hello", use: helloWorld)
         gameRoutes.post("start", use: startGame)
         gameRoutes.post("restart", use: restartGame)
         gameRoutes.post("move", use: makeMove)
+    }
+
+    func helloWorld(req: Request) throws -> String {
+        return "Hello, World!"
     }
 
     func startGame(req: Request) throws -> EventLoopFuture<Response> {
