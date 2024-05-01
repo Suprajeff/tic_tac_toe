@@ -15,7 +15,7 @@ const createExpressServer = (middlewares: ExpressMiddleware[], router: Router) =
     app.use('/', router);
 
     return app.listen(8081, () => {
-        console.log('Server listening on port 3001');
+        console.log('Server listening on port 8081');
     });
 };
 

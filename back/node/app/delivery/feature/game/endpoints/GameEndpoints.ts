@@ -7,7 +7,7 @@ class GameEndpoints {
         private controller: GameController,
         private router: Router
     ) {
-       this.initializeRoutes 
+       this.initializeRoutes()
     }
 
     initializeRoutes() {

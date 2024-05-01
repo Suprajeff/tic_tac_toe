@@ -9,7 +9,7 @@ import {GameController} from "./controllers/GameController.js";
 import {GameEndpoints} from "./endpoints/GameEndpoints.js";
 import { Router } from "express";
 
-const lauchGameFeature = async (client: RedisData, router: Router) =>{
+const launchGameFeature = async (client: RedisData, router: Router) =>{
 
     const gameRepository = new GameRepositoryImpl(client)
 
@@ -23,6 +23,8 @@ const lauchGameFeature = async (client: RedisData, router: Router) =>{
 
     new GameEndpoints(gameController, router);
 
+    console.log(`road ready: ${gameController}`)
+
 }
 
-export {lauchGameFeature}
+export {launchGameFeature}

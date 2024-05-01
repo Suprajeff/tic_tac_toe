@@ -1,7 +1,7 @@
 import { createRedisClient } from "./connections/infrastructure/database/redis.js";
 import { createExpressRouter, createExpressServer } from "./connections/infrastructure/server/express.js";
 import { RedisData } from "./core/database/redis/RedisData.js";
-import { lauchGameFeature } from "./delivery/feature/game/Launcher.js";
+import { launchGameFeature } from "./delivery/feature/game/Launcher.js";
 
 const init = async () =>{
 
@@ -13,7 +13,7 @@ const init = async () =>{
 
     // Express Router + HTTP Routes
     const router = createExpressRouter();
-    lauchGameFeature(redisData, router)
+    await launchGameFeature(redisData, router)
 
     // Start Express Server ============================================================================
     createExpressServer([], router);

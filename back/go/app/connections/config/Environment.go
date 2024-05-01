@@ -4,7 +4,6 @@ import (
     "bufio"
     "log"
     "os"
-    "path/filepath"
     "strings"
 )
 
@@ -15,16 +14,16 @@ type Environment struct {
 
 func GetEnvironment() Environment {
     // Get the current working directory
-	cwd, err := os.Getwd()
-	if err != nil {
-		log.Fatalf("Error getting current working directory: %v", err)
-	}
+//	cwd, err := os.Getwd()
+//	if err != nil {
+//		log.Fatalf("Error getting current working directory: %v", err)
+//	}
 
 	// Construct the path to the .env file two levels up
-	envPath := filepath.Join(filepath.Dir(filepath.Dir(cwd)), ".env")
+	//envPath := filepath.Join(filepath.Dir(filepath.Dir(cwd)), ".env")
 
 	// Load environment variables from the .env file
-	envMap, err := loadEnv(envPath)
+	envMap, err := loadEnv("app/.env")
 	if err != nil {
 		log.Fatalf("Error loading .env file: %v", err)
 	}
