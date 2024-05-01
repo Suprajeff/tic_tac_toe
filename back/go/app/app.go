@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"
+	"go-ttt/app/delivery/feature/game"
 )
 
 func main() {
-	fmt.Println("GO!")
+	game.LaunchGameFeature()
 }

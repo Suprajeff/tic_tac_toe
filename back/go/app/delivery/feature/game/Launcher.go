@@ -19,7 +19,7 @@ import (
 	"os/signal"
 )
 
-func gameLauncher() {
+func LaunchGameFeature() {
 
 	env := config.GetEnvironment()
 	fmt.Println("Session Secret: ", env.SessionSecret)

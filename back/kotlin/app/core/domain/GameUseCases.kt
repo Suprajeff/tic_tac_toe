@@ -1,12 +1,12 @@
 interface GameUseCasesB {
-    fun initializeGame(): Result<GameType>
-    fun resetGame(gameID: String): Result<GameType>
-    fun makeMove(gameID: String, position: CellPosition, player: PlayerType): Result<GameType>
+    suspend fun initializeGame(): Result<GameType>
+    suspend fun resetGame(gameID: String): Result<GameType>
+    suspend fun makeMove(gameID: String, position: CellPosition, player: PlayerType): Result<GameType>
 }
 
 class GameUseCases(private val gameRepo: GameRepository, private val gameLogic: GameLogicB): GameUseCasesB {
 
-    override fun initializeGame(): Result<GameType> {
+    override suspend fun initializeGame(): Result<GameType> {
 
         val newKeyResult = gameLogic.generateNewID()
         val boardResult = gameLogic.generateNewBoard()
@@ -34,7 +34,7 @@ class GameUseCases(private val gameRepo: GameRepository, private val gameLogic: 
 
     }
 
-    override fun resetGame(gameID: String): Result<GameType> {
+    override suspend fun resetGame(gameID: String): Result<GameType> {
 
         val boardResult = gameLogic.generateNewBoard()
         val playerResult = gameLogic.randomPlayer()
@@ -59,7 +59,7 @@ class GameUseCases(private val gameRepo: GameRepository, private val gameLogic: 
 
     }
 
-    override fun makeMove(gameID: String, position: CellPosition, player: PlayerType): Result<GameType> {
+    override suspend fun makeMove(gameID: String, position: CellPosition, player: PlayerType): Result<GameType> {
 
         val newBoardStateResult = gameRepo.updateBoard(gameID, position, player)
         if (newBoardStateResult !is Result.Success<StateType>) {

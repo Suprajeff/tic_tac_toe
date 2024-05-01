@@ -9,7 +9,7 @@ import {GameController} from "./controllers/GameController.js";
 import {GameEndpoints} from "./endpoints/GameEndpoints.js";
 import { createExpressRouter, createExpressServer } from "../../../connections/infrastructure/server/express.js";
 
-const init = async () =>{
+const lauchGameFeature = async () =>{
 
     // Redis Client & Connect =================================================================
     const redisClient = createRedisClient();
@@ -52,4 +52,4 @@ const init = async () =>{
 
 }
 
-await init()
+export {lauchGameFeature}

@@ -2,7 +2,7 @@ import Foundation
 import Vapor
 
 
-func gameLauncher(_ app: Application) throws {
+func launchGameFeature(_ app: Application) throws {
 
     try redisSetup(app)
 
