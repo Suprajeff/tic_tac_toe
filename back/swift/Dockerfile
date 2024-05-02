@@ -14,12 +14,11 @@ RUN swift package resolve
 COPY . .
 
 # Build the Vapor app
-# RUN swift build -c release
-RUN swift build -c release
+RUN swift build
 
 # Expose the port Vapor will run on
 EXPOSE 8083
 
 # Start Vapor app
-CMD ["swift", "run"]
+CMD swift run
 

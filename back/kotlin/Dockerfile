@@ -1,5 +1,5 @@
 # Use an OpenJDK base image
-FROM openjdk:11-jdk
+FROM openjdk:12-jdk-alpine
 
 # Set the working directory
 WORKDIR /app
@@ -41,11 +41,12 @@ RUN ./gradlew --no-daemon dependencies
 COPY . .
 
 # Build Kotlin App
-RUN ./gradlew --no-daemon build
+RUN ./gradlew --no-daemon jar
 
 EXPOSE 8082
 
 # Start App
-CMD ["./gradlew", "--no-daemon", "run"]
+CMD ["java", "-jar", "build/libs/tic-tac-toe-1.0.0.jar"]
+# CMD ["./gradlew", "--no-daemon", "run"]
 
 

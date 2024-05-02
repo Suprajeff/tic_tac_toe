@@ -37,9 +37,14 @@ kotlin {
 }
 
 tasks.jar {
-    manifest {
-        attributes("Main-Class" to "app.AppKt")
-    }
-    from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
+    archiveBaseName.set("tic-tac-toe")
+    archiveVersion.set("1.0.0")
 }
+
+//tasks.jar {
+//    manifest {
+//        attributes("Main-Class" to "app.AppKt")
+//    }
+//    from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
+//}
 

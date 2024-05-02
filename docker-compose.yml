@@ -2,6 +2,7 @@ version: '3'
 services:
   nodejs:
     image: node-ttt
+    container_name: node-app
     command: npm start
     volumes:
       - ./back/node:/app
@@ -11,6 +12,7 @@ services:
       - redis
   go:
     image: go-ttt
+    container_name: go-app
     command: go run /app/app/app.go
     volumes:
       - ./back/go:/app
@@ -20,7 +22,10 @@ services:
       - redis
   kotlin:
     image: kotlin-ttt
-    command: tail -f /dev/null
+    container_name: kotlin-app
+    # tail -f /dev/null
+    # command: java -jar build/libs/tic-tac-toe-1.0.0.jar
+    command: gradlew run
     volumes:
       - ./back/kotlin:/app
     ports:
@@ -29,9 +34,11 @@ services:
       - redis
   swift:
     image: swift-ttt
+    container_name: swift-app
     # command: tail -f /dev/null
-    # command: ./app/.build/x86_64-unknown-linux-gnu/release/swift-ttt
-    command: /app/.build/x86_64-unknown-linux-gnu/debug/swift-ttt
+    # bash -c "swift run && /app/.build/x86_64-unknown-linux-gnu/debug/swift-ttt"
+    # command: /app/.build/x86_64-unknown-linux-gnu/debug/swift-ttt
+    command: swift run
     volumes:
       - ./back/swift:/app
     ports:
@@ -44,6 +51,7 @@ services:
       - "6379:6379"
   frontend:
       image: nginx:alpine
+      container_name: htmx-app
       volumes:
         - ./front:/usr/share/nginx/html
       ports:
