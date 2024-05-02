@@ -48,6 +48,4 @@ EXPOSE 8082
 # Start App
 CMD ["./gradlew", "--no-daemon", "run"]
 
-# # Set the entry point to run the compiled Kotlin application
-# CMD ["java", "-jar", "build/libs/tic-tac-toe.jar"]
 

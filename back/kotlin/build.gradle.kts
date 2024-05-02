@@ -35,3 +35,11 @@ kotlin {
         kotlin.srcDirs("app")
     }
 }
+
+tasks.jar {
+    manifest {
+        attributes("Main-Class" to "app.AppKt")
+    }
+    from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
+}
+

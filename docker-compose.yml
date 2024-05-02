@@ -2,7 +2,6 @@ version: '3'
 services:
   nodejs:
     image: node-ttt
-    # command: tail -f /dev/null
     command: npm start
     volumes:
       - ./back/node:/app
@@ -21,7 +20,7 @@ services:
       - redis
   kotlin:
     image: kotlin-ttt
-    command: ./gradlew --no-daemon run
+    command: tail -f /dev/null
     volumes:
       - ./back/kotlin:/app
     ports:
@@ -30,7 +29,9 @@ services:
       - redis
   swift:
     image: swift-ttt
-    command: ./app/.build/Run --env=production --hostname=0.0.0.0 --port=8083
+    # command: tail -f /dev/null
+    # command: ./app/.build/x86_64-unknown-linux-gnu/release/swift-ttt
+    command: /app/.build/x86_64-unknown-linux-gnu/debug/swift-ttt
     volumes:
       - ./back/swift:/app
     ports:
