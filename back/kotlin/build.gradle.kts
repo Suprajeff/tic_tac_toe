@@ -1,9 +1,9 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.5.31"
     application
-    kotlin("plugin.serialization") version "1.5.31"
+    kotlin("jvm") version "1.8.0"
+    kotlin("plugin.serialization") version "1.8.0"
 }
 
 group = "com.supralata"
@@ -18,16 +18,16 @@ dependencies {
     implementation("io.ktor:ktor-server-netty:1.6.8")
     implementation("io.ktor:ktor-websockets:1.6.8")
     implementation("io.lettuce:lettuce-core:6.3.2.RELEASE")
-    testImplementation("org.jetbrains.kotlin:kotlin-test:1.5.31")
+    testImplementation("org.jetbrains.kotlin:kotlin-test:1.8.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "11"
+    kotlinOptions.jvmTarget = "12"
 }
 
 application {
-    mainClassName = "app/appKt"
+    mainClass.set("AppKt")
 }
 
 kotlin {
@@ -38,8 +38,10 @@ kotlin {
 
 tasks.jar {
     archiveBaseName.set("tic-tac-toe")
-    archiveVersion.set("1.0.0")
+    version = "1.0.0"
 }
+
+
 
 //tasks.jar {
 //    manifest {

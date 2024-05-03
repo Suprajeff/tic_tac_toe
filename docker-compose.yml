@@ -25,7 +25,7 @@ services:
     container_name: kotlin-app
     # tail -f /dev/null
     # command: java -jar build/libs/tic-tac-toe-1.0.0.jar
-    command: gradlew run
+    command: /app/gradlew run
     volumes:
       - ./back/kotlin:/app
     ports:

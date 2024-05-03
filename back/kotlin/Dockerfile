@@ -5,7 +5,8 @@ FROM openjdk:12-jdk-alpine
 WORKDIR /app
 
 # Install Kotlin
-ENV KOTLIN_VERSION 1.5.31
+# ENV KOTLIN_VERSION 1.5.31
+ENV KOTLIN_VERSION 1.8.0
 RUN wget -O kotlin-compiler.zip "https://github.com/JetBrains/kotlin/releases/download/v${KOTLIN_VERSION}/kotlin-compiler-${KOTLIN_VERSION}.zip" && \
     unzip kotlin-compiler.zip -d /opt && \
     rm kotlin-compiler.zip
@@ -17,7 +18,7 @@ ENV PATH $PATH:/opt/kotlinc/bin
 RUN cp /opt/kotlinc/lib/kotlin-stdlib.jar /app/kotlin-stdlib.jar
 
 # Install Gradle
-ENV GRADLE_VERSION 7.4
+ENV GRADLE_VERSION 8.7
 RUN wget -O gradle.zip "https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip" && \
     unzip gradle.zip -d /opt && \
     rm gradle.zip
