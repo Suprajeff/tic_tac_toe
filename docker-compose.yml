@@ -38,6 +38,7 @@ services:
     # command: tail -f /dev/null
     # bash -c "swift run && /app/.build/x86_64-unknown-linux-gnu/debug/swift-ttt"
     # command: /app/.build/x86_64-unknown-linux-gnu/debug/swift-ttt
+    # command: swift run
     command: swift run
     volumes:
       - ./back/swift:/app

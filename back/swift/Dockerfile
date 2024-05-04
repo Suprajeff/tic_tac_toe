@@ -13,6 +13,10 @@ RUN swift package resolve
 # Copy the Swift files into the container
 COPY . .
 
+# Set permission to write files
+RUN chown -R $(id -u):$(id -g) /app
+
+
 # Build the Vapor app
 RUN swift build
 

@@ -7,27 +7,28 @@ let package = Package(
         .macOS(.v12)
     ],
     products: [
-        .executable(name: "swift-ttt", targets: ["Main"])
+        .executable(name: "swift-ttt", targets: ["TicTacToe"])
     ],
     dependencies: [
+        .package(url: "https://github.com/apple/swift-nio.git", from: "2.42.0"),
         .package(url: "https://github.com/vapor/vapor.git", from: "4.0.0"),
         .package(url: "https://github.com/vapor/redis.git", from: "4.0.0"),
         .package(url: "https://github.com/vapor/websocket-kit.git", from: "2.0.0")
     ],
     targets: [
         .executableTarget(
-            name: "Main",
+            name: "TicTacToe",
             dependencies: [
+                .product(name: "NIO", package: "swift-nio"),
                 .product(name: "Vapor", package: "vapor"),
                 .product(name: "Redis", package: "redis"),
                 .product(name: "WebSocketKit", package: "websocket-kit")
-            ],
-            path: "app"
+            ]
         ),
         .testTarget(
-            name: "MainTests",
+            name: "TicTacToeTests",
             dependencies: [
-                .target(name: "Main")
+                .target(name: "TicTacToe")
             ]
         )
     ]
