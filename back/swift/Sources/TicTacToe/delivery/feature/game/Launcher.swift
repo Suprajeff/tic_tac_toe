@@ -2,7 +2,7 @@ import Foundation
 import Vapor
 
 
-func launchGameFeature(_ app: Application) throws {
+public func launchGameFeature(_ app: Application) throws {
 
     try redisSetup(app)
 
@@ -19,10 +19,9 @@ func launchGameFeature(_ app: Application) throws {
 
     let gameController = GameController(gameUseCases: gameUseCases, gameResponses: gameResponses)
 
-    let gameEndpoints = GameEndpoints(gameController: gameController)
-
     do{
-        try app.register(collection: gameEndpoints)
+        print("Registering routes...")
+        try app.register(collection: GameEndpoints(gameController: gameController))
     } catch {
         print(error)
     }

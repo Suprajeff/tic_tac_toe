@@ -10,6 +10,7 @@ func main() {
     app.http.server.configuration.port = 8083
 
     do {
+
         print("Launching game features...")
         try launchGameFeature(app)
 
@@ -21,3 +22,6 @@ func main() {
     }
     
 }
+
+main()
+
