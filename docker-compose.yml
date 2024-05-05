@@ -51,12 +51,10 @@ services:
     ports:
       - "6379:6379"
   frontend:
-      image: nginx:alpine
+      image: htmx-ttt
       container_name: htmx-app
-      volumes:
-        - ./front:/usr/share/nginx/html
       ports:
-        - "80:80"
+        - "8085:80"
       depends_on:
         - nodejs
         - go
