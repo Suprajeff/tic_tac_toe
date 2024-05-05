@@ -6,6 +6,7 @@ import (
 	"go-ttt/app/connections/config"
 	"go-ttt/app/connections/infrastructure/database"
 	"go-ttt/app/delivery/feature/game"
+	"go-ttt/app/delivery/middlewares"
 	"log"
 	"net/http"
 	"os"
@@ -26,7 +27,9 @@ func main() {
 
 	game.LaunchGameFeature(client, r)
 
-	addr := ":8080"
+	r.Use(middlewares.CorsMiddleware())
+
+	addr := ":8085"
 	log.Printf("Starting server on %s", addr)
 	fmt.Println("Address: ", addr)
 

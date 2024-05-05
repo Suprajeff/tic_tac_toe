@@ -9,6 +9,14 @@ func main() {
     app.http.server.configuration.hostname = "localhost"
     app.http.server.configuration.port = 8083
 
+    let corsConfiguration = CORSMiddleware.Configuration(
+        allowedOrigin: .originBased(allowed: [Environment.get("CORS_ORIGIN") ?? "http://localhost:8085"]),
+        allowedMethods: [.GET, .POST, .OPTIONS],
+        allowedHeaders: ["Accept", "Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization"]
+    )
+    let cors = CORSMiddleware(configuration: corsConfiguration)
+    app.middleware.use(cors, at: .beginning)
+
     do {
 
         try redisSetup(app)
