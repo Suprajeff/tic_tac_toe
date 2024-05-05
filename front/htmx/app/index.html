@@ -10,18 +10,18 @@
     </head>
     <body class="flex justify-center items-center h-screen bg-slate-900">
         <div class="flex flex-col gap-6 item-center justify-center">
-            <h1 class="text-slate-400 text-center text-4xl font-['Teachers']">Playing</h1>
+            <h1 id="gameTitle" class="text-slate-400 text-center text-4xl font-['Teachers']">Playing</h1>
             <div id="game" class="flex items-center justify-center">
                 <div class="grid grid-cols-3 grid-rows-3 gap-4 bg-gray-200 p-4 rounded-lg h-64 w-64">
-                    <div class="flex items-center justify-center font-bold text-4xl bg-slate-900 text-white hover:bg-slate-600 transition-colors cursor-pointer" hx-get="/move/0" hx-trigger="click" hx-target="#game"></div>
-                    <div class="flex items-center justify-center font-bold text-4xl bg-slate-900 text-white hover:bg-slate-600 transition-colors cursor-pointer" hx-get="/move/1" hx-trigger="click" hx-target="#game"></div>
-                    <div class="flex items-center justify-center font-bold text-4xl bg-slate-900 text-white hover:bg-slate-600 transition-colors cursor-pointer" hx-get="/move/2" hx-trigger="click" hx-target="#game"></div>
-                    <div class="flex items-center justify-center font-bold text-4xl bg-slate-900 text-white hover:bg-slate-600 transition-colors cursor-pointer" hx-get="/move/3" hx-trigger="click" hx-target="#game"></div>
-                    <div class="flex items-center justify-center font-bold text-4xl bg-slate-900 text-white hover:bg-slate-600 transition-colors cursor-pointer" hx-get="/move/4" hx-trigger="click" hx-target="#game"></div>
-                    <div class="flex items-center justify-center font-bold text-4xl bg-slate-900 text-white hover:bg-slate-600 transition-colors cursor-pointer" hx-get="/move/5" hx-trigger="click" hx-target="#game"></div>
-                    <div class="flex items-center justify-center font-bold text-4xl bg-slate-900 text-white hover:bg-slate-600 transition-colors cursor-pointer" hx-get="/move/6" hx-trigger="click" hx-target="#game"></div>
-                    <div class="flex items-center justify-center font-bold text-4xl bg-slate-900 text-white hover:bg-slate-600 transition-colors cursor-pointer" hx-get="/move/7" hx-trigger="click" hx-target="#game"></div>
-                    <div class="flex items-center justify-center font-bold text-4xl bg-slate-900 text-white hover:bg-slate-600 transition-colors cursor-pointer" hx-get="/move/8" hx-trigger="click" hx-target="#game"></div>
+                    <div class="flex items-center justify-center font-bold text-4xl bg-slate-900 text-white hover:bg-slate-600 transition-colors cursor-pointer" hx-get="http://localhost:8081/move/0" hx-trigger="click" hx-target="#game"></div>
+                    <div class="flex items-center justify-center font-bold text-4xl bg-slate-900 text-white hover:bg-slate-600 transition-colors cursor-pointer" hx-get="http://localhost:8081/move/1" hx-trigger="click" hx-target="#game"></div>
+                    <div class="flex items-center justify-center font-bold text-4xl bg-slate-900 text-white hover:bg-slate-600 transition-colors cursor-pointer" hx-get="http://localhost:8081/move/2" hx-trigger="click" hx-target="#game"></div>
+                    <div class="flex items-center justify-center font-bold text-4xl bg-slate-900 text-white hover:bg-slate-600 transition-colors cursor-pointer" hx-get="http://localhost:8081/move/3" hx-trigger="click" hx-target="#game"></div>
+                    <div class="flex items-center justify-center font-bold text-4xl bg-slate-900 text-white hover:bg-slate-600 transition-colors cursor-pointer" hx-get="http://localhost:8081/move/4" hx-trigger="click" hx-target="#game"></div>
+                    <div class="flex items-center justify-center font-bold text-4xl bg-slate-900 text-white hover:bg-slate-600 transition-colors cursor-pointer" hx-get="http://localhost:8081/move/5" hx-trigger="click" hx-target="#game"></div>
+                    <div class="flex items-center justify-center font-bold text-4xl bg-slate-900 text-white hover:bg-slate-600 transition-colors cursor-pointer" hx-get="http://localhost:8081/move/6" hx-trigger="click" hx-target="#game"></div>
+                    <div class="flex items-center justify-center font-bold text-4xl bg-slate-900 text-white hover:bg-slate-600 transition-colors cursor-pointer" hx-get="http://localhost:8081/move/7" hx-trigger="click" hx-target="#game"></div>
+                    <div class="flex items-center justify-center font-bold text-4xl bg-slate-900 text-white hover:bg-slate-600 transition-colors cursor-pointer" hx-get="http://localhost:8081/move/8" hx-trigger="click" hx-target="#game"></div>
                 </div>
             </div>
             <button class="bg-slate-400 hover:bg-slate-600 text-white font-bold py-2 px-4 rounded-full">Reset</button>

@@ -11,8 +11,12 @@ func main() {
 
     do {
 
+        try redisSetup(app)
+
+        let redisClient = app.redis
+
         print("Launching game features...")
-        try launchGameFeature(app)
+        try launchGameFeature(redisClient: redisClient, app)
 
         print("Starting Vapor server...")
         try app.run()

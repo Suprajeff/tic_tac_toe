@@ -1,12 +1,9 @@
 import Foundation
 import Vapor
+import Redis
 
 
-public func launchGameFeature(_ app: Application) throws {
-
-    try redisSetup(app)
-
-    let redisClient = app.redis
+public func launchGameFeature(redisClient: RedisClient, _ app: Application) throws {
 
     let redisData = RedisData(redis: redisClient)
     let gameRepository = GameRepositoryImpl(redisData: redisData)
