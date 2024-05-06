@@ -17,8 +17,11 @@ class GameEndpoints: RouteCollection {
         gameRoutes.post("move", use: makeMove)
     }
 
-    func helloWorld(req: Request) throws -> String {
-        return "Hello, World!"
+    func helloWorld(req: Request) throws -> Response {
+        print("Hello requested")
+        let helloString = "Hello, Swift!"
+        let helloData = helloString.data(using: .utf8) ?? Data()
+        return Response(status: .ok, body: .init(data: helloData))
     }
 
     func startGame(req: Request) throws -> EventLoopFuture<Response> {

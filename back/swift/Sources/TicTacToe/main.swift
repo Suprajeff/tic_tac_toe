@@ -23,10 +23,12 @@ func main() {
         let redisClient = app.redis
 
         print("Launching game features...")
-        try launchGameFeature(redisClient: redisClient, app)
-
+        let gameFeatureController = try launchGameFeature(redisClient: redisClient, app)
+        print("Registering routes...")
         app.middleware.use(cors, at: .beginning)
-
+        try app.routes.register(collection: GameEndpoints(gameController: gameFeatureController))
+        print("Routes registered")
+        print(app.routes.all)
         print("Starting Vapor server...")
         try app.run()
 
