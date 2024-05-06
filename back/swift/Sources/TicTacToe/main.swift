@@ -2,22 +2,21 @@ import Vapor
 
 func main() {
     
-    print("Starting Vapor application...")
-
-    let app = Application()
-
-    app.http.server.configuration.hostname = "localhost"
-    app.http.server.configuration.port = 8083
-
-    let corsConfiguration = CORSMiddleware.Configuration(
-        allowedOrigin: .originBased(allowed: [Environment.get("CORS_ORIGIN") ?? "http://localhost:8085"]),
-        allowedMethods: [.GET, .POST, .OPTIONS],
-        allowedHeaders: ["Accept", "Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization"]
-    )
-    let cors = CORSMiddleware(configuration: corsConfiguration)
-    app.middleware.use(cors, at: .beginning)
-
     do {
+
+        print("Starting Vapor application...")
+
+        let app = Application()
+
+        app.http.server.configuration.hostname = "localhost"
+        app.http.server.configuration.port = 8083
+
+        let corsConfiguration = CORSMiddleware.Configuration(
+            allowedOrigin: .any(["http://localhost:8085"]),
+            allowedMethods: [.GET, .POST, .OPTIONS],
+            allowedHeaders: ["Accept", "Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization"]
+        )
+        let cors = CORSMiddleware(configuration: corsConfiguration)
 
         try redisSetup(app)
 
@@ -25,6 +24,8 @@ func main() {
 
         print("Launching game features...")
         try launchGameFeature(redisClient: redisClient, app)
+
+        app.middleware.use(cors, at: .beginning)
 
         print("Starting Vapor server...")
         try app.run()

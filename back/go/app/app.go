@@ -29,7 +29,7 @@ func main() {
 
 	r.Use(middlewares.CorsMiddleware())
 
-	addr := ":8085"
+	addr := ":8080"
 	log.Printf("Starting server on %s", addr)
 	fmt.Println("Address: ", addr)
 
