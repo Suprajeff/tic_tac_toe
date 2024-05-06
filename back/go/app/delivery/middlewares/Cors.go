@@ -27,7 +27,7 @@ func CorsMiddleware() func(http.Handler) http.Handler {
 				return
 			}
 
-			// Otherwise, proceed to the next middleware or handler
+	
 			next.ServeHTTP(w, r)
 		})
 	}

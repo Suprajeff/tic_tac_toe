@@ -1,5 +1,5 @@
 import {Request, Response, NextFunction} from 'express'
-export const corsMiddleware = (req: Request, res: Response, next: NextFunction) => {
+const corsMiddleware = (req: Request, res: Response, next: NextFunction) => {
     // Get the CORS origin from the environment variable or set a default value
     const corsOrigin = process.env.CORS_ORIGIN || 'http://localhost:8085';
 
@@ -17,3 +17,5 @@ export const corsMiddleware = (req: Request, res: Response, next: NextFunction) 
         next();
     }
 };
+
+export {corsMiddleware}

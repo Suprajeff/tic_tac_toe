@@ -1,4 +1,5 @@
 import { default as createExpressApp, Request, Response, NextFunction, Router, Express, json, urlencoded} from 'express';
+import session from 'express-session';
 
 type ExpressMiddleware = (req: Request, res: Response, next: NextFunction) => void;
 
@@ -7,6 +8,18 @@ const createExpressServer = (middlewares: ExpressMiddleware[], router: Router) =
 
     app.use(json())
     app.use(urlencoded({extended: true}))
+
+    app.use(
+        session({
+            name: 'tictactoenode',
+            secret: 'tictactoe',
+            resave: false,
+            saveUninitialized: false,
+            cookie: {
+                secure: false,
+            },
+        })
+    );
 
     middlewares.forEach(middleware  => {
         app.use(middleware);

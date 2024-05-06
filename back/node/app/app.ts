@@ -4,7 +4,7 @@ import { RedisData } from "./core/database/redis/RedisData.js";
 import { launchGameFeature } from "./delivery/feature/game/Launcher.js";
 import {corsMiddleware} from "./delivery/middlewares/Cors.js";
 
-const init = async () =>{
+const init = async () => {
 
     // Redis Client & Connect =================================================================
     const redisClient = createRedisClient();
