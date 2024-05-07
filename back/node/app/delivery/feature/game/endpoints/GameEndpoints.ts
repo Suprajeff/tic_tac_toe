@@ -12,8 +12,8 @@ class GameEndpoints {
 
     initializeRoutes() {
         this.router.get('/hello', (req, res) => this.controller.helloWorld(req, res));
-        this.router.post('/start', (req, res) => this.controller.startGame(res));
-        this.router.post('/restart', (req, res) => this.controller.restartGame(req, res));
+        this.router.get('/start', (req, res) => this.controller.startGame(res));
+        this.router.get('/restart', (req, res) => this.controller.restartGame(req, res));
         this.router.post('/move', (req, res) => this.controller.makeMove(req, res));
     }
     

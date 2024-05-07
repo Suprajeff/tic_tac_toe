@@ -7,7 +7,7 @@ import (
 
 func GameEndpoints(r *mux.Router, controller *game.GameController) {
 	r.HandleFunc("/hello", controller.HelloGo).Methods("GET")
-	r.HandleFunc("/start", controller.StartGame).Methods("POST")
-	r.HandleFunc("/restart", controller.RestartGame).Methods("POST")
+	r.HandleFunc("/start", controller.StartGame).Methods("GET")
+	r.HandleFunc("/restart", controller.RestartGame).Methods("GET")
 	r.HandleFunc("/move", controller.MakeMove).Methods("POST")
 }

@@ -12,8 +12,8 @@ class GameEndpoints: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
         let gameRoutes = routes.grouped("game")
         gameRoutes.get("hello", use: helloWorld)
-        gameRoutes.post("start", use: startGame)
-        gameRoutes.post("restart", use: restartGame)
+        gameRoutes.get("start", use: startGame)
+        gameRoutes.get("restart", use: restartGame)
         gameRoutes.post("move", use: makeMove)
     }
 

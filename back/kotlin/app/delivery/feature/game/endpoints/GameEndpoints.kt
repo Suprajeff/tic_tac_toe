@@ -15,14 +15,14 @@ class GameEndpoints(private val controller: GameController, private val applicat
                 call.respondText("Hello Kotlin!")
             }
 
-            post("/start") {
+            get("/start") {
                 val call = call
                 launch {
                     controller.startGame(call)
                 }
             }
 
-            post("/restart") {
+            get("/restart") {
                 val call = call
                 launch {
                     controller.restartGame(call)
