@@ -2,7 +2,7 @@ import { createRedisClient } from "./connections/infrastructure/database/redis.j
 import { createExpressRouter, createExpressServer } from "./connections/infrastructure/server/express.js";
 import { RedisData } from "./core/database/redis/RedisData.js";
 import { launchGameFeature } from "./delivery/feature/game/Launcher.js";
-import {corsMiddleware} from "./delivery/middlewares/Cors.js";
+import {corsMiddleware} from "./delivery/middlewares/cors/Cors.js";
 
 const init = async () => {
 

@@ -37,7 +37,8 @@ class GameController {
     
     async restartGame(req: Request, res: Response) {
 
-        const { gameID } = req.body;
+        const gameID = req.session.gameID;
+        if(!gameID){return}
         const result = await this.useCases.resetGame(gameID)
 
         if (result.status === 'success') {
@@ -57,9 +58,11 @@ class GameController {
         console.log(req.body)
         console.log('===== body =====')
 
-        const { gameID, positionData, playerData } = req.body;
+        const gameID = req.session.gameID;
+        const player = req.session.currentPlayer
+        if(!gameID || !player){return}
+        const {positionData} = req.body;
         const position: CellPosition = JSON.parse(positionData);
-        const player: PlayerType = JSON.parse(playerData);
         const result = await this.useCases.makeMove(gameID, position, player)
 
         if (result.status === 'success') {
