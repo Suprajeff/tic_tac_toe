@@ -6,7 +6,13 @@ import {SocketR} from "./types/SocketIO.js";
 class GameResponses {
     
     private sendHTTPResponse = (res: Response, data: Record<string, any> | string, statusCode: number) => {
-            typeof data === "string" ? res.status(statusCode).send(data) : res.status(statusCode).json(data);
+        if(typeof data === "string"){
+            res.setHeader('Content-Type', 'text/html');
+            res.status(statusCode).send(data)
+        } else {
+            res.setHeader('Content-Type', 'application/json');
+            res.status(statusCode).json(data);
+        }
     }
 
     private sendSocketResponse = (socketR: SocketR, data: Record<string, any> | string, room?: string) => {

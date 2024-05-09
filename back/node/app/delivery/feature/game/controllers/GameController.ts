@@ -24,11 +24,8 @@ class GameController {
         const result = await this.useCases.initializeGame()
 
         if (result.status === 'success') {
-
             const boardHtml = GameHTMLContent.getNewBoard();
-            res.setHeader('Content-Type', 'text/html');
-            res.status(200).send(boardHtml);
-
+            this.sResponse.successR(res, boardHtml, 200)
         } else {
             this.handleResult(result, res)
         }
@@ -40,13 +37,8 @@ class GameController {
         const result = await this.useCases.resetGame(gameID)
 
         if (result.status === 'success') {
-
             const boardHtml = GameHTMLContent.getNewBoard();
-            res.setHeader('Content-Type', 'text/html');
-            console.log("board restarted")
-            console.log(boardHtml)
-            res.status(200).send(boardHtml);
-
+            this.sResponse.successR(res, boardHtml, 200)
         } else {
             this.handleResult(result, res)
         }
@@ -79,7 +71,9 @@ class GameController {
                 "#gameTitle": newTitle,
             }
 
-            res.status(200).send(htmlMultiResponses);
+//            res.status(200).send(htmlMultiResponses);
+
+            this.sResponse.successR(res, htmlMultiResponses, 200)
 
         } else {
             this.handleResult(result, res)
@@ -88,6 +82,9 @@ class GameController {
 
     handleResult(result: Result<GameType>, res: Response) {
         switch (result.status) {
+//            case 'success':
+//                this.sResponse.successR(res, result.data, 200)
+//                break
             case 'error':
                 this.sResponse.serverErrR(res, null,500)
                 break
