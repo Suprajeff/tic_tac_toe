@@ -19,11 +19,15 @@ class GameController {
         res.status(200).send("Hello, Node!");
     }
     
-    async startGame(res: Response) {
+    async startGame(req: Request, res: Response) {
 
         const result = await this.useCases.initializeGame()
 
         if (result.status === 'success') {
+            req.session.gameID = result.data.id
+            req.session.currentPlayer = result.data.currentPlayer
+            req.session.gameState = result.data.gameState
+            req.session.state = result.data.state
             const boardHtml = GameHTMLContent.getNewBoard();
             this.sResponse.successR(res, boardHtml, 200)
         } else {
@@ -37,6 +41,9 @@ class GameController {
         const result = await this.useCases.resetGame(gameID)
 
         if (result.status === 'success') {
+            req.session.currentPlayer = result.data.currentPlayer
+            req.session.gameState = result.data.gameState
+            req.session.state = result.data.state
             const boardHtml = GameHTMLContent.getNewBoard();
             this.sResponse.successR(res, boardHtml, 200)
         } else {
@@ -56,6 +63,10 @@ class GameController {
         const result = await this.useCases.makeMove(gameID, position, player)
 
         if (result.status === 'success') {
+
+            req.session.currentPlayer = result.data.currentPlayer
+            req.session.gameState = result.data.gameState
+            req.session.state = result.data.state
 
             const newMove = GameHTMLContent.getFilledCellHTML(player);
             let newTitle: string = GameTitle.Playing
