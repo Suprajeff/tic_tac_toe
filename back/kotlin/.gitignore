@@ -1,5 +1,5 @@
 dist/
 .gradle/
 .idea/
-app/.env
+.env
 build

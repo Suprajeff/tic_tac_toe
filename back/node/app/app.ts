@@ -3,6 +3,7 @@ import { createExpressRouter, createExpressServer } from "./connections/infrastr
 import { RedisData } from "./core/database/redis/RedisData.js";
 import { launchGameFeature } from "./delivery/feature/game/Launcher.js";
 import {corsMiddleware} from "./delivery/middlewares/cors/Cors.js";
+import { createSessionMiddleware } from "./delivery/middlewares/session/Session.js";
 
 const init = async () => {
 
@@ -12,12 +13,15 @@ const init = async () => {
 
     const redisData = new RedisData(redisClient)
 
+    // Initialize Redis Session Store =========================================================================
+    const sessionMiddleware = createSessionMiddleware(redisClient);
+
     // Express Router + HTTP Routes
     const router = createExpressRouter();
     await launchGameFeature(redisData, router)
 
     // Start Express Server ============================================================================
-    createExpressServer([corsMiddleware], router);
+    createExpressServer([corsMiddleware, sessionMiddleware], router);
 
     // Ensure you call `client.quit()` when you are done with Redis
     process.on('exit', () => {

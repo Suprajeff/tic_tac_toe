@@ -67,17 +67,17 @@ h1 {
     animation-timing-function: linear;
     height: 30px;
     width: 30px;
-    border: 8px solid #ffffff;
+    border: 5px solid #94a3b8;
     border-right-color: transparent;
     border-radius: 50%;
     display: inline-block;
 }
 
-.loading-spinner {
-    position: absolute;
-    top: 50%;
-    right: 0;
-    bottom: 0;
-    left: 50%;
-    margin: -15px 0 -15px;
-}
+/*.loading-spinner {*/
+/*    position: absolute;*/
+/*    top: 50%;*/
+/*    right: 0;*/
+/*    bottom: 0;*/
+/*    left: 50%;*/
+/*    margin: -15px 0 -15px;*/
+/*}*/

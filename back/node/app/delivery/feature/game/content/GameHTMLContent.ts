@@ -23,7 +23,7 @@ class GameHTMLContent {
                     <div id="cellNine" class="flex items-center justify-center font-bold text-4xl bg-slate-900 text-white hover:bg-slate-600 transition-colors cursor-pointer" hx-post="http://localhost:8081/move" hx-trigger="click" hx-swap="multi:#cellNine:outer,#gameTitle:inner" hx-vals='{"position":"BR"}'></div>
                 </div>
             </div>
-            <button class="bg-slate-400 hover:bg-slate-600 text-white font-bold py-2 px-4 rounded-full" hx-get="http://localhost:8081/restart" hx-trigger="click" hx-swap="multi:#board:outer">Reset</button>
+            <button class="bg-slate-400 hover:bg-slate-600 text-white font-bold py-2 px-4 rounded-full" hx-get="http://localhost:8081/restart" hx-request="{'credentials': true}" hx-trigger="click" hx-swap="multi:#board:outer">Reset</button>
         </div>
     `;
 
