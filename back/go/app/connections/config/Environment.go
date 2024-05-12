@@ -23,7 +23,7 @@ func GetEnvironment() Environment {
 	//envPath := filepath.Join(filepath.Dir(filepath.Dir(cwd)), ".env")
 
 	// Load environment variables from the .env file
-	envMap, err := loadEnv("app/.env")
+	envMap, err := loadEnv(".env")
 	if err != nil {
 		log.Fatalf("Error loading .env file: %v", err)
 	}

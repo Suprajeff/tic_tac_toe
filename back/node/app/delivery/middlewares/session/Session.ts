@@ -6,25 +6,24 @@ import {RedisClientType} from "redis";
 const createSessionMiddleware = (redisClient: RedisClientType) => {
     const store: RedisStore = new RedisStore({
         client: redisClient,
-        prefix: "tictac_session:",
+        prefix: "tictac:",
     });
 
     const sessionSecret = SESSION_SECRET ? SESSION_SECRET : "secret"
-    
-    console.log('setting session')
-    console.log(sessionSecret)
 
     return session({
-        name: "tictactoe_node_session",
+        name: "tictacnode",
         store: store,
         secret: sessionSecret,
         resave: false,
         saveUninitialized: false,
         cookie: {
-            sameSite: false,
+            domain: 'localhost',
+            path: '/',
+            maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
             secure: false,
             httpOnly: true,
-            maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
+            sameSite: 'none',
         }
     });
 };

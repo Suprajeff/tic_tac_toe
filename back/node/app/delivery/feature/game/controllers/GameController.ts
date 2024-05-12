@@ -20,42 +20,20 @@ class GameController {
     
     async startGame(req: Request, res: Response) {
 
-        if (req.session.gameID) {
+        const result = await this.useCases.initializeGame()
 
-            console.log('session retrieved')
-            console.log(req.session.gameID)
+        console.log('Result Creation Log')
+        console.log(result)
 
-//            const result = await this.useCases.retrieveGame(req.session.gameID)
-//
-//            if (result.status === 'success') {
-//                req.session.gameID = result.data.id
-//                req.session.currentPlayer = result.data.currentPlayer
-//                req.session.gameState = result.data.gameState
-//                req.session.state = result.data.state
-//                const boardHtml = GameHTMLContent.getBoard();
-//                this.sResponse.successR(res, boardHtml, 200)
-//            } else {
-//                this.handleResult(result, res)
-//            }
-
+        if (result.status === 'success') {
+            req.session.gameID = result.data.id
+            req.session.currentPlayer = result.data.currentPlayer
+            req.session.gameState = result.data.gameState
+            req.session.state = result.data.state
+            const boardHtml = GameHTMLContent.getNewBoard();
+            this.sResponse.successR(res, boardHtml, 200)
         } else {
-
-            const result = await this.useCases.initializeGame()
-
-            console.log('Result Creation Log')
-            console.log(result)
-
-            if (result.status === 'success') {
-                req.session.gameID = result.data.id
-                req.session.currentPlayer = result.data.currentPlayer
-                req.session.gameState = result.data.gameState
-                req.session.state = result.data.state
-                const boardHtml = GameHTMLContent.getNewBoard();
-                this.sResponse.successR(res, boardHtml, 200)
-            } else {
-                this.handleResult(result, res)
-            }
-
+            this.handleResult(result, res)
         }
 
     }
