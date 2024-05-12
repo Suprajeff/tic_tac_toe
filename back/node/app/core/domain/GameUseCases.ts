@@ -8,6 +8,7 @@ import {GameState} from "../model/GameState.js";
 
 interface GameUseCasesB {
     initializeGame(): Promise<Result<GameType>>;
+    retrieveGame(gameID: string): Promise<Result<GameType>>;
     resetGame(gameID: string): Promise<Result<GameType>>;
     makeMove(gameID: string, position: CellPosition, player: PlayerType): Promise<Result<GameType>>;
 }
@@ -29,6 +30,10 @@ class GameUseCases implements GameUseCasesB {
         const player = this.gameProcess.randomPlayer()
         if(newKey.status !== 'success' || player.status !== 'success'){return error('something went wrong')}
         return  await this.gameRepo.createNewGame(newKey.data, board, player.data)
+    }
+
+    async retrieveGame(gameID: string): Promise<Result<GameType>> {
+        return  await this.gameRepo.getGameState(gameID)
     }
 
     async resetGame(gameID: string): Promise<Result<GameType>> {
