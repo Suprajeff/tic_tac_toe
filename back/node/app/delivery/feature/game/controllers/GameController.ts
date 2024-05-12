@@ -20,20 +20,29 @@ class GameController {
     
     async startGame(req: Request, res: Response) {
 
-        const result = await this.useCases.initializeGame()
+        if(!req.session.gameID){
 
-        console.log('Result Creation Log')
-        console.log(result)
+            const result = await this.useCases.initializeGame()
 
-        if (result.status === 'success') {
-            req.session.gameID = result.data.id
-            req.session.currentPlayer = result.data.currentPlayer
-            req.session.gameState = result.data.gameState
-            req.session.state = result.data.state
-            const boardHtml = GameHTMLContent.getNewBoard();
-            this.sResponse.successR(res, boardHtml, 200)
+            console.log('Result Creation Log')
+            console.log(result)
+
+            if (result.status === 'success') {
+                req.session.gameID = result.data.id
+                req.session.currentPlayer = result.data.currentPlayer
+                req.session.gameState = result.data.gameState
+                req.session.state = result.data.state
+                const boardHtml = GameHTMLContent.getNewBoard();
+                this.sResponse.successR(res, boardHtml, 200)
+            } else {
+                this.handleResult(result, res)
+            }
+
         } else {
-            this.handleResult(result, res)
+
+            console.log(req.session.gameID)
+            //const result = await this.useCases.retrieveGame()
+
         }
 
     }

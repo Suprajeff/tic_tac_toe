@@ -5,7 +5,7 @@ const corsMiddleware = (req: Request, res: Response, next: NextFunction) => {
 
     res.header('Access-Control-Allow-Origin', corsOrigin);
     res.header('Access-Control-Allow-Methods', 'GET,HEAD,OPTIONS,POST,PUT');
-    res.header('Access-Control-Allow-Headers', '*');
+    res.header('Access-Control-Allow-Headers', 'hx-target, hx-current-url, hx-trigger, hx-request, hx-boost, hx-ext, hx-get, hx-swap, Content-Type');
     res.header('Access-Control-Allow-Credentials', 'true');
 
     if (req.method === 'OPTIONS') {

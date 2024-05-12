@@ -23,7 +23,7 @@ const createSessionMiddleware = (redisClient: RedisClientType) => {
             maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
             secure: false,
             httpOnly: true,
-            sameSite: 'none',
+            sameSite: false,
         }
     });
 };
