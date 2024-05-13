@@ -105,7 +105,7 @@ func (gsc *GameStateChecker) CheckForVictoryOrDrawC(playersMoves map[model.CellT
 
 }
 
-func contains(arr []model.CellPosition, pos model.CellPosition) bool {
+func Contains(arr []model.CellPosition, pos model.CellPosition) bool {
 	for _, p := range arr {
 		if p == pos {
 			return true

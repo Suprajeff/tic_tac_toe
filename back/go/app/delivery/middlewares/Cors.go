@@ -9,10 +9,9 @@ func CorsMiddleware() func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-			// Get the CORS origin from the environment variable or set a default value
 			corsOrigin := os.Getenv("CORS_ORIGIN")
 			if corsOrigin == "" {
-				corsOrigin = "http://localhost:8085" // Default value
+				corsOrigin = "http://localhost:8085"
 			}
 
 			w.Header().Set("Access-Control-Allow-Origin", corsOrigin)

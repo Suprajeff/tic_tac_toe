@@ -5,17 +5,16 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Tic Tac Toe</title>
         <script src="https://unpkg.com/htmx.org@1.9.12"></script>
-        <script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/multi-swap.js"></script>
         <script src="https://cdn.tailwindcss.com"></script>
         <link rel="stylesheet" href="assets/style.css">
     </head>
-    <body id="tictactoe" class="flex flex-col gap-6 justify-center items-center h-screen bg-slate-900" hx-boost="true" hx-ext="multi-swap" hx-get="http://localhost:8081/start" hx-trigger="load" hx-target="#board" hx-swap="outerHTML" hx-request='{"credentials": "include"}'>
+    <body id="tictactoe" class="flex flex-col gap-6 justify-center items-center h-screen bg-slate-900">
         <div id="lang" class="flex flex gap-6 items-center justify-center">
-            <div class="border border-2 rounded-full p-2 cursor-pointer" hx-get="http://localhost:8080/start" hx-trigger="click" hx-target="#board" hx-swap="outerHTML"><img src="assets/img/golang.svg" class="w-12 h-12" alt="golang"></div>
-            <div class="border border-2 rounded-full p-2 cursor-pointer" hx-get="http://localhost:8081/start" hx-trigger="click" hx-target="#board" hx-swap="outerHTML"><img src="assets/img/node.svg" class="w-12 h-12" alt="node"></div>
-            <div class="border border-2 rounded-full p-2 cursor-pointer" hx-get="http://localhost:8082/start" hx-trigger="click" hx-target="#board" hx-swap="outerHTML"><img src="assets/img/kotlin.svg" class="w-12 h-12" alt="kotlin"></div>
-            <div class="border border-2 rounded-full p-2 cursor-pointer" hx-get="http://localhost:8083/start" hx-trigger="click" hx-target="#board" hx-swap="outerHTML"><img src="assets/img/swift.svg" class="w-12 h-12" alt="swift"></div>
+            <div class="border border-2 rounded-full p-2 cursor-pointer" hx-get="http://localhost:8080/start" hx-trigger="click" hx-target="#board" hx-swap="outerHTML" hx-request='{"credentials": "include"}'><img src="assets/img/golang.svg" class="w-12 h-12" alt="golang"></div>
+            <div class="border border-2 rounded-full p-2 cursor-pointer" hx-get="http://localhost:8081/start" hx-trigger="click" hx-target="#board" hx-swap="outerHTML" hx-request='{"credentials": "include"}'><img src="assets/img/node.svg" class="w-12 h-12" alt="node"></div>
+            <div class="border border-2 rounded-full p-2 cursor-pointer" hx-get="http://localhost:8082/start" hx-trigger="click" hx-target="#board" hx-swap="outerHTML" hx-request='{"credentials": "include"}'><img src="assets/img/kotlin.svg" class="w-12 h-12" alt="kotlin"></div>
+            <div class="border border-2 rounded-full p-2 cursor-pointer" hx-get="http://localhost:8083/start" hx-trigger="click" hx-target="#board" hx-swap="outerHTML" hx-request='{"credentials": "include"}'><img src="assets/img/swift.svg" class="w-12 h-12" alt="swift"></div>
         </div>
-        <div id="board" class="flex flex-col gap-6 items-center justify-center"><div class="loading-spinner"></div></div>
+        <div id="board" class="flex flex-col gap-6 items-center justify-center"><h1 class="text-slate-400 text-center text-4xl font-['Teachers']">Choose a game provider</h1></div>
     </body>
 </html>

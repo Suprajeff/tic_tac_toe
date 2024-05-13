@@ -22,8 +22,6 @@ func main() {
 	// Router
 	r := mux.NewRouter()
 
-	r.Use(middlewares.GetSettingsPreferences)
-
 	game.LaunchGameFeature(client, r)
 
 	r.Use(middlewares.CorsMiddleware())
