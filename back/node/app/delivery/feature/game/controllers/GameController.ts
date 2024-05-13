@@ -41,8 +41,35 @@ class GameController {
 
         } else {
 
-            console.log(req.session.gameID)
-            //const result = await this.useCases.retrieveGame()
+            const result = await this.useCases.retrieveGame(req.session.gameID)
+
+            console.log(result)
+
+            if (result.status === 'success') {
+
+                if ('cells' in result.data.state) {
+                    console.log('board state is an array or a dictionary')
+                    return
+                }
+
+                req.session.currentPlayer = result.data.currentPlayer
+                req.session.gameState = result.data.gameState
+                req.session.state = result.data.state
+
+                let newTitle: GameTitle = GameTitle.Playing
+
+                if(result.data.gameState === 'WON' && result.data.winner) {
+                    newTitle = result.data.winner.symbol === 'X' ? GameTitle.PlayerXWon : GameTitle.PlayerOWon
+                    console.log(newTitle)
+                } else if (result.data.gameState === 'DRAW') {
+                    newTitle = GameTitle.Draw
+                }
+
+                const boardHtml = GameHTMLContent.getBoard(newTitle, result.data.state);
+                this.sResponse.successR(res, boardHtml, 200)
+            } else {
+                this.handleResult(result, res)
+            }
 
         }
 
