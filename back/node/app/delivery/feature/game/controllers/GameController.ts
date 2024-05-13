@@ -6,6 +6,7 @@ import {Result} from "../../../../core/common/result/Result.js";
 import {GameType} from "../../../../core/model/GameType.js";
 import {GameHTMLContent} from "../content/GameHTMLContent.js";
 import {GameTitle} from "../content/types/GameTitle.js";
+import {PlayersMoves} from "../../../../core/model/PlayersMoves.js";
 
 class GameController {
     
@@ -80,27 +81,34 @@ class GameController {
 
         if (result.status === 'success') {
 
+            console.log('move made')
+            console.log(result.data)
+            console.log('move made')
+
+            if ('cells' in result.data.state) {
+                console.log('board state is an array or a dictionary')
+                return
+            }
+
             req.session.currentPlayer = result.data.currentPlayer
             req.session.gameState = result.data.gameState
             req.session.state = result.data.state
 
-            const newMove = GameHTMLContent.getFilledCellHTML(player);
-            let newTitle: string = GameTitle.Playing
+            let newTitle: GameTitle = GameTitle.Playing
 
             if(result.data.gameState === 'WON' && result.data.winner) {
-                newTitle = result.data.winner.symbol === 'X' ? GameHTMLContent.getGameTitleHTML(GameTitle.PlayerXWon) : GameHTMLContent.getGameTitleHTML(GameTitle.PlayerOWon)
+                newTitle = result.data.winner.symbol === 'X' ? GameTitle.PlayerXWon : GameTitle.PlayerOWon
+                console.log(newTitle)
             } else if (result.data.gameState === 'DRAW') {
-                newTitle = GameHTMLContent.getGameTitleHTML(GameTitle.Draw)
+                newTitle = GameTitle.Draw
             }
 
-            const htmlMultiResponses = {
-                "#cellOne": newMove,
-                "#gameTitle": newTitle,
-            }
+            const newMove = GameHTMLContent.getBoard(newTitle, result.data.state);
 
-            this.sResponse.successR(res, htmlMultiResponses, 200)
+            this.sResponse.successR(res, newMove, 200)
 
         } else {
+            console.log('something went wrong')
             this.handleResult(result, res)
         }
     }

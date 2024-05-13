@@ -62,9 +62,15 @@ class GameDao implements GameDaoProtocol {
     }
 
     async addPlayerMove(gameID: string, move: Move): Promise<Result<StateType>> {
-        await this.redis.sAdd(`${gameID}:moves:${move.player}`, move.position);
+        console.log('New Move')
+        console.log(move)
+        await this.redis.sAdd(`${gameID}:moves:${move.player.symbol}`, move.position);
         const xMoves: CellPosition[] = await this.redis.sMembers(`${gameID}:moves:X`) as CellPosition[]
         const oMoves: CellPosition[] = await this.redis.sMembers(`${gameID}:moves:O`) as CellPosition[]
+        console.log('xMoves')
+        console.log(xMoves);
+        console.log('oMoves')
+        console.log(oMoves);
         return {
             status: "success",
             data: {X: xMoves, O: oMoves}

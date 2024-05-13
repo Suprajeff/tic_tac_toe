@@ -44,7 +44,7 @@ class GameDao: GameDaoProtocol {
     func addPlayerMove(gameID: String, move: Move) -> Result<StateType, Error> {
         do {
             let cellPosition = TypeConverter.cellPositiontoString(move.position)
-            _ = try redis.sadd(cellPosition, to: "\(gameID):moves:\(move.player)").wait()
+            _ = try redis.sadd(cellPosition, to: "\(gameID):moves:\(move.player.symbol)").wait()
             let xPositions = try redis.smembers(of: "\(gameID):moves:X").wait()
             let oPositions = try redis.smembers(of: "\(gameID):moves:O").wait()
 

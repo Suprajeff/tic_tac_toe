@@ -46,7 +46,7 @@ class GameDao(private val syncCommands: RedisCommands<String, String>): GameDaoP
 
             val moveRecord = Converter.cellPositionToStringRepresentation(move.position)
 
-            syncCommands.sadd("$gameID:moves:${move.player}", moveRecord)
+            syncCommands.sadd("$gameID:moves:${move.player.symbol}", moveRecord)
             val xMoves = syncCommands.smembers("$gameID:moves:X").map { position -> CellPosition.valueOf(position) }
             val oMoves = syncCommands.smembers("$gameID:moves:O").map { position -> CellPosition.valueOf(position) }
             Result.Success(State.MovesState(mapOf(CellType.X to xMoves, CellType.O to oMoves)))

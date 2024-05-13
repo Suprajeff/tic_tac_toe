@@ -80,7 +80,7 @@ func (dao *GameDao) ResetGame(ctx context.Context, gameID string, board *model.S
 
 func (dao *GameDao) AddPlayerMove(ctx context.Context, gameID string, move *entity.Move) (*model.StateType, error) {
 
-	err := dao.Redis.SAdd(ctx, fmt.Sprintf("%s:moves:%s", gameID, move.Player), string(move.Position)).Err()
+	err := dao.Redis.SAdd(ctx, fmt.Sprintf("%s:moves:%s", gameID, move.Player.Symbol), string(move.Position)).Err()
 	if err != nil {
 		return nil, err
 	}
