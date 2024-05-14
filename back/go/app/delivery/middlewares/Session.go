@@ -1,38 +1,43 @@
 package middlewares
 
-import (
-	"context"
+import(
 	"github.com/gorilla/sessions"
 	"net/http"
 )
 
-var store = sessions.NewCookieStore([]byte("tictactoego"))
+var (
+	sessionKey = []byte("tictacgo")
+)
 
-func GetSettingsPreferences(next http.Handler) http.Handler {
+func SessionMiddleware() func(next http.Handler) http.Handler {
 	
-	sessionOptions := &sessions.Options{
-		Path:     "/",
-		MaxAge:   86400,
-		HttpOnly: true,
-		Secure:   false,
-	}
-	
-    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        
-        session, _ := store.Get(r, "tictactoe")
-		session.Options = sessionOptions
+	store := sessions.NewCookieStore(sessionKey)
 
-        darkMode, ok := session.Values["darkMode"].(bool)
-		if !ok {
-			darkMode = false
-		}
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			session, err := store.Get(r, "tictacgo")
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
 
-		ctx := context.WithValue(r.Context(), "userSettings", map[string]interface{}{
-			"darkMode": darkMode,
+			session.Options = &sessions.Options{
+				Domain:   "localhost",
+				Path:     "/",
+				MaxAge:   1000 * 60 * 60 * 24 * 30,
+				Secure:   false,
+				HttpOnly: true,
+				SameSite: http.SameSiteNoneMode,
+			}
+
+			next.ServeHTTP(w, r)
+
+			err = session.Save(r, w)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
 		})
-
-		next.ServeHTTP(w, r.WithContext(ctx))
-		
-	})
-	
+	}
 }
+

@@ -86,7 +86,7 @@ func (gsc *GameStateChecker) CheckForVictoryOrDrawC(playersMoves map[model.CellT
 		for _, combination := range WinningCombinationsForDictionary {
 			winning := true
 			for _, pos := range combination {
-				if !contains(moves, pos) {
+				if !Contains(moves, pos) {
 					winning = false
 					break
 				}

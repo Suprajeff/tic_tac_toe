@@ -1,0 +1,1 @@
+data class Cell(val id: String, val position: CellPosition)

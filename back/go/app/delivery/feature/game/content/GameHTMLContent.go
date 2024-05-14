@@ -79,14 +79,14 @@ func GetNewBoard() string {
 	return NewGameBoard
 }
 
-func GetBoard(title types.GameTitle, state map[model.CellType][]model.CellPosition) string {
+func GetBoard(title types.GameTitle, moves map[model.CellType][]model.CellPosition) string {
 
 	var boardContent string
 
 	for _, cell := range CELL {
 
-		playerX := service.Contains(state[model.X], cell.Position)
-		playerO := service.Contains(state[model.O], cell.Position)
+		playerX := service.Contains(moves[model.X], cell.Position)
+		playerO := service.Contains(moves[model.O], cell.Position)
 
 		if playerX || playerO {
 			var player model.PlayerType

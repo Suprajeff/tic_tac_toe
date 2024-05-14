@@ -2,10 +2,14 @@ package controllers
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	repository "go-ttt/app/core/domain"
 	"go-ttt/app/core/model"
+	"go-ttt/app/delivery/feature/game/content"
 	"go-ttt/app/delivery/utils/responses"
 	"go-ttt/app/delivery/utils/responses/types"
+	contentType "go-ttt/app/delivery/feature/game/content/types"
 	"net/http"
 )
 
@@ -38,7 +42,11 @@ func (gc *GameController) StartGame(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	gc.sendSuccessResponse(w, result)
+	fmt.Println("Result Creation Log", result)
+
+	var boardHtml = content.GetNewBoard()
+
+	gc.sendSuccessResponse(w, boardHtml)
 
 }
 
@@ -60,7 +68,11 @@ func (gc *GameController) RestartGame(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	gc.sendSuccessResponse(w, result)
+	fmt.Println("Result Restart Log", result)
+
+	var boardHtml = content.GetNewBoard()
+
+	gc.sendSuccessResponse(w, boardHtml)
 
 }
 
@@ -97,7 +109,34 @@ func (gc *GameController) MakeMove(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	gc.sendSuccessResponse(w, result)
+	fmt.Println("Result Restart Log", result)
+
+
+
+	var newTitle contentType.GameTitle
+
+	switch result.GameState {
+	case "WON":
+		if result.Winner.Symbol == model.X {
+			newTitle = contentType.PlayerXWon
+		} else {
+			newTitle = contentType.PlayerOWon
+		}
+	case "DRAW":
+		newTitle = contentType.Draw
+	default:
+		newTitle = contentType.Playing
+	}
+
+	switch state := result.State.(type) {
+		case *model.BoardState:
+			println("board state")
+			gc.handleError(w, errors.New("Wrong type"))
+			return
+		case *model.MovesState:
+			var boardHtml = content.GetBoard(newTitle, state.PlayersMoves)
+			gc.sendSuccessResponse(w, boardHtml)
+	}
 
 }
 

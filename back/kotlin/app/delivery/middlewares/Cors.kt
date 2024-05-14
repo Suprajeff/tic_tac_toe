@@ -8,16 +8,11 @@ import io.ktor.server.netty.*
 
 fun Application.configureCORS() {
     install(CORS) {
-        //val corsOrigin = System.getenv("CORS_ORIGIN") ?: "http://localhost:8085"
-        host("localhost:8085", schemes = listOf("http", "https"))
-        method(HttpMethod.Options)
-        method(HttpMethod.Put)
-        method(HttpMethod.Delete)
-        method(HttpMethod.Patch)
-        header(HttpHeaders.Authorization)
-        header(HttpHeaders.Accept)
+        val corsOrigin = System.getenv("CORS_ORIGIN") ?: "http://localhost:8085"
+        host(corsOrigin)
         header(HttpHeaders.ContentType)
         allowCredentials = true
-        anyHost()
+        allowNonSimpleContentTypes = true
+        allowHeaders = true
     }
 }
