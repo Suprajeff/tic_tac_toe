@@ -54,38 +54,66 @@ class GameHTMLContent {
         (id: "Nine", position: .BR)
     ]
 
-    public static func getFilledCellHTML(cellID: String, player: PlayerType) -> String {
-        let formattedString = String(format: FILLED_CELL, cellID, player.symbol)
-        return formattedString
+    public static func getFilledCellHTML(cellID: String, player: PlayerType) -> Result<String, Error> {
+
+        guard let playerSymbol = TypeConverter.playerTypeToString(player) else {
+            return .failure(CustomError("Failed to extract or convert data"))
+        }
+        let formattedString = String(format: FILLED_CELL, cellID, playerSymbol)
+        return .success(formattedString)
+
     }
-    
-    public static func getEmptyCellHTML(cellID: String, position: CellPosition) -> String {
-        let formattedString = String(format: EMPTY_CELL, cellID, position.rawValue)
-        return formattedString
+
+    public static func getEmptyCellHTML(cellID: String, position: CellPosition) -> Result<String, Error> {
+
+        guard let cellPosition = TypeConverter.cellPositiontoString(position) else {
+            return .failure(CustomError("Failed to extract or convert data"))
+        }
+        let formattedString = String(format: EMPTY_CELL, cellID, cellPosition)
+        return .success(formattedString)
+
     }
     
     public static func getNewBoard() -> String {
         return NEW_GAME_BOARD
     }
 
-    static func getBoard(title: GameTitle, state: PlayersMoves) -> String {
+    static func getBoard(title: GameTitle, state: PlayersMoves) -> Result<String, Error> {
+
         var boardContent = ""
 
         for cell in CELL {
-            let playerX = state.X.contains(cell.position)
-            let playerO = state.O.contains(cell.position)
+            let playerX = state[.X]?.contains(cell.position) ?? false
+            let playerO = state[.O]?.contains(cell.position) ?? false
 
             if playerX || playerO {
-                let playerSymbol = playerX ? "X" : "O"
-                let filledCellHTML = getFilledCellHTML(cellID: cell.id, player: PlayerType(symbol: playerSymbol))
-                boardContent += filledCellHTML
+                let playerSymbol: CellType = playerX ? .X : .O
+                let filledCellResult = getFilledCellHTML(cellID: cell.id, player: PlayerType(symbol: playerSymbol))
+                switch filledCellResult {
+                    case .success(let filledCellHTML):
+                        boardContent += filledCellHTML
+                    case .failure(let error):
+                        print("Error: \(error.localizedDescription)")
+                        boardContent += "<div>Error in generating filled cell HTML</div>"
+                    case .notFound:
+                        boardContent += "<div>Error finding info</div>"
+                }
             } else {
-                let emptyCellHTML = getEmptyCellHTML(cellID: cell.id, position: cell.position)
-                boardContent += emptyCellHTML
+                let emptyCellResult = getEmptyCellHTML(cellID: cell.id, position: cell.position)
+                switch emptyCellResult {
+                    case .success(let emptyCellHTML):
+                        boardContent += emptyCellHTML
+                    case .failure(let error):
+                        print("Error: \(error.localizedDescription)")
+                        boardContent += "<div>Error in generating empty cell HTML</div>"
+                    case .notFound:
+                        boardContent += "<div>Error finding info</div>"
+                }
             }
         }
 
-        return String(format: GAME_BOARD, title, boardContent)
+        return .success(String(format: GAME_BOARD, title, boardContent))
+
     }
 
 }
