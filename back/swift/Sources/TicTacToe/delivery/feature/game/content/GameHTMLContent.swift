@@ -112,7 +112,7 @@ class GameHTMLContent {
             }
         }
 
-        return .success(String(format: GAME_BOARD, title, boardContent))
+        return .success(String(format: GAME_BOARD, title.rawValue, boardContent))
 
     }
 

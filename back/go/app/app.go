@@ -7,7 +7,7 @@ import (
 	"go-ttt/app/connections/infrastructure/database"
 	"go-ttt/app/connections/infrastructure/server"
 	"go-ttt/app/delivery/feature/game"
-	"go-ttt/app/delivery/middlewares"
+	"go-ttt/app/delivery/middlewares/cors"
 )
 
 func main() {
@@ -21,10 +21,11 @@ func main() {
 
 	// Router
 	r := mux.NewRouter()
+	r.Use(middlewares.CorsMiddleware())
 
 	game.LaunchGameFeature(client, r)
 
-	r.Use(middlewares.CorsMiddleware())
+	middlewares.AllRoutes(r)
 
 	server.CreateGorillaServer(r)
 
