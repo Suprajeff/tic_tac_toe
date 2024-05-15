@@ -1,8 +1,8 @@
 import io.lettuce.core.RedisClient
 import io.lettuce.core.api.sync.RedisCommands
 import io.lettuce.core.api.async.RedisAsyncCommands
-import io.ktor.application.*
-import io.ktor.routing.*
+import io.ktor.server.application.*
+import io.ktor.server.routing.*
 
 fun launchGameFeature(application: Application, redisData: RedisData, ){
 

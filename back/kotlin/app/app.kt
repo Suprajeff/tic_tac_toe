@@ -1,7 +1,7 @@
 import java.io.File
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import io.ktor.application.*
+import io.ktor.server.application.*
 import io.lettuce.core.RedisClient
 import io.lettuce.core.api.sync.RedisCommands
 

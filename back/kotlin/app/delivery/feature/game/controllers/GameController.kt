@@ -1,11 +1,11 @@
 import io.ktor.server.*
 import io.ktor.http.*
-import io.ktor.application.*
-import io.ktor.routing.*
+import io.ktor.server.application.*
+import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import io.ktor.request.receiveText
+import io.ktor.server.request.receiveText
 
 class GameController(private val useCases: GameUseCasesB, private val responses: GameResponses) {
     

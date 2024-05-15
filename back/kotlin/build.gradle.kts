@@ -14,9 +14,10 @@ repositories {
 }
 
 dependencies {
-    implementation("io.ktor:ktor-server-core:1.6.8")
-    implementation("io.ktor:ktor-server-netty:1.6.8")
-    implementation("io.ktor:ktor-websockets:1.6.8")
+    implementation("io.ktor:ktor-server-core:2.3.11")
+    implementation("io.ktor:ktor-server-cors:2.3.11")
+    implementation("io.ktor:ktor-server-netty:2.3.11")
+    implementation("io.ktor:ktor-websockets:2.3.11")
     implementation("io.lettuce:lettuce-core:6.3.2.RELEASE")
     testImplementation("org.jetbrains.kotlin:kotlin-test:1.8.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")

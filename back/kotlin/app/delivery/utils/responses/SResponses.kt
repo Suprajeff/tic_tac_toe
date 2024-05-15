@@ -1,12 +1,10 @@
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.ContentType
-import io.ktor.response.respondText
-import io.ktor.websocket.*
-import io.ktor.application.*
+import io.ktor.server.response.respondText
+import io.ktor.server.application.*
 import io.ktor.http.*
 import io.ktor.server.*
 import io.ktor.websocket.*
-import io.ktor.http.cio.websocket.*
 
 class GameResponses() {
     

@@ -1,18 +1,30 @@
-import io.ktor.application.*
-import io.ktor.features.*
+import io.ktor.server.application.*
+import io.ktor.server.plugins.cors.*
 import io.ktor.http.*
-import io.ktor.response.*
+import io.ktor.server.response.*
 import java.util.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 
 fun Application.configureCORS() {
     install(CORS) {
-        val corsOrigin = System.getenv("CORS_ORIGIN") ?: "http://localhost:8085"
-        host(corsOrigin)
-        header(HttpHeaders.ContentType)
         allowCredentials = true
         allowNonSimpleContentTypes = true
-        allowHeaders = true
+        val corsOrigin = System.getenv("CORS_ORIGIN") ?: "http://localhost:8085"
+        allowHost(corsOrigin)
+        allowMethod(HttpMethod.Head)
+        allowMethod(HttpMethod.Get)
+        allowMethod(HttpMethod.Post)
+        allowMethod(HttpMethod.Options)
+        allowMethod(HttpMethod.Put)
+        allowHeader(HttpHeaders.ContentType)
+        allowHeader("hx-target")
+        allowHeader("hx-current-url")
+        allowHeader("hx-trigger")
+        allowHeader("hx-request")
+        allowHeader("hx-boost")
+        allowHeader("hx-ext")
+        allowHeader("hx-get")
+        allowHeader("hx-swap")
     }
 }
