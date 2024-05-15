@@ -18,14 +18,14 @@ func (gr GameResponses) sendResponse(res types.SChannel, data types.SData, statu
 		switch d := data.(type) {
 		case *types.JsonData:
 			if statusCode != nil {
-				channel.Response.WriteHeader(int(statusCode.(types.ClientError)))
+				channel.Response.WriteHeader(int(statusCode.(types.ServerError)))
 				json.NewEncoder(channel.Response).Encode(d.Data)
 			} else {
 				json.NewEncoder(channel.Response).Encode(d.Data)
 			}
 		case *types.HtmlData:
 			if statusCode != nil {
-				channel.Response.WriteHeader(int(statusCode.(types.ClientError)))
+				channel.Response.WriteHeader(int(statusCode.(types.ServerError)))
 				channel.Response.Write([]byte(d.Data))
 			} else {
 				channel.Response.Write([]byte(d.Data))

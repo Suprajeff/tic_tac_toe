@@ -34,6 +34,8 @@ func (gc *GameController) HelloGo(w http.ResponseWriter, r *http.Request) {
 
 func (gc *GameController) StartGame(w http.ResponseWriter, r *http.Request) {
 
+	fmt.Println("Starting Game")
+
 	ctx := r.Context()
 
 	result, err := gc.useCases.InitializeGame(ctx)
