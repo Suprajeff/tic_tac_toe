@@ -7,9 +7,9 @@ import (
 	repository "go-ttt/app/core/domain"
 	"go-ttt/app/core/model"
 	"go-ttt/app/delivery/feature/game/content"
+	contentType "go-ttt/app/delivery/feature/game/content/types"
 	"go-ttt/app/delivery/utils/responses"
 	"go-ttt/app/delivery/utils/responses/types"
-	contentType "go-ttt/app/delivery/feature/game/content/types"
 	"net/http"
 )
 
@@ -40,6 +40,7 @@ func (gc *GameController) StartGame(w http.ResponseWriter, r *http.Request) {
 
 	result, err := gc.useCases.InitializeGame(ctx)
 	if err != nil {
+		fmt.Println(err.Error())
 		gc.handleError(w, err)
 		return
 	}
@@ -84,6 +85,7 @@ func (gc *GameController) MakeMove(w http.ResponseWriter, r *http.Request) {
 
 	err := r.ParseForm()
 	if err != nil {
+		fmt.Println(err.Error())
 		gc.handleError(w, err)
 		return
 	}
@@ -92,28 +94,33 @@ func (gc *GameController) MakeMove(w http.ResponseWriter, r *http.Request) {
 	positionData := r.FormValue("position")
 	playerData := r.FormValue("player")
 
+	fmt.Println("Making move, GameID:%s", gameID)
+	fmt.Println("Making move, PositionData:%s", positionData)
+	fmt.Println("Making move, PlayerData:%s", playerData)
+
 	var position model.CellPosition
 	var player model.PlayerType
 
 	if err := json.Unmarshal([]byte(positionData), &position); err != nil {
+		fmt.Println(err.Error())
 		gc.handleError(w, err)
 		return
 	}
 
 	if err := json.Unmarshal([]byte(playerData), &player); err != nil {
+		fmt.Println(err.Error())
 		gc.handleError(w, err)
 		return
 	}
 
 	result, err := gc.useCases.MakeMove(ctx, gameID, &position, &player)
 	if err != nil {
+		fmt.Println(err.Error())
 		gc.handleError(w, err)
 		return
 	}
 
 	fmt.Println("Result Restart Log", result)
-
-
 
 	var newTitle contentType.GameTitle
 
@@ -145,20 +152,18 @@ func (gc *GameController) MakeMove(w http.ResponseWriter, r *http.Request) {
 func (gc *GameController) handleError(w http.ResponseWriter, err error) {
 	var statusCode types.ServerError = types.InternalServerError
 	gc.sResponse.ServerErrR(
-		&types.HttpResponseChannel{Response: w},
+		w,
 		&types.JsonData{Data: nil},
-		&statusCode,
-		nil,
+		statusCode,
 	)
 }
 
 func (gc *GameController) sendSuccessResponse(w http.ResponseWriter, data interface{}) {
 	var statusCode types.Success = types.Ok
 	gc.sResponse.SuccessR(
-		&types.HttpResponseChannel{Response: w},
-		&types.JsonData{Data: map[string]interface{}{"data": data}},
-		&statusCode,
-		nil,
+		w,
+		data,
+		statusCode,
 	)
 }
 

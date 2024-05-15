@@ -14,15 +14,10 @@ type Cell struct {
 
 const (
 	
-	FilledCell = `
-		<div id="cell%s" class="flex items-center justify-center font-bold text-4xl bg-slate-600 text-white">%s</div>
-	`
+	FilledCell = `<div id="cell%s" class="flex items-center justify-center font-bold text-4xl bg-slate-600 text-white">%s</div>`
 
-	EmptyCell = `
-		<div id="cell%s" class="flex items-center justify-center font-bold text-4xl bg-slate-900 text-white hover:bg-slate-600 transition-colors cursor-pointer" hx-post="http://localhost:8080/move" hx-request='{"credentials": "include"}' hx-trigger="click" hx-target="#board" hx-swap="outerHTML" hx-vals='{"position":"%s"}'></div>
-	`
-	NewGameBoard = `
-		<div id="board" class="flex flex-col gap-6 item-center justify-center" hx-trigger="load">
+	EmptyCell = `<div id="cell%s" class="flex items-center justify-center font-bold text-4xl bg-slate-900 text-white hover:bg-slate-600 transition-colors cursor-pointer" hx-post="http://localhost:8080/move" hx-request='{"credentials": "include"}' hx-trigger="click" hx-target="#board" hx-swap="outerHTML" hx-vals='{"position":"%s"}'></div>`
+	NewGameBoard = `<div id="board" class="flex flex-col gap-6 item-center justify-center" hx-trigger="load">
 			<h1 id="gameTitle" class="text-slate-400 text-center text-4xl font-['Teachers']">Playing</h1>
 			<div id="game" class="flex items-center justify-center">
 				<div class="grid grid-cols-3 grid-rows-3 gap-4 bg-gray-200 p-4 rounded-lg h-64 w-64">
@@ -38,11 +33,9 @@ const (
 				</div>
 			</div>
 			<button class="bg-slate-400 hover:bg-slate-600 text-white font-bold py-2 px-4 rounded-full" hx-get="http://localhost:8080/restart" hx-trigger="click" hx-target="#board" hx-swap="outerHTML" hx-request='{"credentials": "include"}'>Reset</button>
-		</div>
-	`
+		</div>`
 	
-	GameBoard = `
-		<div id="board" class="flex flex-col gap-6 item-center justify-center" hx-trigger="load">
+	GameBoard = `<div id="board" class="flex flex-col gap-6 item-center justify-center" hx-trigger="load">
 			<h1 id="gameTitle" class="text-slate-400 text-center text-4xl font-['Teachers']">%s</h1>
 			<div id="game" class="flex items-center justify-center">
 				<div class="grid grid-cols-3 grid-rows-3 gap-4 bg-gray-200 p-4 rounded-lg h-64 w-64">
@@ -50,8 +43,7 @@ const (
 				</div>
 			</div>
 			<button class="bg-slate-400 hover:bg-slate-600 text-white font-bold py-2 px-4 rounded-full" hx-get="http://localhost:8080/restart" hx-trigger="click" hx-target="#board" hx-swap="outerHTML" hx-request='{"credentials": "include"}'>Reset</button>
-		</div>
-	`
+		</div>`
 	
 )
 

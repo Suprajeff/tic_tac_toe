@@ -30,8 +30,10 @@ func (dao *GameDao) SetGame(ctx context.Context, newKey string, board *model.Sta
 
 	key := fmt.Sprintf("%s:info", newKey)
 
+	playerAsString := util.PlayerTypeToString(*player)
+
 	err := dao.Redis.HMSet(ctx, key, map[string]interface{}{
-		"currentPlayer": player,
+		"currentPlayer": playerAsString,
 		"gameState":     "IN_PROGRESS",
 	}).Err()
 	if err != nil {
@@ -60,8 +62,10 @@ func (dao *GameDao) ResetGame(ctx context.Context, gameID string, board *model.S
 		return nil, err
 	}
 
+	playerAsString := util.PlayerTypeToString(*player)
+
 	err = dao.Redis.HMSet(ctx, fmt.Sprintf("%s:info", gameID), map[string]interface{}{
-		"currentPlayer": player,
+		"currentPlayer": playerAsString,
 		"gameState":     "IN_PROGRESS",
 	}).Err()
 	if err != nil {

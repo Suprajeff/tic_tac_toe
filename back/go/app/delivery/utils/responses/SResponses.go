@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/gorilla/websocket"
 	"go-ttt/app/delivery/utils/responses/types"
+	"net/http"
 )
 
 type GameResponses struct{}
@@ -12,66 +13,75 @@ func NewGameResponses() GameResponses {
 	return GameResponses{}
 }
 
-func (gr GameResponses) sendResponse(res types.SChannel, data types.SData, statusCode interface{}, room *string) {
-	switch channel := res.(type) {
-	case *types.HttpResponseChannel:
-		switch d := data.(type) {
-		case *types.JsonData:
-			if statusCode != nil {
-				channel.Response.WriteHeader(int(statusCode.(types.ServerError)))
-				json.NewEncoder(channel.Response).Encode(d.Data)
-			} else {
-				json.NewEncoder(channel.Response).Encode(d.Data)
-			}
-		case *types.HtmlData:
-			if statusCode != nil {
-				channel.Response.WriteHeader(int(statusCode.(types.ServerError)))
-				channel.Response.Write([]byte(d.Data))
-			} else {
-				channel.Response.Write([]byte(d.Data))
-			}
-		}
-	case *types.WebSocketChannel:
-		switch d := data.(type) {
-		case *types.JsonData:
-			if room != nil {
-//				channel.Socket.BroadcastJSON(*room, d.Data)
-			} else {
-				err := channel.Socket.WriteJSON(d.Data)
-				if err != nil {
-					return
-				}
-			}
-		case *types.HtmlData:
-			if room != nil {
-//				channel.Socket.BroadcastText(*room, d.Data)
-			} else {
-				err := channel.Socket.WriteMessage(websocket.TextMessage, []byte(d.Data))
-				if err != nil {
-					return
-				}
-			}
-		}
+func (gr GameResponses) sendHTTPResponse(w http.ResponseWriter, data interface{}, statusCode int) {
+	switch v := data.(type) {
+	case string:
+		w.Header().Set("Content-Type", "text/html")
+		w.WriteHeader(statusCode)
+		w.Write([]byte(v))
+	default:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(statusCode)
+		json.NewEncoder(w).Encode(data)
 	}
 }
 
-func (gr *GameResponses) informationR(res types.SChannel, data types.SData, statusCode *types.Informational, room *string) {
-	gr.sendResponse(res, data, statusCode, room)
+func (gr GameResponses) sendSocketResponse(conn *websocket.Conn, data interface{}, room string) error {
+	var err error
+
+	switch v := data.(type) {
+	case string:
+		if room != "" {
+			// Broadcast the string data to the specified room
+			err = gr.broadcastToRoom(room, websocket.TextMessage, []byte(v))
+		} else {
+			// Send the string data to the current WebSocket connection
+			err = conn.WriteMessage(websocket.TextMessage, []byte(v))
+		}
+	default:
+		bytes, marshalErr := json.Marshal(v)
+		if marshalErr != nil {
+			return marshalErr
+		}
+
+		if room != "" {
+			// Broadcast the JSON data to the specified room
+			err = gr.broadcastToRoom(room, websocket.TextMessage, bytes)
+		} else {
+			// Send the JSON data to the current WebSocket connection
+			err = conn.WriteMessage(websocket.TextMessage, bytes)
+		}
+	}
+
+	return err
 }
 
-func (gr *GameResponses) SuccessR(res types.SChannel, data types.SData, statusCode *types.Success, room *string) {
-	gr.sendResponse(res, data, statusCode, room)
+func (gr GameResponses) broadcastToRoom(room string, messageType int, message []byte) error {
+	// Broadcast the message to WebSocket connections in the specified room
+	return nil
 }
 
-func (gr *GameResponses) redirectionR(res types.SChannel, data types.SData, statusCode *types.Redirection, room *string) {
-	gr.sendResponse(res, data, statusCode, room)
+func (gr *GameResponses) informationR(w http.ResponseWriter, data interface{}, statusCode types.Informational) {
+	gr.sendHTTPResponse(w, data, int(statusCode))
 }
 
-func (gr *GameResponses) clientErrR(res types.SChannel, data types.SData, statusCode *types.ClientError, room *string) {
-	gr.sendResponse(res, data, statusCode, room)
+func (gr *GameResponses) SuccessR(w http.ResponseWriter, data interface{}, statusCode types.Success) {
+	gr.sendHTTPResponse(w, data, int(statusCode))
 }
 
-func (gr *GameResponses) ServerErrR(res types.SChannel, data types.SData, statusCode *types.ServerError, room *string) {
-	gr.sendResponse(res, data, statusCode, room)
+func (gr *GameResponses) redirectionR(w http.ResponseWriter, data interface{}, statusCode types.Redirection) {
+	gr.sendHTTPResponse(w, data, int(statusCode))
+}
+
+func (gr *GameResponses) clientErrR(w http.ResponseWriter, data interface{}, statusCode types.ClientError) {
+	gr.sendHTTPResponse(w, data, int(statusCode))
+}
+
+func (gr *GameResponses) ServerErrR(w http.ResponseWriter, data interface{}, statusCode types.ServerError) {
+	gr.sendHTTPResponse(w, data, int(statusCode))
+}
+
+func (gr *GameResponses) SocketR(socket *websocket.Conn, data interface{}, room *string) {
+	gr.sendSocketResponse(socket, data, *room)
 }
 
