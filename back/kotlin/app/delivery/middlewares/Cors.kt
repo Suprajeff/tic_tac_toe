@@ -10,14 +10,15 @@ fun Application.configureCORS() {
     install(CORS) {
         allowCredentials = true
         allowNonSimpleContentTypes = true
-        val corsOrigin = System.getenv("CORS_ORIGIN") ?: "http://localhost:8085"
-        allowHost(corsOrigin)
+        val corsOrigin = System.getenv("CORS_ORIGIN") ?: "localhost:8085"
+        allowHost(corsOrigin, schemes = listOf("http"))
         allowMethod(HttpMethod.Head)
         allowMethod(HttpMethod.Get)
         allowMethod(HttpMethod.Post)
         allowMethod(HttpMethod.Options)
         allowMethod(HttpMethod.Put)
         allowHeader(HttpHeaders.ContentType)
+        allowHeader(HttpHeaders.Authorization)
         allowHeader("hx-target")
         allowHeader("hx-current-url")
         allowHeader("hx-trigger")
