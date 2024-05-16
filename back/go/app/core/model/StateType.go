@@ -8,10 +8,10 @@ type BoardState struct {
 	BoardType
 }
 
-func (*BoardState) stateMember() {}
+func (BoardState) stateMember() {}
 
 type MovesState struct {
 	PlayersMoves
 }
 
-func (*MovesState) stateMember() {}
+func (MovesState) stateMember() {}

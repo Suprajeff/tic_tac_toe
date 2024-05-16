@@ -16,16 +16,16 @@ func NewGameRepositoryImpl(Data dao.GameDao) repository.GameRepository {
 	return &GameRepositoryImpl{data: Data}
 }
 
-func (r *GameRepositoryImpl) CreateNewGame(ctx context.Context, newKey string, board *model.StateType, player *model.PlayerType) (*model.GameType, error) {
+func (r *GameRepositoryImpl) CreateNewGame(ctx context.Context, newKey string, board model.StateType, player model.PlayerType) (*model.GameType, error) {
 	return r.data.SetGame(ctx, newKey, board, player)
 }
 
-func (r *GameRepositoryImpl) ResetGame(ctx context.Context, gameID string, board *model.StateType, player *model.PlayerType) (*model.GameType, error) {
+func (r *GameRepositoryImpl) ResetGame(ctx context.Context, gameID string, board model.StateType, player model.PlayerType) (*model.GameType, error) {
 	return r.data.ResetGame(ctx, gameID, board, player)
 }
 
-func (r *GameRepositoryImpl) UpdateBoard(ctx context.Context, gameID string, position *model.CellPosition, player *model.PlayerType) (*model.StateType, error) {
-	playerMove := &entity.Move{Player: *player, Position: *position}
+func (r *GameRepositoryImpl) UpdateBoard(ctx context.Context, gameID string, position model.CellPosition, player model.PlayerType) (model.StateType, error) {
+	playerMove := entity.Move{Player: player, Position: position}
 	return r.data.AddPlayerMove(ctx, gameID, playerMove)
 }
 
@@ -49,6 +49,6 @@ func (r *GameRepositoryImpl) GetGameState(ctx context.Context, gameID string) (*
 	return r.data.GetInfo(ctx, gameID)
 }
 
-func (r *GameRepositoryImpl) UpdateGameState(ctx context.Context, gameID string, board *model.StateType, info *entity.GameInfo) (*model.GameType, error) {
+func (r *GameRepositoryImpl) UpdateGameState(ctx context.Context, gameID string, board model.StateType, info entity.GameInfo) (*model.GameType, error) {
 	return r.data.UpdateInfo(ctx, gameID, board, info)
 }

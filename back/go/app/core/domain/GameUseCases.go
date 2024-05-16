@@ -12,7 +12,7 @@ import (
 type GameUseCases interface {
 	InitializeGame(ctx context.Context) (*model.GameType, error)
 	ResetGame(ctx context.Context, gameID string) (*model.GameType, error)
-	MakeMove(ctx context.Context, gameID string, position *model.CellPosition, player *model.PlayerType) (*model.GameType, error)
+	MakeMove(ctx context.Context, gameID string, position model.CellPosition, player model.PlayerType) (*model.GameType, error)
 }
 type GameUseCasesImpl struct {
 	gameRepo repository.GameRepository
@@ -33,7 +33,7 @@ func (uc *GameUseCasesImpl) InitializeGame(ctx context.Context) (*model.GameType
 		fmt.Println(err.Error())
 		return nil, err
 	}
-	fmt.Println("New ID ready for game creation")
+
 	board, err := uc.gameProcess.GenerateNewBoard()
 	if err != nil {
 		fmt.Println(err.Error())
@@ -41,19 +41,17 @@ func (uc *GameUseCasesImpl) InitializeGame(ctx context.Context) (*model.GameType
 	}
 
 	var boardState = model.BoardState{
-		BoardType: *board,
+		BoardType: board,
 	}
 
-	var boardStateAsStateType model.StateType = &boardState
-	fmt.Println("Board ready for game creation")
+	var boardStateAsStateType model.StateType = boardState
 	player, err := uc.gameProcess.RandomPlayer()
 	if err != nil {
 		fmt.Println(err.Error())
 		return nil, err
 	}
-	fmt.Println("Random Player ready for game creation")
-	fmt.Println("Elements ready for game creation")
-	return uc.gameRepo.CreateNewGame(ctx, newKey, &boardStateAsStateType, player)
+
+	return uc.gameRepo.CreateNewGame(ctx, newKey, boardStateAsStateType, *player)
 }
 
 func (uc *GameUseCasesImpl) ResetGame(ctx context.Context, gameID string) (*model.GameType, error) {
@@ -64,27 +62,27 @@ func (uc *GameUseCasesImpl) ResetGame(ctx context.Context, gameID string) (*mode
 	}
 
 	var boardState = model.BoardState{
-			BoardType: *board,
+			BoardType: board,
 		}
 
-	var boardStateAsStateType model.StateType = &boardState
+	var boardStateAsStateType model.StateType = boardState
 
 	player, err := uc.gameProcess.RandomPlayer()
 	if err != nil {
 		return nil, err
 	}
 
-	return uc.gameRepo.ResetGame(ctx, gameID, &boardStateAsStateType, player)
+	return uc.gameRepo.ResetGame(ctx, gameID, boardStateAsStateType, *player)
 }
 
-func (uc *GameUseCasesImpl) MakeMove(ctx context.Context, gameID string, position *model.CellPosition, player *model.PlayerType) (*model.GameType, error) {
+func (uc *GameUseCasesImpl) MakeMove(ctx context.Context, gameID string, position model.CellPosition, player model.PlayerType) (*model.GameType, error) {
 
 	newBoardState, err := uc.gameRepo.UpdateBoard(ctx, gameID, position, player)
 	if err != nil {
 		return nil, err
 	}
 
-	result, err := uc.gameProcess.CheckForWinner(*newBoardState)
+	result, err := uc.gameProcess.CheckForWinner(newBoardState)
 	if err != nil {
 		return nil, err
 	}
@@ -95,19 +93,26 @@ func (uc *GameUseCasesImpl) MakeMove(ctx context.Context, gameID string, positio
 	}
 
 	gameState := model.InProgress
-	if result.Winner != nil {
-		gameState = model.Won
-	}
-	if(result.Draw){
-		gameState = model.Draw
+	var winner *model.PlayerType = nil
+
+	if result != nil {
+
+		if result.Winner != nil {
+			gameState = model.Won
+			winner = result.Winner
+		}
+		if result.Draw {
+			gameState = model.Draw
+		}
+
 	}
 
 	var gameInfo = entity.GameInfo{
 		GameState: gameState,
-		CurrentPlayer: *nextPlayer,
-		Winner: result.Winner,
+		CurrentPlayer: nextPlayer,
+		Winner: winner,
 	}
 
-	return uc.gameRepo.UpdateGameState(ctx, gameID, newBoardState, &gameInfo)
+	return uc.gameRepo.UpdateGameState(ctx, gameID, newBoardState, gameInfo)
 }
 

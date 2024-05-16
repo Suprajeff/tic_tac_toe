@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"fmt"
 	"github.com/google/uuid"
 	"go-ttt/app/core/model"
 	"math/rand"
@@ -9,9 +10,9 @@ import (
 
 type GameLogicB interface {
 	GenerateNewID() (string, error)
-	GenerateNewBoard() (*model.BoardType, error)
+	GenerateNewBoard() (model.BoardType, error)
 	RandomPlayer() (*model.PlayerType, error)
-	GetNextPlayer(currentPlayer *model.PlayerType) (*model.PlayerType, error)
+	GetNextPlayer(currentPlayer model.PlayerType) (model.PlayerType, error)
 	CheckForWinner(state model.StateType) (*model.GameResult, error)
 }
 
@@ -33,7 +34,7 @@ func (gl *GameLogic) GenerateNewID() (string, error) {
 	return newID.String(), nil
 }
 
-func (gl *GameLogic) GenerateNewBoard() (*model.BoardType, error) {
+func (gl *GameLogic) GenerateNewBoard() (model.BoardType, error) {
 	board := &model.ArrayBoard{
 			Cells: [][]model.CellType{
 				{model.Empty, model.Empty, model.Empty},
@@ -44,7 +45,7 @@ func (gl *GameLogic) GenerateNewBoard() (*model.BoardType, error) {
 
 	var boardAsBoardType model.BoardType = board
 
-	return &boardAsBoardType, nil
+	return boardAsBoardType, nil
 }
 
 func (gl *GameLogic) RandomPlayer() (*model.PlayerType, error) {
@@ -57,7 +58,7 @@ func (gl *GameLogic) RandomPlayer() (*model.PlayerType, error) {
 		return &player, nil
 }
 
-func (gl *GameLogic) GetNextPlayer(currentPlayer *model.PlayerType) (*model.PlayerType, error) {
+func (gl *GameLogic) GetNextPlayer(currentPlayer model.PlayerType) (model.PlayerType, error) {
 	var nextSymbol string
 	if currentPlayer.Symbol == "X" {
 		nextSymbol = "O"
@@ -65,30 +66,33 @@ func (gl *GameLogic) GetNextPlayer(currentPlayer *model.PlayerType) (*model.Play
 		nextSymbol = "X"
 	}
 	nextPlayer := model.PlayerType{Symbol: model.CellType(nextSymbol)}
-	return &nextPlayer, nil
+	return nextPlayer, nil
 }
 
 func (gl *GameLogic) CheckForWinner(state model.StateType) (*model.GameResult, error) {
 
 	switch state := state.(type) {
-		case *model.BoardState:
+		case model.BoardState:
 			switch board := state.BoardType.(type) {
-			case *model.ArrayBoard:
+			case model.ArrayBoard:
 				result, err := gl.checker.CheckForVictoryOrDrawA(board.Cells)
 				if err != nil {
+					fmt.Println(err.Error())
 					return nil, err
 				}
 				return result, nil
-			case *model.DictionaryBoard:
+			case model.DictionaryBoard:
 				result, err := gl.checker.CheckForVictoryOrDrawB(board.Cells)
 				if err != nil {
+					fmt.Println(err.Error())
 					return nil, err
 				}
 				return result, nil
 			}
-		case *model.MovesState:
+		case model.MovesState:
 			result, err := gl.checker.CheckForVictoryOrDrawC(state.PlayersMoves)
 			if err != nil {
+				fmt.Println(err.Error())
 				return nil, err
 			}
 			return result, nil
@@ -96,6 +100,6 @@ func (gl *GameLogic) CheckForWinner(state model.StateType) (*model.GameResult, e
 			return nil, errors.New("invalid state type")
 	}
 
-	return nil, errors.New("invalid state type")
+	return nil, errors.New("invalid final state type")
 
 }

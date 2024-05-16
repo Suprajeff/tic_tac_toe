@@ -7,10 +7,10 @@ type ArrayBoard struct {
 Cells [][]CellType
 }
 
-func (*ArrayBoard) boardMember() {}
+func (ArrayBoard) boardMember() {}
 
 type DictionaryBoard struct {
 Cells map[CellPosition]CellType
 }
 
-func (*DictionaryBoard) boardMember() {}
+func (DictionaryBoard) boardMember() {}

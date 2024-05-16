@@ -1,6 +1,8 @@
 package service
 
-import "go-ttt/app/core/model"
+import (
+	"go-ttt/app/core/model"
+)
 
 type GameStateCheckerB interface {
 	CheckForVictoryOrDrawA(cells [][]model.CellType) (*model.GameResult, error)
@@ -101,6 +103,7 @@ func (gsc *GameStateChecker) CheckForVictoryOrDrawC(playersMoves map[model.CellT
 	if totalMoves > 0 {
 		return nil, nil
 	}
+
 	return &model.GameResult{Winner: nil, Draw: true}, nil
 
 }

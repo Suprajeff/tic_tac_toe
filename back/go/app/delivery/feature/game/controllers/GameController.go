@@ -1,10 +1,10 @@
 package controllers
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/gorilla/sessions"
+	"go-ttt/app/core/database/redis/util"
 	repository "go-ttt/app/core/domain"
 	"go-ttt/app/core/model"
 	"go-ttt/app/delivery/feature/game/content"
@@ -61,12 +61,6 @@ func (gc *GameController) RestartGame(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
 
-	err := r.ParseForm()
-	if err != nil {
-		gc.handleError(w, err)
-		return
-	}
-
 	game, err := gc.retrieveSavedResult(w, r)
 	if err != nil {
 		gc.handleError(w, err)
@@ -107,22 +101,18 @@ func (gc *GameController) MakeMove(w http.ResponseWriter, r *http.Request) {
 
 	positionData := r.FormValue("position")
 
-	fmt.Println("Making move, GameID:%s", game.ID)
-	fmt.Println("Making move, PositionData:%s", positionData)
-	fmt.Println("Making move, PlayerData:%s", game.CurrentPlayer)
-
-	var position model.CellPosition
-	var player model.PlayerType = model.PlayerType{
-		Symbol: game.CurrentPlayer.Symbol,
-	}
-
-	if err := json.Unmarshal([]byte(positionData), &position); err != nil {
+	position, err := util.StringToCellPosition(positionData)
+	if err != nil {
 		fmt.Println(err.Error())
 		gc.handleError(w, err)
 		return
 	}
 
-	result, err := gc.useCases.MakeMove(ctx, game.ID, &position, &player)
+	player := model.PlayerType{
+		Symbol: game.CurrentPlayer.Symbol,
+	}
+
+	result, err := gc.useCases.MakeMove(ctx, game.ID, position, player)
 	if err != nil {
 		fmt.Println(err.Error())
 		gc.handleError(w, err)
@@ -148,11 +138,10 @@ func (gc *GameController) MakeMove(w http.ResponseWriter, r *http.Request) {
 	}
 
 	switch state := result.State.(type) {
-		case *model.BoardState:
-			println("board state")
-			gc.handleError(w, errors.New("Wrong type"))
+		case model.BoardState:
+			gc.handleError(w, errors.New("wrong type"))
 			return
-		case *model.MovesState:
+		case model.MovesState:
 			var boardHtml = content.GetBoard(newTitle, state.PlayersMoves)
 			gc.sendSuccessResponse(w, boardHtml)
 	}
@@ -169,25 +158,21 @@ func (gc *GameController) retrieveSavedResult(w http.ResponseWriter, r *http.Req
 
 	gameID, ok := session.Values["gameID"].(string)
 	if !ok {
-		fmt.Println("gameID is nil")
 		return nil, errors.New("gameID is nil")
 	}
 
 	player, ok := session.Values["currentPlayer"].(model.PlayerType)
 	if !ok {
-		fmt.Println("player is nil")
 		return nil, errors.New("gameID is nil")
 	}
 
 	gameState, ok := session.Values["gameState"].(model.GameState)
 	if !ok {
-		fmt.Println("gameState is nil")
 		return nil, errors.New("gameID is nil")
 	}
 
 	state, ok := session.Values["state"].(model.StateType)
 	if !ok {
-		fmt.Println("state is nil")
 		return nil, errors.New("gameID is nil")
 	}
 
@@ -205,7 +190,6 @@ func (gc *GameController) saveResult(w http.ResponseWriter, r *http.Request, res
 
 	session, err := gc.sessionStore.Get(r, "tictacgo")
 	if err != nil {
-		fmt.Println("Getting Session In Controller")
 		fmt.Println(err.Error())
 		return
 	}
@@ -217,7 +201,6 @@ func (gc *GameController) saveResult(w http.ResponseWriter, r *http.Request, res
 
 	err = session.Save(r, w)
 	if err != nil {
-		fmt.Println("Saving Session In Controller")
 		fmt.Println(err.Error())
 		return
 	}
