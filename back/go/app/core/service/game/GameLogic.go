@@ -35,10 +35,10 @@ func (gl *GameLogic) GenerateNewID() (string, error) {
 
 func (gl *GameLogic) GenerateNewBoard() (*model.BoardType, error) {
 	board := &model.ArrayBoard{
-			Cells: [][]*model.CellType{
-				{nil, nil, nil},
-				{nil, nil, nil},
-				{nil, nil, nil},
+			Cells: [][]model.CellType{
+				{model.Empty, model.Empty, model.Empty},
+				{model.Empty, model.Empty, model.Empty},
+				{model.Empty, model.Empty, model.Empty},
 			},
 		}
 

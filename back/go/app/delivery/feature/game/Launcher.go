@@ -2,6 +2,7 @@ package game
 
 import (
 	"github.com/gorilla/mux"
+	"github.com/gorilla/sessions"
 	"go-ttt/app/core/database/redis"
 	"go-ttt/app/connections/infrastructure/database"
 	data "go-ttt/app/core/data/implementation/redis"
@@ -13,7 +14,7 @@ import (
 	"go-ttt/app/delivery/utils/responses"
 )
 
-func LaunchGameFeature(client *database.Client, router *mux.Router) {
+func LaunchGameFeature(client *database.Client, router *mux.Router, store *sessions.CookieStore) {
 
 	redisData := redis.NewRedis(client.Client)
 
@@ -26,7 +27,7 @@ func LaunchGameFeature(client *database.Client, router *mux.Router) {
 	gameUseCases := repository.NewGameUseCases(gameRepository, gameLogic)
 	gameResponses := responses.NewGameResponses()
 
-	gameController := controllers.NewGameController(gameUseCases, gameResponses)
+	gameController := controllers.NewGameController(gameUseCases, gameResponses, store)
 
 	endpoints.GameEndpoints(router, gameController)
 

@@ -1,17 +1,12 @@
 package middlewares
 
 import(
+	"fmt"
 	"github.com/gorilla/sessions"
 	"net/http"
 )
 
-var (
-	sessionKey = []byte("tictacgo")
-)
-
-func SessionMiddleware() func(next http.Handler) http.Handler {
-	
-	store := sessions.NewCookieStore(sessionKey)
+func SessionMiddleware(store *sessions.CookieStore) func(next http.Handler) http.Handler {
 
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -24,17 +19,18 @@ func SessionMiddleware() func(next http.Handler) http.Handler {
 			session.Options = &sessions.Options{
 				Domain:   "localhost",
 				Path:     "/",
-				MaxAge:   1000 * 60 * 60 * 24 * 30,
+				MaxAge:   30 * 24 * 60 * 60,
 				Secure:   false,
 				HttpOnly: true,
-				SameSite: http.SameSiteNoneMode,
+				SameSite: http.SameSiteLaxMode,
 			}
 
 			next.ServeHTTP(w, r)
 
 			err = session.Save(r, w)
 			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
+				fmt.Println("Error when trying to save session")
+				fmt.Println(err.Error())
 				return
 			}
 		})

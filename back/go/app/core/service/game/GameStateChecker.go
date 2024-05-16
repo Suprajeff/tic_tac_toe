@@ -3,8 +3,8 @@ package service
 import "go-ttt/app/core/model"
 
 type GameStateCheckerB interface {
-	CheckForVictoryOrDrawA(cells [][]*model.CellType) (*model.GameResult, error)
-	CheckForVictoryOrDrawB(cells map[model.CellPosition]*model.CellType) (*model.GameResult, error)
+	CheckForVictoryOrDrawA(cells [][]model.CellType) (*model.GameResult, error)
+	CheckForVictoryOrDrawB(cells map[model.CellPosition]model.CellType) (*model.GameResult, error)
 	CheckForVictoryOrDrawC(playersHands map[model.CellType][]model.CellPosition) (*model.GameResult, error)
 }
 
@@ -14,7 +14,7 @@ func NewGameStateChecker() GameStateCheckerB {
 	return &GameStateChecker{}
 }
 
-func (gsc *GameStateChecker) CheckForVictoryOrDrawA(cells [][]*model.CellType) (*model.GameResult, error) {
+func (gsc *GameStateChecker) CheckForVictoryOrDrawA(cells [][]model.CellType) (*model.GameResult, error) {
 
 	for _, combination := range WinningCombinationsForArray {
 		a, b, c := combination[0], combination[1], combination[2]
@@ -22,15 +22,15 @@ func (gsc *GameStateChecker) CheckForVictoryOrDrawA(cells [][]*model.CellType) (
 		cell2 := cells[b/3][b%3]
 		cell3 := cells[c/3][c%3]
 
-		if cell1 != nil && *cell1 == *cell2 && *cell2 == *cell3 {
-			return &model.GameResult{Winner: &model.PlayerType{Symbol: *cell1}, Draw: false}, nil
+		if cell1 != model.Empty && cell1 == cell2 && cell2 == cell3 {
+			return &model.GameResult{Winner: &model.PlayerType{Symbol: cell1}, Draw: false}, nil
 		}
 	}
 
 	cellAvailable := false
 	for _, row := range cells {
 		for _, cell := range row {
-			if cell == nil {
+			if cell == model.Empty {
 				cellAvailable = true
 				break
 			}
@@ -48,7 +48,7 @@ func (gsc *GameStateChecker) CheckForVictoryOrDrawA(cells [][]*model.CellType) (
 
 }
 
-func (gsc *GameStateChecker) CheckForVictoryOrDrawB(cells map[model.CellPosition]*model.CellType) (*model.GameResult, error) {
+func (gsc *GameStateChecker) CheckForVictoryOrDrawB(cells map[model.CellPosition]model.CellType) (*model.GameResult, error) {
 
 	for _, combination := range WinningCombinationsForDictionary {
 		pos1, pos2, pos3 := combination[0], combination[1], combination[2]
@@ -56,14 +56,14 @@ func (gsc *GameStateChecker) CheckForVictoryOrDrawB(cells map[model.CellPosition
 		cell2 := cells[pos2]
 		cell3 := cells[pos3]
 
-		if cell1 != nil && *cell1 == *cell2 && *cell2 == *cell3 {
-			return &model.GameResult{Winner: &model.PlayerType{Symbol: *cell1}, Draw: false}, nil
+		if cell1 != model.Empty && cell1 == cell2 && cell2 == cell3 {
+			return &model.GameResult{Winner: &model.PlayerType{Symbol: cell1}, Draw: false}, nil
 		}
 	}
 
 	cellAvailable := false
 	for _, cell := range cells {
-		if cell == nil {
+		if cell == model.Empty {
 			cellAvailable = true
 			break
 		}
