@@ -82,7 +82,7 @@ func (uc *GameUseCasesImpl) MakeMove(ctx context.Context, gameID string, positio
 		return nil, err
 	}
 
-	result, err := uc.gameProcess.CheckForWinner(newBoardState)
+	result, err := uc.gameProcess.CheckForWinner(*newBoardState)
 	if err != nil {
 		return nil, err
 	}
@@ -113,6 +113,6 @@ func (uc *GameUseCasesImpl) MakeMove(ctx context.Context, gameID string, positio
 		Winner: winner,
 	}
 
-	return uc.gameRepo.UpdateGameState(ctx, gameID, newBoardState, gameInfo)
+	return uc.gameRepo.UpdateGameState(ctx, gameID, *newBoardState, gameInfo)
 }
 

@@ -24,7 +24,7 @@ func (r *GameRepositoryImpl) ResetGame(ctx context.Context, gameID string, board
 	return r.data.ResetGame(ctx, gameID, board, player)
 }
 
-func (r *GameRepositoryImpl) UpdateBoard(ctx context.Context, gameID string, position model.CellPosition, player model.PlayerType) (model.StateType, error) {
+func (r *GameRepositoryImpl) UpdateBoard(ctx context.Context, gameID string, position model.CellPosition, player model.PlayerType) (*model.StateType, error) {
 	playerMove := entity.Move{Player: player, Position: position}
 	return r.data.AddPlayerMove(ctx, gameID, playerMove)
 }

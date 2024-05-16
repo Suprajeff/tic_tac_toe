@@ -9,7 +9,7 @@ import (
 type GameRepository interface {
 	CreateNewGame(ctx context.Context, newKey string, board model.StateType, player model.PlayerType) (*model.GameType, error)
 	ResetGame(ctx context.Context, gameID string, board model.StateType, player model.PlayerType) (*model.GameType, error)
-	UpdateBoard(ctx context.Context, gameID string, position model.CellPosition, player model.PlayerType) (model.StateType, error)
+	UpdateBoard(ctx context.Context, gameID string, position model.CellPosition, player model.PlayerType) (*model.StateType, error)
 	GetCurrentPlayer(ctx context.Context, gameID string) (*model.PlayerType, error)
 	GetBoardState(ctx context.Context, gameID string) (*model.StateType, error)
 	GetGameState(ctx context.Context, gameID string) (*model.GameType, error)

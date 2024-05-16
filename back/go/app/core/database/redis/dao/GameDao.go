@@ -16,10 +16,10 @@ type GameDao struct {
 type GameDaoProtocol interface {
 	SetGame(ctx context.Context, newKey string, board model.StateType, player model.PlayerType) (*model.GameType, error)
 	ResetGame(ctx context.Context, gameID string, board model.StateType, player model.PlayerType) (*model.GameType, error)
-	AddPlayerMove(ctx context.Context, gameID string, move entity.Move) (model.StateType, error)
-	GetPlayerMoves(ctx context.Context, gameID string, move entity.Move) (entity.Moves, error)
-	GetInfo(ctx context.Context, gameID string) (model.GameType, error)
-	UpdateInfo(ctx context.Context, gameID string, board model.StateType, info entity.GameInfo) (model.GameType, error)
+	AddPlayerMove(ctx context.Context, gameID string, move entity.Move) (*model.StateType, error)
+	GetPlayerMoves(ctx context.Context, gameID string, move entity.Move) (*entity.Moves, error)
+	GetInfo(ctx context.Context, gameID string) (*model.GameType, error)
+	UpdateInfo(ctx context.Context, gameID string, board model.StateType, info entity.GameInfo) (*model.GameType, error)
 }
 
 func NewGameDao(rData *redisInstance.Data) GameDao {
@@ -83,7 +83,7 @@ func (dao *GameDao) ResetGame(ctx context.Context, gameID string, board model.St
 
 }
 
-func (dao *GameDao) AddPlayerMove(ctx context.Context, gameID string, move entity.Move) (model.StateType, error) {
+func (dao *GameDao) AddPlayerMove(ctx context.Context, gameID string, move entity.Move) (*model.StateType, error) {
 
 	playerAsString := util.PlayerTypeToString(move.Player)
 
@@ -138,7 +138,7 @@ func (dao *GameDao) AddPlayerMove(ctx context.Context, gameID string, move entit
 
 	var stateAsStateType model.StateType = state
 
-	return stateAsStateType, nil
+	return &stateAsStateType, nil
 }
 
 func (dao *GameDao) GetPlayerMoves(ctx context.Context, gameID string, move entity.Move) (*entity.Moves, error) {
