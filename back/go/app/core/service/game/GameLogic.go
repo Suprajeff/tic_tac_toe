@@ -10,9 +10,9 @@ import (
 
 type GameLogicB interface {
 	GenerateNewID() (string, error)
-	GenerateNewBoard() (model.BoardType, error)
+	GenerateNewBoard() (*model.BoardType, error)
 	RandomPlayer() (*model.PlayerType, error)
-	GetNextPlayer(currentPlayer model.PlayerType) (model.PlayerType, error)
+	GetNextPlayer(currentPlayer model.PlayerType) (*model.PlayerType, error)
 	CheckForWinner(state model.StateType) (*model.GameResult, error)
 }
 
@@ -34,7 +34,7 @@ func (gl *GameLogic) GenerateNewID() (string, error) {
 	return newID.String(), nil
 }
 
-func (gl *GameLogic) GenerateNewBoard() (model.BoardType, error) {
+func (gl *GameLogic) GenerateNewBoard() (*model.BoardType, error) {
 	board := &model.ArrayBoard{
 			Cells: [][]model.CellType{
 				{model.Empty, model.Empty, model.Empty},
@@ -45,7 +45,7 @@ func (gl *GameLogic) GenerateNewBoard() (model.BoardType, error) {
 
 	var boardAsBoardType model.BoardType = board
 
-	return boardAsBoardType, nil
+	return &boardAsBoardType, nil
 }
 
 func (gl *GameLogic) RandomPlayer() (*model.PlayerType, error) {
@@ -58,7 +58,7 @@ func (gl *GameLogic) RandomPlayer() (*model.PlayerType, error) {
 		return &player, nil
 }
 
-func (gl *GameLogic) GetNextPlayer(currentPlayer model.PlayerType) (model.PlayerType, error) {
+func (gl *GameLogic) GetNextPlayer(currentPlayer model.PlayerType) (*model.PlayerType, error) {
 	var nextSymbol string
 	if currentPlayer.Symbol == "X" {
 		nextSymbol = "O"
@@ -66,7 +66,7 @@ func (gl *GameLogic) GetNextPlayer(currentPlayer model.PlayerType) (model.Player
 		nextSymbol = "X"
 	}
 	nextPlayer := model.PlayerType{Symbol: model.CellType(nextSymbol)}
-	return nextPlayer, nil
+	return &nextPlayer, nil
 }
 
 func (gl *GameLogic) CheckForWinner(state model.StateType) (*model.GameResult, error) {

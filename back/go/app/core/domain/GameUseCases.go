@@ -41,7 +41,7 @@ func (uc *GameUseCasesImpl) InitializeGame(ctx context.Context) (*model.GameType
 	}
 
 	var boardState = model.BoardState{
-		BoardType: board,
+		BoardType: *board,
 	}
 
 	var boardStateAsStateType model.StateType = boardState
@@ -62,7 +62,7 @@ func (uc *GameUseCasesImpl) ResetGame(ctx context.Context, gameID string) (*mode
 	}
 
 	var boardState = model.BoardState{
-			BoardType: board,
+			BoardType: *board,
 		}
 
 	var boardStateAsStateType model.StateType = boardState
@@ -109,7 +109,7 @@ func (uc *GameUseCasesImpl) MakeMove(ctx context.Context, gameID string, positio
 
 	var gameInfo = entity.GameInfo{
 		GameState: gameState,
-		CurrentPlayer: nextPlayer,
+		CurrentPlayer: *nextPlayer,
 		Winner: winner,
 	}
 
