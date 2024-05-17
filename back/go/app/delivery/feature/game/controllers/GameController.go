@@ -38,47 +38,66 @@ func (gc *GameController) HelloGo(w http.ResponseWriter, r *http.Request) {
 func (gc *GameController) StartGame(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("Starting Game")
-
 	ctx := r.Context()
+	resultCh := make(chan *model.GameType)
+	errorCh := make(chan error)
 
-	result, err := gc.useCases.InitializeGame(ctx)
-	if err != nil {
-		fmt.Println(err.Error())
-		gc.handleError(w, err)
-		return
+	go func() {
+		result, err := gc.useCases.InitializeGame(ctx)
+		if err != nil {
+			errorCh <- err
+			return
+		}
+		resultCh <- result
+	}()
+
+	select {
+	    case result := <-resultCh:
+			fmt.Println("Result Creation Log", result)
+			gc.saveResult(w, r, result)
+			var boardHtml = content.GetNewBoard()
+			gc.sendSuccessResponse(w, boardHtml)
+		case err := <-errorCh:
+			fmt.Println(err.Error())
+			gc.handleError(w, err)
+		case <-ctx.Done():
+			gc.handleError(w, ctx.Err())
 	}
-
-	fmt.Println("Result Creation Log", result)
-	gc.saveResult(w, r, result)
-
-	var boardHtml = content.GetNewBoard()
-
-	gc.sendSuccessResponse(w, boardHtml)
 
 }
 
 func (gc *GameController) RestartGame(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
+	resultCh := make(chan *model.GameType)
+	errorCh := make(chan error)
 
-	game, err := gc.retrieveSavedResult(w, r)
-	if err != nil {
-		gc.handleError(w, err)
-		return
+    go func() {
+        game, err := gc.retrieveSavedResult(w, r)
+		if err != nil {
+			errorCh <- err
+			return
+		}
+
+		result, err := gc.useCases.ResetGame(ctx, game.ID)
+		if err != nil {
+			errorCh <- err
+			return
+		}
+		resultCh <- result
+	}()
+
+    select {
+	    case result := <-resultCh:
+	        fmt.Println("Result Restart Log", result)
+			gc.saveResult(w, r, result)
+			var boardHtml = content.GetNewBoard()
+			gc.sendSuccessResponse(w, boardHtml)
+		case err := <-errorCh:
+			gc.handleError(w, err)
+		case <-ctx.Done():
+			gc.handleError(w, ctx.Err())
 	}
-
-	result, err := gc.useCases.ResetGame(ctx, game.ID)
-	if err != nil {
-		gc.handleError(w, err)
-		return
-	}
-
-	fmt.Println("Result Restart Log", result)
-	gc.saveResult(w, r, result)
-
-	var boardHtml = content.GetNewBoard()
-
-	gc.sendSuccessResponse(w, boardHtml)
 
 }
 
@@ -93,57 +112,68 @@ func (gc *GameController) MakeMove(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	game, err := gc.retrieveSavedResult(w, r)
-	if err != nil {
-		gc.handleError(w, err)
-		return
-	}
+	resultCh := make(chan *model.GameType)
+	errorCh := make(chan error)
 
-	positionData := r.FormValue("position")
-
-	position, err := util.StringToCellPosition(positionData)
-	if err != nil {
-		fmt.Println(err.Error())
-		gc.handleError(w, err)
-		return
-	}
-
-	player := model.PlayerType{
-		Symbol: game.CurrentPlayer.Symbol,
-	}
-
-	result, err := gc.useCases.MakeMove(ctx, game.ID, position, player)
-	if err != nil {
-		fmt.Println(err.Error())
-		gc.handleError(w, err)
-		return
-	}
-
-	fmt.Println("Result Restart Log", result)
-	gc.saveResult(w, r, result)
-
-	var newTitle contentType.GameTitle
-
-	switch result.GameState {
-	case "WON":
-		if result.Winner.Symbol == model.X {
-			newTitle = contentType.PlayerXWon
-		} else {
-			newTitle = contentType.PlayerOWon
-		}
-	case "DRAW":
-		newTitle = contentType.Draw
-	default:
-		newTitle = contentType.Playing
-	}
-
-	switch state := result.State.(type) {
-		case model.BoardState:
-			gc.handleError(w, errors.New("wrong type"))
+    go func() {
+        game, err := gc.retrieveSavedResult(w, r)
+		if err != nil {
+			errorCh <- err
 			return
-		case model.MovesState:
-			var boardHtml = content.GetBoard(newTitle, state.PlayersMoves)
-			gc.sendSuccessResponse(w, boardHtml)
+		}
+
+		positionData := r.FormValue("position")
+		position, err := util.StringToCellPosition(positionData)
+		if err != nil {
+			errorCh <- err
+			return
+		}
+
+		player := model.PlayerType{
+			Symbol: game.CurrentPlayer.Symbol,
+		}
+
+		result, err := gc.useCases.MakeMove(ctx, game.ID, position, player)
+		if err != nil {
+			errorCh <- err
+			return
+		}
+		resultCh <- result
+	}()
+
+
+	select {
+		case result := <-resultCh:
+			fmt.Println("Result Restart Log", result)
+			gc.saveResult(w, r, result)
+
+			var newTitle contentType.GameTitle
+
+			switch result.GameState {
+			case "WON":
+				if result.Winner.Symbol == model.X {
+					newTitle = contentType.PlayerXWon
+				} else {
+					newTitle = contentType.PlayerOWon
+				}
+			case "DRAW":
+				newTitle = contentType.Draw
+			default:
+				newTitle = contentType.Playing
+			}
+
+			switch state := result.State.(type) {
+			case model.BoardState:
+				gc.handleError(w, errors.New("wrong type"))
+				return
+			case model.MovesState:
+				var boardHtml = content.GetBoard(newTitle, state.PlayersMoves)
+				gc.sendSuccessResponse(w, boardHtml)
+			}
+		case err := <-errorCh:
+			gc.handleError(w, err)
+		case <-ctx.Done():
+			gc.handleError(w, ctx.Err())
 	}
 
 }
