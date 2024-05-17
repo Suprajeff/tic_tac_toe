@@ -8,25 +8,25 @@ import io.ktor.websocket.*
 
 class GameResponses() {
     
-    private suspend fun sendHTTPResponse(res: ApplicationCall, data: SData, statusCode: HttpStatusCode) {
+    private suspend fun sendHTTPResponse(call: ApplicationCall, data: SData, statusCode: HttpStatusCode) {
         when (data) {
             is SData.Json -> {
-                res.call.respondText(data.data.toString(), contentType = ContentType.Application.Json, status = statusCode)
+                call.respondText(data.data.toString(), contentType = ContentType.Application.Json, status = statusCode)
             }
             is SData.Html -> {
-                res.call.respondText(data.data, contentType = ContentType.Text.Html, status = statusCode)
+                call.respondText(data.data, contentType = ContentType.Text.Html, status = statusCode)
             }
         }
     }
 
-    private suspend fun sendSocketResponse(res: WebSocketSession, data: SData, room: String? = null) {
+    private suspend fun sendSocketResponse(socket: WebSocketSession, data: SData, room: String? = null) {
         when (data) {
             is SData.Json -> {
                 if (room != null) {
                     // need to implement logic to send to all connected users
 //                            res.session.broadcast(data.data.toString(), room)
                 } else {
-                    res.session.send(Frame.Text(data.data.toString()))
+                    socket.send(Frame.Text(data.data.toString()))
                 }
             }
             is SData.Html -> {
@@ -34,34 +34,34 @@ class GameResponses() {
                 // need to implement logic to send to all connected users
                     //res.session.broadcast(data.data, room)
                 } else {
-                    res.session.send(Frame.Text(data.data.toString()))
+                    socket.send(Frame.Text(data.data.toString()))
                 }
             }
         }
     }
 
-    suspend fun informationR(res: ApplicationCall, data: SData, statusCode: Status.Informational) {
-        sendHTTPResponse(res, data, statusCode.toHttpStatusCode(), room)
+    suspend fun informationR(call: ApplicationCall, data: SData, statusCode: Status.Informational) {
+        sendHTTPResponse(call, data, statusCode.toHttpStatusCode())
     }
 
-    suspend fun successR(res: ApplicationCall, data: SData, statusCode: Status.Success) {
-        sendHTTPResponse(res, data, statusCode.toHttpStatusCode(), room)
+    suspend fun successR(call: ApplicationCall, data: SData, statusCode: Status.Success) {
+        sendHTTPResponse(call, data, statusCode.toHttpStatusCode())
     }
 
-    suspend fun redirectionR(res: ApplicationCall, data: SData, statusCode: Status.Redirection) {
-        sendHTTPResponse(res, data, statusCode.toHttpStatusCode(), room)
+    suspend fun redirectionR(call: ApplicationCall, data: SData, statusCode: Status.Redirection) {
+        sendHTTPResponse(call, data, statusCode.toHttpStatusCode())
     }
 
-    suspend fun clientErrR(res: ApplicationCall, data: SData, statusCode: Status.ClientError) {
-        sendHTTPResponse(res, data, statusCode.toHttpStatusCode(), room)
+    suspend fun clientErrR(call: ApplicationCall, data: SData, statusCode: Status.ClientError) {
+        sendHTTPResponse(call, data, statusCode.toHttpStatusCode())
     }
 
-    suspend fun serverErrR(res: ApplicationCall, data: SData, statusCode: Status.ServerError) {
-        sendHTTPResponse(res, data, statusCode.toHttpStatusCode(), room)
+    suspend fun serverErrR(call: ApplicationCall, data: SData, statusCode: Status.ServerError) {
+        sendHTTPResponse(call, data, statusCode.toHttpStatusCode())
     }
 
-    suspend fun socketR(res: WebSocketSession, data: SData, room: String? = null) {
-        sendHTTPResponse(res, data, statusCode.toHttpStatusCode(), room)
+    suspend fun socketR(socket: WebSocketSession, data: SData, room: String? = null) {
+        sendSocketResponse(socket, data, room)
     }
 
 }

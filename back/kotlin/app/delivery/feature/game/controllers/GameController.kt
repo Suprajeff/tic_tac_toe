@@ -18,6 +18,7 @@ class GameController(private val useCases: GameUseCasesB, private val responses:
     companion object {
         private val logger = LoggerFactory.getLogger(GameController::class.java)
         private val scope = CoroutineScopesModule.providesCoroutineScope(DispatchersProvider.provideIODispatcher())
+        private val gameHTMLContent = GameHTMLContent()
     }
 
     suspend fun startGame(call: ApplicationCall) {
@@ -26,7 +27,16 @@ class GameController(private val useCases: GameUseCasesB, private val responses:
             logger.info("Starting Game")
             val result = useCases.initializeGame()
             logger.info("Game initialization result: $result")
-            handleResult(result, call)
+            if (result is Result.Success<GameType>) {
+                val boardHtml = gameHTMLContent.getNewBoard()
+                responses.successR(
+                    call = call,
+                    data = SData.Html(boardHtml),
+                    statusCode = Status.Success.OK
+                )
+            } else {
+                handleResult(result, call)
+            }
         }
 
     }
@@ -61,20 +71,20 @@ class GameController(private val useCases: GameUseCasesB, private val responses:
 
     private suspend fun handleResult(result: Result<GameType>, call: ApplicationCall) {
         when {
-            result is Result.Success<GameType> -> responses.successR(
-                res = SChannel.HttpResponse(call),
-                data = SData.Json(mapOf("data" to result.data)),
-                statusCode = Status.Success.OK
-            )
+//            result is Result.Success<GameType> -> responses.successR(
+//                call = call,
+//                data = SData.Json(mapOf("data" to result.data)),
+//                statusCode = Status.Success.OK
+//            )
             result is Result.Error -> responses.serverErrR(
-                res = SChannel.HttpResponse(call),
+                call = call,
                 data = SData.Json(emptyMap()),
                 statusCode = Status.ServerError.INTERNAL_SERVER_ERROR
             )
             result is Result.NotFound -> responses.clientErrR(
-                res = SChannel.HttpResponse(call),
+                call = call,
                 data = SData.Json(emptyMap()),
-                statusCode = Status.ClientError.NOT_FOUND
+                statusCode = Status.ClientError.REQUEST_TIMEOUT
             )
         }
     }
