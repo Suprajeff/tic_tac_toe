@@ -14,7 +14,7 @@ func main() {
         let corsConfiguration = CORSMiddleware.Configuration(
             allowedOrigin: .any(["http://localhost:8085"]),
             allowedMethods: [.GET, .POST, .OPTIONS],
-            allowedHeaders: ["Accept", "Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization"]
+            allowedHeaders: ["Accept", "Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization", "hx-target", "hx-current-url", "hx-trigger", "hx-request", "hx-boost", "hx-ext", "hx-get", "hx-swap"]
         )
         let cors = CORSMiddleware(configuration: corsConfiguration)
 
