@@ -3,11 +3,11 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.server.application.*
 import io.lettuce.core.RedisClient
-import io.lettuce.core.api.sync.RedisCommands
+import io.lettuce.core.api.async.RedisAsyncCommands
 
 fun main() {
 
-    val redisClient: RedisCommands<String, String>? = try {
+    val redisClient: RedisAsyncCommands<String, String>? = try {
         createRedisClient()
     } catch (e: Exception) {
         println("Error creating Redis client: ${e.message}")

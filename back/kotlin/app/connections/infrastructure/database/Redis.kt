@@ -2,11 +2,11 @@ import java.util.concurrent.ExecutionException
 import io.lettuce.core.RedisClient
 import io.lettuce.core.RedisURI
 import io.lettuce.core.*
-//import io.lettuce.core.api.async.RedisAsyncCommands
-import io.lettuce.core.api.sync.RedisCommands
+import io.lettuce.core.api.async.RedisAsyncCommands
+//import io.lettuce.core.api.sync.RedisCommands
 import io.lettuce.core.api.StatefulRedisConnection
 
-fun createRedisClient(redisHost: String = "redis"): RedisCommands<String, String> {
+fun createRedisClient(redisHost: String = "redis"): RedisAsyncCommands<String, String> {
     val uri = RedisURI.Builder
         .redis(redisHost, 6379)
         .build()
@@ -17,11 +17,11 @@ fun createRedisClient(redisHost: String = "redis"): RedisCommands<String, String
  
     try {
         val connection = client.connect()
-        return connection.sync()
+        return connection.async()
     } catch (e: ExecutionException) {
         throw RuntimeException(e.message, e)
     } finally {
-        client.shutdown()
+        //client.shutdown()
     }
     
 }
