@@ -54,39 +54,23 @@ class GameResponses {
         sendHTTPResponse(data: data, statusCode: statusCode.httpResponseStatus)
     }
 
-    func informationR(socket: WebSocket, data: SData, room: String? = nil) {
-        sendSocketResponse(socket: socket, data: data, room: room)
-    }
-
     func successR(data: SData, statusCode: Status.Success) -> EventLoopFuture<Response> {
         sendHTTPResponse(data: data, statusCode: statusCode.httpResponseStatus)
-    }
-
-    func successR(socket: WebSocket, data: SData, room: String? = nil) {
-        sendSocketResponse(socket: socket, data: data, room: room)
     }
 
     func redirectionR(data: SData, statusCode: Status.Redirection) -> EventLoopFuture<Response> {
         sendHTTPResponse(data: data, statusCode: statusCode.httpResponseStatus)
     }
 
-    func redirectionR(socket: WebSocket, data: SData, room: String? = nil) {
-        sendSocketResponse(socket: socket, data: data, room: room)
-    }
-
     func clientErrR(data: SData, statusCode: Status.ClientError) -> EventLoopFuture<Response> {
         sendHTTPResponse(data: data, statusCode: statusCode.httpResponseStatus)
-    }
-
-    func clientErrR(socket: WebSocket, data: SData, room: String? = nil) {
-        sendSocketResponse(socket: socket, data: data, room: room)
     }
 
     func serverErrR(data: SData, statusCode: Status.ServerError) -> EventLoopFuture<Response> {
         sendHTTPResponse(data: data, statusCode: statusCode.httpResponseStatus)
     }
 
-    func serverErrR(socket: WebSocket, data: SData, room: String? = nil) {
+    func socketR(socket: WebSocket, data: SData, room: String? = nil) {
         sendSocketResponse(socket: socket, data: data, room: room)
     }
 }
