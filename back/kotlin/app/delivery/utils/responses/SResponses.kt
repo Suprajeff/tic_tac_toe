@@ -5,15 +5,23 @@ import io.ktor.server.application.*
 import io.ktor.http.*
 import io.ktor.server.*
 import io.ktor.websocket.*
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory
 
 class GameResponses() {
     
+    companion object {
+        private val logger = LoggerFactory.getLogger(GameResponses::class.java)
+    }
+
     private suspend fun sendHTTPResponse(call: ApplicationCall, data: SData, statusCode: HttpStatusCode) {
         when (data) {
             is SData.Json -> {
+                logger.info("JSON!")
                 call.respondText(data.data.toString(), contentType = ContentType.Application.Json, status = statusCode)
             }
             is SData.Html -> {
+                logger.info("HTML!")
                 call.respondText(data.data, contentType = ContentType.Text.Html, status = statusCode)
             }
         }
@@ -45,6 +53,11 @@ class GameResponses() {
     }
 
     suspend fun successR(call: ApplicationCall, data: SData, statusCode: Status.Success) {
+        logger.info("Success!")
+        logger.info(call.toString())
+        logger.info(data.toString())
+        logger.info(statusCode.value.toString())
+        logger.info("Success!")
         sendHTTPResponse(call, data, statusCode.toHttpStatusCode())
     }
 

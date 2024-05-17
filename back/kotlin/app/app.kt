@@ -18,6 +18,7 @@ fun main() {
         val redisData = RedisData(it)
         embeddedServer(Netty, port = 8082) {
             configureCORS()
+            configureSession()
             launchGameFeature(this, redisData)
         }.start(wait = true)
     }

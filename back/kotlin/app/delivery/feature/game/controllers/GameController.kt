@@ -1,6 +1,7 @@
 import io.ktor.server.*
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.sessions.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
@@ -28,12 +29,9 @@ class GameController(private val useCases: GameUseCasesB, private val responses:
             val result = useCases.initializeGame()
             logger.info("Game initialization result: $result")
             if (result is Result.Success<GameType>) {
+                saveResult(call, result.data)
                 val boardHtml = gameHTMLContent.getNewBoard()
-                responses.successR(
-                    call = call,
-                    data = SData.Html(boardHtml),
-                    statusCode = Status.Success.OK
-                )
+                responses.successR(call = call, data = SData.Html(boardHtml), statusCode = Status.Success.OK)
             } else {
                 handleResult(result, call)
             }
@@ -45,10 +43,21 @@ class GameController(private val useCases: GameUseCasesB, private val responses:
 
         scope.launch {
             logger.info("Restarting Game")
-            val gameID = ""
+            val savedResult = call.sessions.get<GameSession>()
+            val gameID = savedResult?.gameID
+            if (gameID == null) {
+                responses.serverErrR(call = call, data = SData.Json(emptyMap()), statusCode = Status.ServerError.INTERNAL_SERVER_ERROR)
+                return@launch
+            }
             val result = useCases.resetGame(gameID)
             logger.info("Game restart result: $result")
-            handleResult(result, call)
+            if (result is Result.Success<GameType>) {
+                saveResult(call, result.data)
+                val boardHtml = gameHTMLContent.getNewBoard()
+                responses.successR(call = call, data = SData.Html(boardHtml), statusCode = Status.Success.OK)
+            } else {
+                handleResult(result, call)
+            }
         }
 
     }
@@ -56,15 +65,56 @@ class GameController(private val useCases: GameUseCasesB, private val responses:
     suspend fun makeMove(call: ApplicationCall) {
         
         scope.launch {
+
             logger.info("Making Move")
             val requestBody = call.receiveText()
-            val parsedData = Json.decodeFromString<GameData>(requestBody)
-            val gameID = parsedData.gameID
-            val position = parsedData.position
-            val player = PlayerType(symbol = parsedData.playerSymbol)
-            val result = useCases.makeMove(gameID, position, player)
+
+            val moveData = Json.decodeFromString<MoveData>(requestBody)
+            val position = moveData.position
+            val gameID = call.sessions.get<GameSession>()?.gameID
+            val currentPlayer = call.sessions.get<GameSession>()?.currentPlayer
+
+            if (gameID == null || currentPlayer == null) {
+                responses.serverErrR(call = call, data = SData.Json(emptyMap()), statusCode = Status.ServerError.INTERNAL_SERVER_ERROR)
+                return@launch
+            }
+
+            val result = useCases.makeMove(gameID, position, currentPlayer)
             logger.info("Game Move result: $result")
-            handleResult(result, call)
+
+            if (result is Result.Success<GameType>) {
+
+                call.sessions.set(GameSession(
+                    gameID = gameID,
+                    currentPlayer = result.data.currentPlayer,
+                    gameState = result.data.gameState,
+                    state = result.data.state
+                ))
+
+                val newTitle = when {
+                    result.data.gameState == GameState.WON && result.data.winner != null -> {
+                        if (result.data.winner.symbol == CellType.X) GameTitle.PLAYER_X_WON else GameTitle.PLAYER_O_WON
+                    }
+                    result.data.gameState == GameState.DRAW -> GameTitle.DRAW
+                    else -> GameTitle.PLAYING
+                }
+
+                when (result.data.state) {
+                    is State.BoardState -> {
+                        logger.info("Board state is an array or a dictionary")
+                        responses.serverErrR(call = call, data = SData.Json(emptyMap()), statusCode = Status.ServerError.INTERNAL_SERVER_ERROR)
+                        return@launch
+                    }
+                    is State.MovesState -> {
+                        val newMove = gameHTMLContent.getBoard(newTitle, result.data.state.moves)
+                        responses.successR(call = call, data = SData.Html(newMove), statusCode = Status.Success.OK)
+                    }
+                }
+
+            } else {
+                handleResult(result, call)
+            }
+
         }
 
     }
@@ -87,6 +137,16 @@ class GameController(private val useCases: GameUseCasesB, private val responses:
                 statusCode = Status.ClientError.REQUEST_TIMEOUT
             )
         }
+    }
+
+    private fun saveResult(call: ApplicationCall, result: GameType) {
+        call.sessions.set(GameSession(
+            gameID = result.id,
+            currentPlayer = result.currentPlayer,
+            gameState = result.gameState,
+            state = result.state,
+            winner = result.winner
+        ))
     }
 
 }
