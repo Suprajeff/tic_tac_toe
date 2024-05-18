@@ -1,3 +1,5 @@
+package delivery.utils.responses.types
+
 class Status {
 
     enum class Informational(val value: Int) {

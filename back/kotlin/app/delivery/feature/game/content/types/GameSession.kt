@@ -1,3 +1,5 @@
+package delivery.feature.game.content.types
+
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Serializer
 import kotlinx.serialization.descriptors.PrimitiveKind

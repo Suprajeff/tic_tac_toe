@@ -1,3 +1,5 @@
+package delivery.feature.game.content
+
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 const val FILLED_CELL = """

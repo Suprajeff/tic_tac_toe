@@ -1,3 +1,5 @@
+package delivery.middlewares
+
 import io.ktor.server.application.*
 import io.ktor.server.plugins.cors.*
 import io.ktor.http.*

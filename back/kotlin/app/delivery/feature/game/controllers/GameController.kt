@@ -1,3 +1,5 @@
+package delivery.feature.game.controllers
+
 import io.ktor.server.*
 import io.ktor.http.*
 import io.ktor.server.application.*

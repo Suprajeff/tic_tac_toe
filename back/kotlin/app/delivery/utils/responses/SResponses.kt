@@ -1,3 +1,5 @@
+package delivery.utils.responses
+
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.ContentType
 import io.ktor.server.response.respondText
