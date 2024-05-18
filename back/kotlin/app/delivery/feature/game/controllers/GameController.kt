@@ -50,23 +50,25 @@ class GameController(private val useCases: GameUseCasesB, private val responses:
 
     suspend fun restartGame(call: ApplicationCall) {
 
-        scope.launch {
-            logger.info("Restarting Game")
-            val savedResult = call.sessions.get<GameSession>()
-            val gameID = savedResult?.gameID
-            if (gameID == null) {
-                responses.serverErrR(call = call, data = SData.Json(emptyMap()), statusCode = Status.ServerError.INTERNAL_SERVER_ERROR)
-                return@launch
-            }
-            val result = useCases.resetGame(gameID)
-            logger.info("Game restart result: $result")
-            if (result is Result.Success<GameType>) {
+        logger.info("Restarting Game")
+        val savedResult = call.sessions.get<GameSession>()
+        val gameID = savedResult?.gameID
+        if (gameID == null) {
+            responses.serverErrR(call = call, data = SData.Json(emptyMap()), statusCode = Status.ServerError.INTERNAL_SERVER_ERROR)
+            return
+        }
+        val result = withContext(scope.coroutineContext) {
+            useCases.resetGame(gameID)
+        }
+        logger.info("Game restart result: $result")
+        if (result is Result.Success<GameType>) {
+            withContext(scope.coroutineContext) {
                 saveResult(call, result.data)
                 val boardHtml = gameHTMLContent.getNewBoard()
                 responses.successR(call = call, data = SData.Html(boardHtml), statusCode = Status.Success.OK)
-            } else {
-                handleResult(result, call)
             }
+        } else {
+            handleResult(result, call)
         }
 
     }
