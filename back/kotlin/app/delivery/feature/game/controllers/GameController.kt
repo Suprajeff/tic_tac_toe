@@ -3,6 +3,7 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.sessions.*
 import io.ktor.server.routing.*
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.decodeFromString
@@ -81,8 +82,6 @@ class GameController(private val useCases: GameUseCasesB, private val responses:
     suspend fun makeMove(call: ApplicationCall) {
 
             logger.info("Making Move")
-//            val content = call.receive<String>()
-//            logger.info("Request URI AAAxa: ${call.request.uri} - Payload AAAxa: $content")
             val positionData = call.receiveParameters()["position"]
 
             val savedResult = call.sessions.get<GameSession>()

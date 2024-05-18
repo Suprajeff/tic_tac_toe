@@ -1,3 +1,4 @@
+import org.slf4j.LoggerFactory
 interface GameUseCasesB {
     suspend fun initializeGame(): Result<GameType>
     suspend fun resetGame(gameID: String): Result<GameType>
@@ -5,6 +6,10 @@ interface GameUseCasesB {
 }
 
 class GameUseCases(private val gameRepo: GameRepository, private val gameLogic: GameLogicB): GameUseCasesB {
+
+    companion object {
+        private val logger = LoggerFactory.getLogger(GameUseCases::class.java)
+    }
 
     override suspend fun initializeGame(): Result<GameType> {
 
@@ -62,30 +67,73 @@ class GameUseCases(private val gameRepo: GameRepository, private val gameLogic: 
     override suspend fun makeMove(gameID: String, position: CellPosition, player: PlayerType): Result<GameType> {
 
         val newBoardStateResult = gameRepo.updateBoard(gameID, position, player)
-        if (newBoardStateResult !is Result.Success<StateType>) {
-            return Result.Error(IllegalStateException("Error getting board: ${(newBoardStateResult as Result.Error).exception}"))
+        when (newBoardStateResult) {
+            is Result.Success<StateType> -> {
+                val data = newBoardStateResult.data
+                logger.info("Newboard State Result: $data")
+            }
+            is Result.Error -> {
+                val error = newBoardStateResult.exception
+                logger.info("Newboard State Error: $error")
+                return Result.Error(IllegalStateException("Error getting board: ${(newBoardStateResult as Result.Error).exception}"))
+            }
+            is Result.NotFound -> {
+                logger.warn("Result not found")
+                return Result.NotFound
+            }
+            else -> {
+                logger.info("Case not covered")
+                return Result.NotFound
+            }
         }
 
-        val checkWinnerAndDrawResult = gameLogic.checkForWinner(newBoardStateResult.data)
-        if (checkWinnerAndDrawResult !is Result.Success<GameResult>) {
-            return Result.Error(IllegalStateException("Error checking for winner: ${(checkWinnerAndDrawResult as Result.Error).exception}"))
-        }
-
-        var gameState: GameState
+        var gameState: GameState = GameState.IN_PROGRESS
         var winner: PlayerType? = null
 
-        if (checkWinnerAndDrawResult.data.winner != null){
-            gameState = GameState.WON
-            winner = checkWinnerAndDrawResult.data.winner
-        } else if(checkWinnerAndDrawResult.data.draw){
-            gameState = GameState.DRAW
-        } else {
-            gameState = GameState.IN_PROGRESS
+        val checkWinnerAndDrawResult = gameLogic.checkForWinner(newBoardStateResult.data)
+        when (checkWinnerAndDrawResult) {
+            is Result.Success<GameResult> -> {
+                val data = checkWinnerAndDrawResult.data
+                logger.info("Winner Check Result: $data")
+                if (checkWinnerAndDrawResult.data.winner != null){
+                    gameState = GameState.WON
+                    winner = checkWinnerAndDrawResult.data.winner
+                } else if(checkWinnerAndDrawResult.data.draw){
+                    gameState = GameState.DRAW
+                }
+            }
+            is Result.Error -> {
+                val error = checkWinnerAndDrawResult.exception
+                logger.info("Winner Check Error: $error")
+                return Result.Error(IllegalStateException("Error checking for winner: ${(checkWinnerAndDrawResult as Result.Error).exception}"))
+            }
+            is Result.NotFound -> {
+                logger.warn("Result not found")
+            }
+            else -> {
+                logger.info("Case not covered")
+            }
         }
 
         val nextPlayerResult = gameLogic.getNextPlayer(player)
-        if (nextPlayerResult !is Result.Success<PlayerType>) {
-            return Result.Error(IllegalStateException("Error getting player: ${(nextPlayerResult as Result.Error).exception}"))
+        when (nextPlayerResult) {
+            is Result.Success<PlayerType> -> {
+                val data = nextPlayerResult.data
+                logger.info("Next Player Result: $data")
+            }
+            is Result.Error -> {
+                val error = nextPlayerResult.exception
+                logger.info("Next Player Error: $error")
+                return Result.Error(IllegalStateException("Error checking for winner: ${(nextPlayerResult as Result.Error).exception}"))
+            }
+            is Result.NotFound -> {
+                logger.warn("Result not found")
+                return Result.NotFound
+            }
+            else -> {
+                logger.info("Case not covered")
+                return Result.NotFound
+            }
         }
 
         return gameRepo.updateGameState(gameID, newBoardStateResult.data, GameInfo(gameState, nextPlayerResult.data, winner))

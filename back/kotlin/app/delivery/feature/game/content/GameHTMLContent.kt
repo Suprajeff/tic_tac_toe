@@ -1,3 +1,5 @@
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 const val FILLED_CELL = """
     <div id="cell%s" class="flex items-center justify-center font-bold text-4xl bg-slate-600 text-white">%s</div>
 """
@@ -81,7 +83,9 @@ class GameHTMLContent {
             }
         }
 
-        return String.format(GAME_BOARD, title, boardContent)
+        val titleFormatted = Json.encodeToString(title)
+
+        return String.format(GAME_BOARD, titleFormatted, boardContent)
     }
 
 }
