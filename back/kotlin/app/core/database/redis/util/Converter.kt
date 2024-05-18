@@ -1,5 +1,9 @@
 package core.database.redis.util
 
+import core.model.CellPosition
+import core.model.CellType
+import core.model.PlayerType
+import core.model.GameState
 object Converter {
     
     fun cellPositionToStringRepresentation(cellPosition: CellPosition): String {

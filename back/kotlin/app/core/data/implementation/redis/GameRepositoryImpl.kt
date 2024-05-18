@@ -1,5 +1,15 @@
 package core.data.implementation.redis
 
+import core.common.result.Result
+import core.database.redis.RedisDataProtocol
+import core.data.repository.GameRepository
+import core.model.StateType
+import core.model.PlayerType
+import core.model.CellPosition
+import core.model.GameType
+import core.database.redis.entity.Move
+import core.database.redis.entity.GameInfo
+
 class GameRepositoryImpl(private val redisData: RedisDataProtocol): GameRepository {
     
     override suspend fun createNewGame(newKey: String, board: StateType, player: PlayerType): Result<GameType> {

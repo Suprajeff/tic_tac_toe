@@ -1,6 +1,13 @@
 package core.service.game
 
 import java.util.UUID
+import core.common.result.Result
+import core.model.CellType
+import core.model.BoardType
+import core.model.PlayerType
+import core.model.State
+import core.model.StateType
+import core.model.GameResult
 
 interface GameLogicB {
     fun generateNewID(): Result<String>

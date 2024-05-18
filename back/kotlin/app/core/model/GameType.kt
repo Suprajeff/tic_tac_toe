@@ -1,7 +1,5 @@
 package core.model
 
-import kotlinx.serialization.Serializable
-
 data class GameType(
     val id: String,
     val currentPlayer: PlayerType,

@@ -1,5 +1,4 @@
 package connections.config
-
 import java.io.File
 import java.util.*
 

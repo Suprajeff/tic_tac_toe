@@ -3,10 +3,7 @@ package connections.infrastructure.database
 import java.util.concurrent.ExecutionException
 import io.lettuce.core.RedisClient
 import io.lettuce.core.RedisURI
-import io.lettuce.core.*
 import io.lettuce.core.api.async.RedisAsyncCommands
-//import io.lettuce.core.api.sync.RedisCommands
-import io.lettuce.core.api.StatefulRedisConnection
 
 fun createRedisClient(redisHost: String = "redis"): RedisAsyncCommands<String, String> {
     val uri = RedisURI.Builder

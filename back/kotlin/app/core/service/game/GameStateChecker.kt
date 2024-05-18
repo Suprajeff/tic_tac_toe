@@ -1,5 +1,11 @@
 package core.service.game
 
+import core.common.result.Result
+import core.model.CellType
+import core.model.CellPosition
+import core.model.PlayerType
+import core.model.GameResult
+
 interface GameStateCheckerB  {
     fun checkForVictoryOrDrawA(cells: Array<Array<CellType?>>): Result<GameResult>;
     fun checkForVictoryOrDrawB(cells: Map<CellPosition, CellType?>): Result<GameResult>;

@@ -1,5 +1,18 @@
 package core.domain
 
+import core.common.result.Result
+import core.model.State
+import core.model.BoardType
+import core.model.StateType
+import core.model.PlayerType
+import core.model.CellPosition
+import core.model.GameType
+import core.model.GameState
+import core.model.GameResult
+import core.database.redis.entity.GameInfo
+import core.data.repository.GameRepository
+import core.service.game.GameLogicB
+
 import org.slf4j.LoggerFactory
 interface GameUseCasesB {
     suspend fun initializeGame(): Result<GameType>

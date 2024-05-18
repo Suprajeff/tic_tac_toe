@@ -1,7 +1,7 @@
 package core.database.redis.entity
 
-import PlayerType
-import CellPosition
+import core.model.PlayerType
+import core.model.CellPosition
 
 data class Move (
     val player: PlayerType,
