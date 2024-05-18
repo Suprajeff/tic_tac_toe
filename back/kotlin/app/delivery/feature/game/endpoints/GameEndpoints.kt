@@ -22,23 +22,26 @@ class GameEndpoints(private val controller: GameController, private val applicat
 
             get("/start") {
                 val call = call
-                launch {
+                val job = launch {
                     controller.startGame(call)
                 }
+                job.join()
             }
 
             get("/restart") {
                 val call = call
-                launch {
+                val job = launch {
                     controller.restartGame(call)
                 }
+                job.join()
             }
 
             post("/move") {
                 val call = call
-                launch {
+                val job = launch {
                     controller.makeMove(call)
                 }
+                job.join()
             }
 
         }

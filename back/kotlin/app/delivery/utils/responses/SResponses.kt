@@ -53,11 +53,6 @@ class GameResponses() {
     }
 
     suspend fun successR(call: ApplicationCall, data: SData, statusCode: Status.Success) {
-        logger.info("Success!")
-        logger.info(call.toString())
-        logger.info(data.toString())
-        logger.info(statusCode.value.toString())
-        logger.info("Success!")
         sendHTTPResponse(call, data, statusCode.toHttpStatusCode())
     }
 

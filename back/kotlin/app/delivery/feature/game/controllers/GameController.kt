@@ -4,6 +4,7 @@ import io.ktor.server.application.*
 import io.ktor.server.sessions.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import io.ktor.server.request.receiveText
@@ -24,18 +25,26 @@ class GameController(private val useCases: GameUseCasesB, private val responses:
 
     suspend fun startGame(call: ApplicationCall) {
 
-        scope.launch {
             logger.info("Starting Game")
-            val result = useCases.initializeGame()
-            logger.info("Game initialization result: $result")
-            if (result is Result.Success<GameType>) {
-                saveResult(call, result.data)
-                val boardHtml = gameHTMLContent.getNewBoard()
-                responses.successR(call = call, data = SData.Html(boardHtml), statusCode = Status.Success.OK)
-            } else {
-                handleResult(result, call)
+
+            val result = withContext(scope.coroutineContext) {
+                useCases.initializeGame()
             }
-        }
+
+            logger.info("Game initialization result: $result")
+
+            if (result is Result.Success<GameType>) {
+                val boardHtml = gameHTMLContent.getNewBoard()
+                withContext(scope.coroutineContext) {
+                    saveResult(call, result.data)
+                    logger.info("Result Saved")
+                    responses.successR(call = call, data = SData.Html(boardHtml), statusCode = Status.Success.OK)
+                }
+            } else {
+                withContext(scope.coroutineContext) {
+                    handleResult(result, call)
+                }
+            }
 
     }
 
@@ -84,11 +93,13 @@ class GameController(private val useCases: GameUseCasesB, private val responses:
 
             if (result is Result.Success<GameType>) {
 
+                val serializedState = Json.encodeToString(result.data.state)
+
                 call.sessions.set(GameSession(
                     gameID = gameID,
                     currentPlayer = result.data.currentPlayer,
                     gameState = result.data.gameState,
-                    state = result.data.state
+                    state = serializedState
                 ))
 
                 val newTitle = when {
@@ -139,12 +150,15 @@ class GameController(private val useCases: GameUseCasesB, private val responses:
         }
     }
 
-    private fun saveResult(call: ApplicationCall, result: GameType) {
+    private suspend fun saveResult(call: ApplicationCall, result: GameType) {
+
+        val serializedState = Json.encodeToString(result.state)
+
         call.sessions.set(GameSession(
             gameID = result.id,
             currentPlayer = result.currentPlayer,
             gameState = result.gameState,
-            state = result.state,
+            state = serializedState,
             winner = result.winner
         ))
     }
