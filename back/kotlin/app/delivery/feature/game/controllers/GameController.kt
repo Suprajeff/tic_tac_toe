@@ -7,7 +7,10 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.*
+import io.ktor.server.request.*
 import io.ktor.server.request.receiveText
+import io.ktor.server.request.receiveParameters
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory
 import kotlinx.coroutines.CoroutineScope
@@ -68,41 +71,38 @@ class GameController(private val useCases: GameUseCasesB, private val responses:
                 responses.successR(call = call, data = SData.Html(boardHtml), statusCode = Status.Success.OK)
             }
         } else {
-            handleResult(result, call)
+            withContext(scope.coroutineContext) {
+                handleResult(result, call)
+            }
         }
 
     }
 
     suspend fun makeMove(call: ApplicationCall) {
-        
-        scope.launch {
 
             logger.info("Making Move")
-            val requestBody = call.receiveText()
+//            val content = call.receive<String>()
+//            logger.info("Request URI AAAxa: ${call.request.uri} - Payload AAAxa: $content")
+            val positionData = call.receiveParameters()["position"]
 
-            val moveData = Json.decodeFromString<MoveData>(requestBody)
-            val position = moveData.position
-            val gameID = call.sessions.get<GameSession>()?.gameID
-            val currentPlayer = call.sessions.get<GameSession>()?.currentPlayer
+            val savedResult = call.sessions.get<GameSession>()
+            val gameID = savedResult?.gameID
+            val currentPlayer = savedResult?.currentPlayer
 
-            if (gameID == null || currentPlayer == null) {
+            if (gameID == null || currentPlayer == null || positionData == null) {
                 responses.serverErrR(call = call, data = SData.Json(emptyMap()), statusCode = Status.ServerError.INTERNAL_SERVER_ERROR)
-                return@launch
+                return
             }
 
-            val result = useCases.makeMove(gameID, position, currentPlayer)
+            val position = CellPosition.valueOf(positionData)
+
+            val result = withContext(scope.coroutineContext) {
+                useCases.makeMove(gameID, position, currentPlayer)
+            }
+
             logger.info("Game Move result: $result")
 
             if (result is Result.Success<GameType>) {
-
-                val serializedState = Json.encodeToString(result.data.state)
-
-                call.sessions.set(GameSession(
-                    gameID = gameID,
-                    currentPlayer = result.data.currentPlayer,
-                    gameState = result.data.gameState,
-                    state = serializedState
-                ))
 
                 val newTitle = when {
                     result.data.gameState == GameState.WON && result.data.winner != null -> {
@@ -116,19 +116,22 @@ class GameController(private val useCases: GameUseCasesB, private val responses:
                     is State.BoardState -> {
                         logger.info("Board state is an array or a dictionary")
                         responses.serverErrR(call = call, data = SData.Json(emptyMap()), statusCode = Status.ServerError.INTERNAL_SERVER_ERROR)
-                        return@launch
+                        return
                     }
                     is State.MovesState -> {
-                        val newMove = gameHTMLContent.getBoard(newTitle, result.data.state.moves)
-                        responses.successR(call = call, data = SData.Html(newMove), statusCode = Status.Success.OK)
+                        withContext(scope.coroutineContext) {
+                            saveResult(call, result.data)
+                            val newMove = gameHTMLContent.getBoard(newTitle, result.data.state.moves)
+                            responses.successR(call = call, data = SData.Html(newMove), statusCode = Status.Success.OK)
+                        }
                     }
                 }
 
             } else {
-                handleResult(result, call)
+                withContext(scope.coroutineContext) {
+                    handleResult(result, call)
+                }
             }
-
-        }
 
     }
 

@@ -19,6 +19,7 @@ fun main() {
         embeddedServer(Netty, port = 8082) {
             configureCORS()
             configureSession()
+            configureParser()
             launchGameFeature(this, redisData)
         }.start(wait = true)
     }
