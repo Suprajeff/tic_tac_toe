@@ -1,3 +1,5 @@
+package connections.infrastructure.database
+
 import java.util.concurrent.ExecutionException
 import io.lettuce.core.RedisClient
 import io.lettuce.core.RedisURI

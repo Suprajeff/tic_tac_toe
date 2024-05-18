@@ -1,3 +1,5 @@
+package core.database.redis.entity
+
 import PlayerType
 import CellPosition
 

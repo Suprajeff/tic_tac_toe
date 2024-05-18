@@ -1,3 +1,5 @@
+package core.service.game
+
 import java.util.UUID
 
 interface GameLogicB {

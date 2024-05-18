@@ -1,3 +1,5 @@
+package core.database.redis.util
+
 object Converter {
     
     fun cellPositionToStringRepresentation(cellPosition: CellPosition): String {

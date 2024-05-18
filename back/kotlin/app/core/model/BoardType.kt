@@ -1,5 +1,6 @@
+package core.model
+
 import kotlinx.serialization.Serializable
-import CellType
 
 @Serializable
 sealed class BoardType {

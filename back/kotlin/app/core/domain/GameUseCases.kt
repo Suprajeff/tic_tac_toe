@@ -1,3 +1,5 @@
+package core.domain
+
 import org.slf4j.LoggerFactory
 interface GameUseCasesB {
     suspend fun initializeGame(): Result<GameType>

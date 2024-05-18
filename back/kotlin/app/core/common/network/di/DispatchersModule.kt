@@ -1,3 +1,5 @@
+package core.common.network.di
+
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 

@@ -1,3 +1,5 @@
+package core.data.repository
+
 interface GameRepository {
     suspend fun createNewGame(newKey: String, board: StateType, player: PlayerType): Result<GameType>
     suspend fun resetGame(gameID: String, board: StateType, player: PlayerType): Result<GameType>

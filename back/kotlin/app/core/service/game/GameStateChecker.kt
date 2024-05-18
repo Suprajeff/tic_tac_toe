@@ -1,3 +1,5 @@
+package core.service.game
+
 interface GameStateCheckerB  {
     fun checkForVictoryOrDrawA(cells: Array<Array<CellType?>>): Result<GameResult>;
     fun checkForVictoryOrDrawB(cells: Map<CellPosition, CellType?>): Result<GameResult>;

@@ -1,7 +1,6 @@
+package core.model
+
 import kotlinx.serialization.Serializable
-import BoardType
-import PlayerType 
-import GameState 
 
 data class GameType(
     val id: String,

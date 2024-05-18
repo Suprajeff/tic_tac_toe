@@ -1,3 +1,5 @@
+package core.service.game
+
 val winningCombinationsForDictionary = listOf(
     Triple(CellPosition.TL, CellPosition.T, CellPosition.TR), // Rows
     Triple(CellPosition.L, CellPosition.C, CellPosition.R),

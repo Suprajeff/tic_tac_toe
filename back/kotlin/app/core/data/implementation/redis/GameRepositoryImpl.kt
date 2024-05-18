@@ -1,3 +1,5 @@
+package core.data.implementation.redis
+
 class GameRepositoryImpl(private val redisData: RedisDataProtocol): GameRepository {
     
     override suspend fun createNewGame(newKey: String, board: StateType, player: PlayerType): Result<GameType> {
