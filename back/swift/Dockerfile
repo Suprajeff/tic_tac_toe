@@ -84,5 +84,5 @@ USER vapor:vapor
 EXPOSE 8083
 
 # Start the Vapor service when the image is run, default to listening on 8083 in production environment
-ENTRYPOINT ["./TicTacToe"]
-CMD ["serve", "--env", "production", "--hostname", "0.0.0.0", "--port", "8083"]
+ENTRYPOINT ["./App"]
+CMD ["serve", "--env", "development", "--hostname", "127.0.0.1", "--port", "8083"]

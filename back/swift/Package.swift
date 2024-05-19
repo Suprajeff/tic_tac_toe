@@ -6,9 +6,9 @@ let package = Package(
     platforms: [
         .macOS(.v13)
     ],
-    products: [
-        .executable(name: "swift-ttt", targets: ["TicTacToe"])
-    ],
+//    products: [
+//        .executable(name: "swift-ttt", targets: ["App"])
+//    ],
     dependencies: [
         .package(url: "https://github.com/vapor/vapor.git", from: "4.99.3"),
         .package(url: "https://github.com/vapor/redis.git", from: "4.10.0"),
