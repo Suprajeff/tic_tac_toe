@@ -5,6 +5,13 @@ import io.ktor.server.application.*
 import io.lettuce.core.RedisClient
 import io.lettuce.core.api.async.RedisAsyncCommands
 
+import connections.infrastructure.database.createRedisClient
+import core.database.redis.RedisData
+import delivery.middlewares.configureCORS
+import delivery.middlewares.configureSession
+import delivery.middlewares.configureParser
+import delivery.feature.game.launchGameFeature
+
 fun main() {
 
     val redisClient: RedisAsyncCommands<String, String>? = try {

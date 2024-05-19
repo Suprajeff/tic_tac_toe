@@ -2,6 +2,13 @@ package delivery.feature.game.content
 
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import core.model.CellType
+import core.model.CellPosition
+import core.model.PlayerType
+import core.model.PlayersMoves
+import delivery.feature.game.content.types.GameTitle
+import delivery.feature.game.content.types.Cell
+
 const val FILLED_CELL = """
     <div id="cell%s" class="flex items-center justify-center font-bold text-4xl bg-slate-600 text-white">%s</div>
 """

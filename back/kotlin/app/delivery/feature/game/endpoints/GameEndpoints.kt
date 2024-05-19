@@ -1,5 +1,7 @@
 package delivery.feature.game.endpoints
 
+import delivery.feature.game.controllers.GameController
+
 import io.ktor.server.*
 import io.ktor.http.*
 import io.ktor.server.application.*

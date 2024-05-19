@@ -10,6 +10,9 @@ import io.ktor.websocket.*
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory
 
+import delivery.utils.responses.types.SData
+import delivery.utils.responses.types.Status
+
 class GameResponses() {
     
     companion object {

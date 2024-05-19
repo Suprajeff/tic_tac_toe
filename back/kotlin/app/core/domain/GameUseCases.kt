@@ -14,11 +14,7 @@ import core.data.repository.GameRepository
 import core.service.game.GameLogicB
 
 import org.slf4j.LoggerFactory
-interface GameUseCasesB {
-    suspend fun initializeGame(): Result<GameType>
-    suspend fun resetGame(gameID: String): Result<GameType>
-    suspend fun makeMove(gameID: String, position: CellPosition, player: PlayerType): Result<GameType>
-}
+
 
 class GameUseCases(private val gameRepo: GameRepository, private val gameLogic: GameLogicB): GameUseCasesB {
 

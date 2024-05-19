@@ -8,7 +8,3 @@ import core.database.redis.dao.GameDao
 class RedisData(commands: RedisAsyncCommands<String, String>) : RedisDataProtocol {
     override val gameDao: GameDao = GameDao(commands)
 }
-
-interface RedisDataProtocol {
-    val gameDao: GameDao
-}

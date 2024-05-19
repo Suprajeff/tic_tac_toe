@@ -5,6 +5,9 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import io.ktor.server.request.receiveText
 
+import core.model.CellType
+import core.model.CellPosition
+
 @Serializable
 data class GameIDData(val gameID: String)
 

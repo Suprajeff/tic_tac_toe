@@ -8,6 +8,8 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.KSerializer
+import core.model.PlayerType
+import core.model.GameState
 
 @Serializable
 data class GameSession(
