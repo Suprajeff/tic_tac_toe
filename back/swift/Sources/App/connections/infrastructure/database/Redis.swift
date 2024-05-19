@@ -17,11 +17,7 @@ public func redisSetup(_ app: Application) async throws {
         redisHost = "redis"
     }
     
-    app.redis.configuration = try RedisConfiguration(
-        hostname: "redis",
-        port: 6379,
-        password: nil
-    )
+    app.redis.configuration = try RedisConfiguration(hostname: "redis")
     
     app.logger.info("Connecting to Redis at \(redisHost)")
     
