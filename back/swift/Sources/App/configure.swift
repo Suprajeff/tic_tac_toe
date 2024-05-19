@@ -25,6 +25,7 @@ public func configure(_ app: Application) async throws {
     try app.routes.register(collection: GameEndpoints(gameController: gameFeatureController))
     app.http.server.configuration.hostname = "127.0.0.1"
     app.http.server.configuration.port = 8083
+    app.http.server.configuration.supportPipelining = true
     app.logger.info("Routes registered")
     print(app.routes.all)
 

@@ -24,14 +24,21 @@ let package = Package(
                 .product(name: "NIOPosix", package: "swift-nio"),
                 .product(name: "Redis", package: "redis"),
                 .product(name: "WebSocketKit", package: "websocket-kit"),
-            ]
+            ],
+            swiftSettings: swiftSettings
         ),
         .testTarget(
             name: "AppTests",
             dependencies: [
                 .target(name: "App"),
                 .product(name: "XCTVapor", package: "vapor"),
-            ]
+            ],
+            swiftSettings: swiftSettings
         )
     ]
 )
+
+var swiftSettings: [SwiftSetting] { [
+    .enableUpcomingFeature("DisableOutwardActorInference"),
+    .enableExperimentalFeature("StrictConcurrency"),
+] }
