@@ -1,7 +1,7 @@
 import Vapor
 import Redis
 
-public func redisSetup(_ app: Application) throws {
+public func redisSetup(_ app: Application) async throws {
  
     let redisHost: String
     

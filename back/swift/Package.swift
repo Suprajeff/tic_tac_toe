@@ -17,7 +17,7 @@ let package = Package(
     ],
     targets: [
         .executableTarget(
-            name: "TicTacToe",
+            name: "App",
             dependencies: [
                 .product(name: "Vapor", package: "vapor"),
                 .product(name: "NIOCore", package: "swift-nio"),
@@ -27,9 +27,9 @@ let package = Package(
             ]
         ),
         .testTarget(
-            name: "TicTacToeTests",
+            name: "AppTests",
             dependencies: [
-                .target(name: "TicTacToe"),
+                .target(name: "App"),
                 .product(name: "XCTVapor", package: "vapor"),
             ]
         )

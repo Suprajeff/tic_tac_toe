@@ -2,7 +2,7 @@ import Vapor
 import Redis
 
 
-func launchGameFeature(redisClient: RedisClient, _ app: Application) throws -> GameController {
+func launchGameFeature(redisClient: RedisClient, _ app: Application) async throws -> GameController {
 
     let redisData = RedisData(redis: redisClient)
     let gameRepository = GameRepositoryImpl(redisData: redisData)

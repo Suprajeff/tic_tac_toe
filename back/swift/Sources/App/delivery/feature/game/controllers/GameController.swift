@@ -15,6 +15,7 @@ class GameController {
 
         switch useCases.initializeGame() {
             case .success(let data):
+                print(data)
                 let boardHtml = GameHTMLContent.getNewBoard()
                 return handleResult(data: boardHtml, successHandler: self.sResponses.successR)
             case .failure(let error):
@@ -37,6 +38,7 @@ class GameController {
 
             switch useCases.resetGame(gameID: gameData.gameID) {
                 case .success(let data):
+                    print(data)
                     let boardHtml = GameHTMLContent.getNewBoard()
                     return handleResult(data: boardHtml, successHandler: self.sResponses.successR)
                 case .failure(let error):
@@ -66,6 +68,7 @@ class GameController {
 
             switch useCases.makeMove(gameID: gameData.gameID, position: gameData.position, player: player) {
                 case .success(let data):
+                    print(data)
                     return handleResult(data: data, successHandler: self.sResponses.successR)
                 case .failure(let error):
                     return handleError(error: error, errorHandler: self.sResponses.serverErrR)
