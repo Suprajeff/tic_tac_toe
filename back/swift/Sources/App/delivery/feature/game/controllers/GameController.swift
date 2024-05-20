@@ -33,13 +33,11 @@ class GameController {
 
         do {
 
-            let gameData = try req.content.decode(GameIDData.self)
-
-            if gameData.gameID.isEmpty {
-                return try handleNotFound(req: req, message: "Game ID cannot be empty", notFoundHandler: self.sResponses.clientErrR)
+            guard let gameID = req.session.data["gameID"] else {
+                return try handleNotFound(req: req, message: "Game ID cannot be null", notFoundHandler: self.sResponses.clientErrR)
             }
 
-            switch await useCases.resetGame(gameID: gameData.gameID) {
+            switch await useCases.resetGame(gameID: gameID) {
                 case .success(let data):
                     print(data)
                     let boardHtml = GameHTMLContent.getNewBoard()
