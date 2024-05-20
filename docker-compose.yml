@@ -41,13 +41,13 @@ services:
     # bash -c "swift run && /app/.build/x86_64-unknown-linux-gnu/debug/swift-ttt"
     # command: /app/.build/x86_64-unknown-linux-gnu/debug/swift-ttt
     # command: swift run
-    command: ["serve", "--env", "development", "--hostname", "127.0.0.1", "--port", "8083"]
+    command: ["serve", "--env", "development", "--hostname", "0.0.0.0", "--port", "8083"]
 #    volumes:
 #      - ./back/swift:/app
     ports:
       - "8083:8083"
     environment:
-      - REDIS_HOST=127.0.0.1
+      - REDIS_HOST=redis
     depends_on:
       - redis
   redis:

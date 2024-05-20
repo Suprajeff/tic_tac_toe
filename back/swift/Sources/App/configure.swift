@@ -23,7 +23,7 @@ public func configure(_ app: Application) async throws {
     app.logger.info("Registering routes...")
     app.middleware.use(cors, at: .beginning)
     try app.routes.register(collection: GameEndpoints(gameController: gameFeatureController))
-    app.http.server.configuration.hostname = "127.0.0.1"
+    app.http.server.configuration.hostname = "0.0.0.0"
     app.http.server.configuration.port = 8083
     app.http.server.configuration.supportPipelining = true
     app.logger.info("Routes registered")
