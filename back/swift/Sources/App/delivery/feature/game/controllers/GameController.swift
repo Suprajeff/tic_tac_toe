@@ -83,12 +83,16 @@ class GameController {
     }
 
     private func handleResult<T: Encodable>(req: Request, data: T, successHandler: (_ req: Request, _ data: SData, _ statusCode: Status.Success) -> Response) throws -> Response {
-        do {
-            let jsonData = try JSONEncoder().encode(data)
-            return try successHandler(req, .json(JSONData(jsonData)), .OK)
-        } catch {
-            let errorMessage = "Error encoding data to JSON: \(error)"
-            return try self.sResponses.serverErrR(req: req, data: .json(JSONData(errorMessage)), statusCode: .INTERNAL_SERVER_ERROR)
+        if let stringData = data as? String {
+            return try successHandler(req, .html(stringData), .OK)
+        } else {
+            do {
+                let jsonData = try JSONEncoder().encode(data)
+                return try successHandler(req, .json(JSONData(jsonData)), .OK)
+            } catch {
+                let errorMessage = "Error encoding data to JSON: \(error)"
+                return try self.sResponses.serverErrR(req: req, data: .json(JSONData(errorMessage)), statusCode: .INTERNAL_SERVER_ERROR)
+            }
         }
     }
 
