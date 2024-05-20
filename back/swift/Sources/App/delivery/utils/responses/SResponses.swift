@@ -3,10 +3,10 @@ import WebSocketKit
 
 class GameResponses {
     
-    private func sendHTTPResponse(data: SData, statusCode: HTTPResponseStatus) -> EventLoopFuture<Response> {
+    private func sendHTTPResponse(req: Request, data: SData, statusCode: HTTPResponseStatus) -> Response {
 
-        let eventLoopGroup = MultiThreadedEventLoopGroup(numberOfThreads: 1)
-        let eventLoop = eventLoopGroup.next()
+//        let eventLoopGroup = MultiThreadedEventLoopGroup(numberOfThreads: 1)
+//        let eventLoop = eventLoopGroup.next()
         let response = Response(status: statusCode)
 
         switch data {
@@ -18,7 +18,9 @@ class GameResponses {
                 response.body = .init(string: htmlString)
         }
 
-        return eventLoop.makeSucceededFuture(response)
+//        return req.eventLoop.makeSucceededFuture(response)
+
+        return response
 
     }
 
@@ -50,24 +52,24 @@ class GameResponses {
 
     }
 
-    func informationR(data: SData, statusCode: Status.Informational) -> EventLoopFuture<Response> {
-        sendHTTPResponse(data: data, statusCode: statusCode.httpResponseStatus)
+    func informationR(req: Request, data: SData, statusCode: Status.Informational) -> Response {
+        return sendHTTPResponse(req: req, data: data, statusCode: statusCode.httpResponseStatus)
     }
 
-    func successR(data: SData, statusCode: Status.Success) -> EventLoopFuture<Response> {
-        sendHTTPResponse(data: data, statusCode: statusCode.httpResponseStatus)
+    func successR(req: Request, data: SData, statusCode: Status.Success) -> Response {
+        return sendHTTPResponse(req: req, data: data, statusCode: statusCode.httpResponseStatus)
     }
 
-    func redirectionR(data: SData, statusCode: Status.Redirection) -> EventLoopFuture<Response> {
-        sendHTTPResponse(data: data, statusCode: statusCode.httpResponseStatus)
+    func redirectionR(req: Request, data: SData, statusCode: Status.Redirection) -> Response {
+        return sendHTTPResponse(req: req, data: data, statusCode: statusCode.httpResponseStatus)
     }
 
-    func clientErrR(data: SData, statusCode: Status.ClientError) -> EventLoopFuture<Response> {
-        sendHTTPResponse(data: data, statusCode: statusCode.httpResponseStatus)
+    func clientErrR(req: Request, data: SData, statusCode: Status.ClientError) -> Response {
+        return sendHTTPResponse(req: req, data: data, statusCode: statusCode.httpResponseStatus)
     }
 
-    func serverErrR(data: SData, statusCode: Status.ServerError) -> EventLoopFuture<Response> {
-        sendHTTPResponse(data: data, statusCode: statusCode.httpResponseStatus)
+    func serverErrR(req: Request, data: SData, statusCode: Status.ServerError) -> Response {
+        return sendHTTPResponse(req: req, data: data, statusCode: statusCode.httpResponseStatus)
     }
 
     func socketR(socket: WebSocket, data: SData, room: String? = nil) {

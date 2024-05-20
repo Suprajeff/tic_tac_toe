@@ -8,20 +8,20 @@ class GameRepositoryImpl: GameRepository {
         self.redisData = redisData
     }
     
-    func createNewGame(newKey: String, board: BoardType, player: PlayerType) -> Result<GameType, Error> {
-        return redisData.gameDao.setGame(newKey: newKey, board: board, player: player)
+    func createNewGame(newKey: String, board: BoardType, player: PlayerType) async -> Result<GameType, Error> {
+        return await redisData.gameDao.setGame(newKey: newKey, board: board, player: player)
     }
     
-    func resetGame(gameID: String, board: BoardType, player: PlayerType) -> Result<GameType, Error>  {
-        return redisData.gameDao.resetGame(gameID: gameID, board: board, player: player)
+    func resetGame(gameID: String, board: BoardType, player: PlayerType) async -> Result<GameType, Error>  {
+        return await redisData.gameDao.resetGame(gameID: gameID, board: board, player: player)
     }
     
-    func updateBoard(gameID: String, position: CellPosition, player: PlayerType) -> Result<StateType, Error> {
-        return redisData.gameDao.addPlayerMove(gameID: gameID, move: Move(player: player, position: position))
+    func updateBoard(gameID: String, position: CellPosition, player: PlayerType) async -> Result<StateType, Error> {
+        return await redisData.gameDao.addPlayerMove(gameID: gameID, move: Move(player: player, position: position))
     }
     
-    func getCurrentPlayer(gameID: String) -> Result<PlayerType, Error> {
-        switch redisData.gameDao.getInfo(gameID: gameID) {
+    func getCurrentPlayer(gameID: String) async -> Result<PlayerType, Error> {
+        switch await redisData.gameDao.getInfo(gameID: gameID) {
                 case .success(let data):
                     print("Data:", data)
                     return .success(data.currentPlayer)
@@ -33,8 +33,8 @@ class GameRepositoryImpl: GameRepository {
                 }
     }
     
-    func getBoardState(gameID: String) -> Result<StateType, Error> {
-        switch redisData.gameDao.getInfo(gameID: gameID) {
+    func getBoardState(gameID: String) async -> Result<StateType, Error> {
+        switch await redisData.gameDao.getInfo(gameID: gameID) {
             case .success(let data):
                 print("Data:", data)
                 return .success(data.state)
@@ -46,12 +46,12 @@ class GameRepositoryImpl: GameRepository {
             }
     }
 
-    func getGameState(gameID: String) -> Result<GameType, Error> {
-        return redisData.gameDao.getInfo(gameID: gameID)
+    func getGameState(gameID: String) async -> Result<GameType, Error> {
+        return await redisData.gameDao.getInfo(gameID: gameID)
     }
 
-    func updateGameState(gameID: String, board: StateType, info: GameInfo) -> Result<GameType, Error> {
-        return redisData.gameDao.updateInfo(gameID: gameID, board: board, info: info)
+    func updateGameState(gameID: String, board: StateType, info: GameInfo) async -> Result<GameType, Error> {
+        return await redisData.gameDao.updateInfo(gameID: gameID, board: board, info: info)
     }
 
 }

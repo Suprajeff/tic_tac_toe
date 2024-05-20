@@ -1,9 +1,9 @@
 import Foundation
 
 protocol GameUseCasesB {
-    func initializeGame() -> Result<GameType, Error>
-    func resetGame(gameID: String) -> Result<GameType, Error>
-    func makeMove(gameID: String, position: CellPosition, player: PlayerType) -> Result<GameType, Error>
+    func initializeGame() async -> Result<GameType, Error>
+    func resetGame(gameID: String) async -> Result<GameType, Error>
+    func makeMove(gameID: String, position: CellPosition, player: PlayerType) async -> Result<GameType, Error>
 }
 
 class GameUseCases: GameUseCasesB {
@@ -16,7 +16,7 @@ class GameUseCases: GameUseCasesB {
         self.gameLogic = logic
     }
 
-    func initializeGame() -> Result<GameType, Error> {
+    func initializeGame() async -> Result<GameType, Error> {
 
         let newKey = gameLogic.generateNewID()
         let board = gameLogic.generateNewBoard()
@@ -29,10 +29,10 @@ class GameUseCases: GameUseCasesB {
             return .failure(CustomError("Something went wrong while initializing the game"))
         }
 
-        return gameRepo.createNewGame(newKey: newKey, board: board, player: player)
+        return await gameRepo.createNewGame(newKey: newKey, board: board, player: player)
     }
 
-    func resetGame(gameID: String) -> Result<GameType, Error> {
+    func resetGame(gameID: String) async -> Result<GameType, Error> {
         let board = gameLogic.generateNewBoard()
         let player = gameLogic.randomPlayer()
         guard case let .success(board) = board,
@@ -40,12 +40,12 @@ class GameUseCases: GameUseCasesB {
         else {
             return .failure(CustomError("Something went wrong while initializing the game"))
         }
-        return gameRepo.resetGame(gameID: gameID, board: board, player: player)
+        return await gameRepo.resetGame(gameID: gameID, board: board, player: player)
     }
 
-    func makeMove(gameID: String, position: CellPosition, player: PlayerType) -> Result<GameType, Error> {
+    func makeMove(gameID: String, position: CellPosition, player: PlayerType) async -> Result<GameType, Error> {
 
-        let newBoardState = gameRepo.updateBoard(gameID: gameID, position: position, player: player)
+        let newBoardState = await gameRepo.updateBoard(gameID: gameID, position: position, player: player)
         guard case let .success(newBoardState) = newBoardState else {
             return .failure(CustomError("something went wrong when trying to retrieve board state"))
         }
@@ -74,7 +74,7 @@ class GameUseCases: GameUseCasesB {
         guard case let .success(nextPlayer) = nextPlayer else {
                 return .failure(CustomError("Something went wrong while getting next player"))
             }
-        return gameRepo.updateGameState(gameID: gameID, board: newBoardState, info: GameInfo(currentPlayer: nextPlayer, gameState: gameState, winner: winner))
+        return await gameRepo.updateGameState(gameID: gameID, board: newBoardState, info: GameInfo(currentPlayer: nextPlayer, gameState: gameState, winner: winner))
     }
 
 }

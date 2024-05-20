@@ -10,7 +10,7 @@ class GameEndpoints: RouteCollection {
     }
 
     func boot(routes: RoutesBuilder) throws {
-//        let gameRoutes = routes.grouped("game")
+//      let gameRoutes = routes.grouped("game")
         routes.get("hello", use: helloWorld)
         routes.get("start", use: startGame)
         routes.get("restart", use: restartGame)
@@ -24,16 +24,16 @@ class GameEndpoints: RouteCollection {
         return Response(status: .ok, body: .init(data: helloData))
     }
 
-    func startGame(req: Request) throws -> EventLoopFuture<Response> {
-        return controller.startGame(req)
+    func startGame(req: Request) async throws -> Response {
+        return try await controller.startGame(req)
     }
 
-    func restartGame(req: Request) throws -> EventLoopFuture<Response> {
-        return controller.restartGame(req)
+    func restartGame(req: Request) async throws -> Response {
+        return try await controller.restartGame(req)
     }
 
-    func makeMove(req: Request) throws -> EventLoopFuture<Response> {
-        return controller.makeMove(req)
+    func makeMove(req: Request) async throws -> Response {
+        return try await controller.makeMove(req)
     }
 
 //    router.post("start") { req -> Response in

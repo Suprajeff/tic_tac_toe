@@ -11,94 +11,94 @@ class GameController {
         self.sResponses = gameResponses
     }
     
-    func startGame(_ req: Request) -> EventLoopFuture<Response> {
+    func startGame(_ req: Request) async throws -> Response {
 
-        switch useCases.initializeGame() {
+        switch await useCases.initializeGame() {
             case .success(let data):
                 print(data)
                 let boardHtml = GameHTMLContent.getNewBoard()
-                return handleResult(data: boardHtml, successHandler: self.sResponses.successR)
+                return try handleResult(req: req, data: boardHtml, successHandler: self.sResponses.successR)
             case .failure(let error):
-                return handleError(error: error, errorHandler: self.sResponses.serverErrR)
+                return try handleError(req: req, error: error, errorHandler: self.sResponses.serverErrR)
             case .notFound:
-                return handleNotFound(message: "Not found", notFoundHandler: self.sResponses.clientErrR)
+                return try handleNotFound(req: req, message: "Not found", notFoundHandler: self.sResponses.clientErrR)
         }
 
     }
 
-    func restartGame(_ req: Request) -> EventLoopFuture<Response> {
+    func restartGame(_ req: Request) async throws -> Response {
 
         do {
 
             let gameData = try req.content.decode(GameIDData.self)
 
             if gameData.gameID.isEmpty {
-                return handleNotFound(message: "Game ID cannot be empty", notFoundHandler: self.sResponses.clientErrR)
+                return try handleNotFound(req: req, message: "Game ID cannot be empty", notFoundHandler: self.sResponses.clientErrR)
             }
 
-            switch useCases.resetGame(gameID: gameData.gameID) {
+            switch await useCases.resetGame(gameID: gameData.gameID) {
                 case .success(let data):
                     print(data)
                     let boardHtml = GameHTMLContent.getNewBoard()
-                    return handleResult(data: boardHtml, successHandler: self.sResponses.successR)
+                    return try handleResult(req: req, data: boardHtml, successHandler: self.sResponses.successR)
                 case .failure(let error):
-                    return handleError(error: error, errorHandler: self.sResponses.serverErrR)
+                    return try handleError(req: req, error: error, errorHandler: self.sResponses.serverErrR)
                 case .notFound:
-                    return handleNotFound(message: "Not found", notFoundHandler: self.sResponses.clientErrR)
+                    return try handleNotFound(req: req, message: "Not found", notFoundHandler: self.sResponses.clientErrR)
             }
 
         } catch {
-            return handleError(error: error, errorHandler: self.sResponses.serverErrR)
+            return try handleError(req: req, error: error, errorHandler: self.sResponses.serverErrR)
         }
 
 
     }
 
-    func makeMove(_ req: Request) -> EventLoopFuture<Response>  {
+    func makeMove(_ req: Request) async throws -> Response  {
 
         do {
 
             let gameData = try req.content.decode(GameData.self)
 
             if gameData.gameID.isEmpty {
-                return handleNotFound(message: "Game ID cannot be empty", notFoundHandler: self.sResponses.clientErrR)
+                return try handleNotFound(req: req, message: "Game ID cannot be empty", notFoundHandler: self.sResponses.clientErrR)
             }
 
             let player = PlayerType(symbol: gameData.playerSymbol)
 
-            switch useCases.makeMove(gameID: gameData.gameID, position: gameData.position, player: player) {
+            switch await useCases.makeMove(gameID: gameData.gameID, position: gameData.position, player: player) {
                 case .success(let data):
                     print(data)
-                    return handleResult(data: data, successHandler: self.sResponses.successR)
+                    return try handleResult(req: req, data: data, successHandler: self.sResponses.successR)
                 case .failure(let error):
-                    return handleError(error: error, errorHandler: self.sResponses.serverErrR)
+                    return try handleError(req: req, error: error, errorHandler: self.sResponses.serverErrR)
                 case .notFound:
-                    return handleNotFound(message: "Not found", notFoundHandler: self.sResponses.clientErrR)
+                    return try handleNotFound(req: req, message: "Not found", notFoundHandler: self.sResponses.clientErrR)
             }
 
         }  catch {
-            return handleError(error: error, errorHandler: self.sResponses.serverErrR)
+            return try handleError(req: req, error: error, errorHandler: self.sResponses.serverErrR)
         }
 
     }
 
-    private func handleResult<T: Encodable>(data: T, successHandler: (_ data: SData, _ statusCode: Status.Success) -> EventLoopFuture<Response>) -> EventLoopFuture<Response> {
+    private func handleResult<T: Encodable>(req: Request, data: T, successHandler: (_ req: Request, _ data: SData, _ statusCode: Status.Success) -> Response) throws -> Response {
         do {
             let jsonData = try JSONEncoder().encode(data)
-            return successHandler(.json(JSONData(jsonData)), .OK)
+            return try successHandler(req, .json(JSONData(jsonData)), .OK)
         } catch {
             let errorMessage = "Error encoding data to JSON: \(error)"
-            return self.sResponses.serverErrR(data: .json(JSONData(errorMessage)), statusCode: .INTERNAL_SERVER_ERROR)
+            return try self.sResponses.serverErrR(req: req, data: .json(JSONData(errorMessage)), statusCode: .INTERNAL_SERVER_ERROR)
         }
     }
 
-    private func handleError(error: Error, errorHandler: (_ data: SData, _ statusCode: Status.ServerError) -> EventLoopFuture<Response>) -> EventLoopFuture<Response> {
+    private func handleError(req: Request, error: Error, errorHandler: (_ req: Request, _ data: SData, _ statusCode: Status.ServerError) -> Response) throws -> Response {
         let errorMessage = "Something went wrong: \(error.localizedDescription)"
-        return errorHandler(.json(JSONData(errorMessage)), .INTERNAL_SERVER_ERROR)
+        return try errorHandler(req, .json(JSONData(errorMessage)), .INTERNAL_SERVER_ERROR)
     }
 
-    private func handleNotFound(message: String, notFoundHandler: (_ data: SData, _ statusCode: Status.ClientError) -> EventLoopFuture<Response>) -> EventLoopFuture<Response> {
-        return notFoundHandler(.json(JSONData(message)), .BAD_REQUEST)
+    private func handleNotFound(req: Request, message: String, notFoundHandler: (_ req: Request, _ data: SData, _ statusCode: Status.ClientError) -> Response) throws -> Response {
+        return try notFoundHandler(req, .json(JSONData(message)), .BAD_REQUEST)
     }
 
 }

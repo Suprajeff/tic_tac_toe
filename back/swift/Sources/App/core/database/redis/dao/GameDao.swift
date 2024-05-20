@@ -9,13 +9,13 @@ class GameDao: GameDaoProtocol {
         self.redis = redis
     }
     
-    func setGame(newKey: String, board: BoardType, player: PlayerType) -> Result<GameType, Error> {
+    func setGame(newKey: String, board: BoardType, player: PlayerType) async -> Result<GameType, Error> {
 
         do {
             guard let starter = TypeConverter.playerTypeToString(player) else {
                 return .failure(CustomError("Failed to extract or convert data from Redis"))
             }
-            _ = try redis.hmset(["currentPlayer": starter, "gameState": "IN_PROGRESS"], in: "\(newKey):info").wait()
+            _ = try await redis.hmset(["currentPlayer": starter, "gameState": "IN_PROGRESS"], in: "\(newKey):info")
             let newGame = GameType(id: newKey, currentPlayer: player, gameState: .InProgress, state: .board(board), winner: nil)
             return .success(newGame)
         } catch {
@@ -24,15 +24,15 @@ class GameDao: GameDaoProtocol {
 
     }
 
-    func resetGame(gameID: String, board: BoardType, player: PlayerType) -> Result<GameType, Error> {
+    func resetGame(gameID: String, board: BoardType, player: PlayerType) async -> Result<GameType, Error> {
 
         do {
-            _ = try redis.delete(["\(gameID):moves:X", "\(gameID):moves:O"]).wait()
-            _ = try redis.hdel(["winner"], from: "\(gameID):info").wait()
+            _ = try await redis.delete(["\(gameID):moves:X", "\(gameID):moves:O"])
+            _ = try await redis.hdel(["winner"], from: "\(gameID):info")
             guard let starter = TypeConverter.playerTypeToString(player) else {
                 return .failure(CustomError("Failed to extract or convert data from Redis"))
             }
-            _ = try redis.hmset(["currentPlayer": starter, "gameState": "IN_PROGRESS"], in: "\(gameID):info").wait()
+            _ = try await redis.hmset(["currentPlayer": starter, "gameState": "IN_PROGRESS"], in: "\(gameID):info")
             let newGame = GameType(id: gameID, currentPlayer: player, gameState: .InProgress, state: .board(board), winner: nil)
             return .success(newGame)
         } catch {
@@ -41,12 +41,12 @@ class GameDao: GameDaoProtocol {
 
     }
 
-    func addPlayerMove(gameID: String, move: Move) -> Result<StateType, Error> {
+    func addPlayerMove(gameID: String, move: Move) async -> Result<StateType, Error> {
         do {
             let cellPosition = TypeConverter.cellPositiontoString(move.position)
-            _ = try redis.sadd(cellPosition, to: "\(gameID):moves:\(move.player.symbol)").wait()
-            let xPositions = try redis.smembers(of: "\(gameID):moves:X").wait()
-            let oPositions = try redis.smembers(of: "\(gameID):moves:O").wait()
+            _ = try await redis.sadd(cellPosition, to: "\(gameID):moves:\(move.player.symbol)")
+            let xPositions = try await redis.smembers(of: "\(gameID):moves:X").get()
+            let oPositions = try await redis.smembers(of: "\(gameID):moves:O").get()
 
             var xCellPositions: [CellPosition] = []
             var oCellPositions: [CellPosition] = []
@@ -78,9 +78,9 @@ class GameDao: GameDaoProtocol {
         }
     }
 
-    func getPlayerMoves(gameID: String, move: Move) -> Result<Moves, Error> {
+    func getPlayerMoves(gameID: String, move: Move) async -> Result<Moves, Error> {
         do {
-            let positions = try redis.smembers(of: "\(gameID):moves:\(move.player)").wait()
+            let positions = try await redis.smembers(of: "\(gameID):moves:\(move.player)").get()
             var cellPositions: [CellPosition] = []
             for position in positions {
                 if let RESPValueString = TypeConverter.extractString(from: position) {
@@ -96,11 +96,11 @@ class GameDao: GameDaoProtocol {
         }
     }
 
-    func getInfo(gameID: String) -> Result<GameType, Error> {
+    func getInfo(gameID: String) async -> Result<GameType, Error> {
         do {
-            let info = try redis.hmget(["currentPlayer", "gameState", "winner"], from: "\(gameID):info").wait()
-            let xPositions = try redis.smembers(of: "\(gameID):moves:X").wait()
-            let oPositions = try redis.smembers(of: "\(gameID):moves:O").wait()
+            let info = try await redis.hmget(["currentPlayer", "gameState", "winner"], from: "\(gameID):info").get()
+            let xPositions = try await redis.smembers(of: "\(gameID):moves:X").get()
+            let oPositions = try await redis.smembers(of: "\(gameID):moves:O").get()
 
             var xCellPositions: [CellPosition] = []
             var oCellPositions: [CellPosition] = []
@@ -136,7 +136,7 @@ class GameDao: GameDaoProtocol {
         }
     }
 
-    func updateInfo(gameID: String, board: StateType, info: GameInfo) -> Result<GameType, Error> {
+    func updateInfo(gameID: String, board: StateType, info: GameInfo) async -> Result<GameType, Error> {
         do {
             guard let currentPlayer = TypeConverter.playerTypeToString(info.currentPlayer),
                         let gameState = TypeConverter.gameStateToString(info.gameState),
@@ -144,7 +144,7 @@ class GameDao: GameDaoProtocol {
                         let winnerFormatted = TypeConverter.playerTypeToString(winner) else {
                 return .failure(CustomError("Failed to extract or convert data from Redis"))
             }
-            _ = try redis.hmset(["currentPlayer": currentPlayer, "gameState": gameState, "winner": winnerFormatted], in: "\(gameID):info").wait()
+            _ = try await redis.hmset(["currentPlayer": currentPlayer, "gameState": gameState, "winner": winnerFormatted], in: "\(gameID):info")
             let gameInfo = GameType(id: gameID, currentPlayer: info.currentPlayer, gameState: info.gameState, state: board, winner: info.winner)
             return .success(gameInfo)
         } catch {
@@ -155,10 +155,10 @@ class GameDao: GameDaoProtocol {
 }
 
 protocol GameDaoProtocol {
-    func setGame(newKey: String, board: BoardType, player: PlayerType) -> Result<GameType, Error>
-    func resetGame(gameID: String, board: BoardType, player: PlayerType) -> Result<GameType, Error>
-    func addPlayerMove(gameID: String, move: Move) -> Result<StateType, Error>
-    func getPlayerMoves(gameID: String, move: Move) -> Result<Moves, Error>
-    func getInfo(gameID: String) -> Result<GameType, Error>
-    func updateInfo(gameID: String, board: StateType, info: GameInfo) -> Result<GameType, Error>
+    func setGame(newKey: String, board: BoardType, player: PlayerType) async -> Result<GameType, Error>
+    func resetGame(gameID: String, board: BoardType, player: PlayerType) async -> Result<GameType, Error>
+    func addPlayerMove(gameID: String, move: Move) async -> Result<StateType, Error>
+    func getPlayerMoves(gameID: String, move: Move) async -> Result<Moves, Error>
+    func getInfo(gameID: String) async -> Result<GameType, Error>
+    func updateInfo(gameID: String, board: StateType, info: GameInfo) async -> Result<GameType, Error>
 }
