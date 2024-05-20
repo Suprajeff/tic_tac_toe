@@ -16,6 +16,9 @@ class GameController {
         switch await useCases.initializeGame() {
             case .success(let data):
                 print(data)
+                req.session.data["gameID"] = data.id
+                req.session.data["currentPlayer"] = TypeConverter.playerTypeToString(data.currentPlayer)
+                req.session.data["gameState"] = TypeConverter.gameStateToString(data.gameState)
                 let boardHtml = GameHTMLContent.getNewBoard()
                 return try handleResult(req: req, data: boardHtml, successHandler: self.sResponses.successR)
             case .failure(let error):

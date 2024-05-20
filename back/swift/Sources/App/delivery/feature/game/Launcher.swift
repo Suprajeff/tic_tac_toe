@@ -2,9 +2,9 @@ import Vapor
 import Redis
 
 
-func launchGameFeature(redisClient: RedisClient, _ app: Application) async throws -> GameController {
+func launchGameFeature(_ app: Application) async throws {
 
-    let redisData = RedisData(redis: redisClient)
+    let redisData = RedisData(redis: app.redis)
     let gameRepository = GameRepositoryImpl(redisData: redisData)
 
     let checker = GameStateChecker()
@@ -15,7 +15,9 @@ func launchGameFeature(redisClient: RedisClient, _ app: Application) async throw
 
     let gameController = GameController(gameUseCases: gameUseCases, gameResponses: gameResponses)
 
-    return gameController
+    let gameEndpoints = GameEndpoints(gameController: gameController)
+
+    try app.routes.register(collection: gameEndpoints)
 
 }
 
