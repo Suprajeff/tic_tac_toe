@@ -1,5 +1,6 @@
 import Foundation
 import Vapor
+import Logging
 
 class GameController {
     
@@ -59,18 +60,63 @@ class GameController {
 
         do {
 
-            let gameData = try req.content.decode(GameData.self)
+            print("Start Making Move")
 
-            if gameData.gameID.isEmpty {
-                return try handleNotFound(req: req, message: "Game ID cannot be empty", notFoundHandler: self.sResponses.clientErrR)
+            let positionData = try req.content.decode(MoveData.self)
+
+            print("Got Position Data \(positionData)")
+
+            guard let position = TypeConverter.stringToCellPosition(positionData.position) else {
+                return try handleNotFound(req: req, message: "Could not get cellposition from request", notFoundHandler: self.sResponses.clientErrR)
             }
 
-            let player = PlayerType(symbol: gameData.playerSymbol)
+            guard let gameID = req.session.data["gameID"] else {
+                return try handleNotFound(req: req, message: "Game ID cannot be null", notFoundHandler: self.sResponses.clientErrR)
+            }
 
-            switch await useCases.makeMove(gameID: gameData.gameID, position: gameData.position, player: player) {
+            guard let currentPlayer = req.session.data["currentPlayer"] else {
+                return try handleNotFound(req: req, message: "Current Player cannot be null", notFoundHandler: self.sResponses.clientErrR)
+            }
+
+            guard let player = TypeConverter.stringToPlayerType(currentPlayer) else {
+                return try handleNotFound(req: req, message: "Could not convert player data to player type cannot be null", notFoundHandler: self.sResponses.clientErrR)
+            }
+
+            switch await useCases.makeMove(gameID: gameID, position: position, player: player) {
                 case .success(let data):
                     print(data)
-                    return try handleResult(req: req, data: data, successHandler: self.sResponses.successR)
+                    print("Setting Up Game Title")
+
+                    let newTitle: GameTitle
+
+                    if data.gameState == GameState.Won, let winner = data.winner {
+                        newTitle = (winner.symbol == CellType.X) ? .PlayerXWon : .PlayerOWon
+                    } else if data.gameState == GameState.Draw {
+                        newTitle = .Draw
+                    } else {
+                        newTitle = .Playing
+                    }
+
+                    print("Updating Board")
+
+                    switch data.state {
+                        case .board(let boardType):
+                            return try handleNotFound(req: req, message: "Wrong state type", notFoundHandler: self.sResponses.clientErrR)
+                        case .moves(let playersMoves):
+                            req.session.data["currentPlayer"] = TypeConverter.playerTypeToString(data.currentPlayer)
+                            req.session.data["gameState"] = TypeConverter.gameStateToString(data.gameState)
+                            let newMove = GameHTMLContent.getBoard(title: newTitle, state: playersMoves)
+                            switch(newMove) {
+                                case .success(let board):
+                                    return try handleResult(req: req, data: board, successHandler: self.sResponses.successR)
+                                case .failure(let error):
+                                    print("Issue Setting Board")
+                                    return try handleError(req: req, error: error, errorHandler: self.sResponses.serverErrR)
+                                case .notFound:
+                                    return try handleNotFound(req: req, message: "Not found", notFoundHandler: self.sResponses.clientErrR)
+                            }
+                    }
+
                 case .failure(let error):
                     return try handleError(req: req, error: error, errorHandler: self.sResponses.serverErrR)
                 case .notFound:

@@ -3,11 +3,11 @@ import Foundation
 class GameHTMLContent {
     
     private static let FILLED_CELL = """
-        <div id="cell%s" class="flex items-center justify-center font-bold text-4xl bg-slate-600 text-white">%s</div>
+        <div id="cell%@" class="flex items-center justify-center font-bold text-4xl bg-slate-600 text-white">%@</div>
     """
 
     private static let EMPTY_CELL = """
-        <div id="cell%s" class="flex items-center justify-center font-bold text-4xl bg-slate-900 text-white hover:bg-slate-600 transition-colors cursor-pointer" hx-post="http://localhost:8083/move" hx-request='{"credentials": "include"}' hx-trigger="click" hx-target="#board" hx-swap="outerHTML" hx-vals='{"position":"%s"}'></div>
+        <div id="cell%@" class="flex items-center justify-center font-bold text-4xl bg-slate-900 text-white hover:bg-slate-600 transition-colors cursor-pointer" hx-post="http://localhost:8083/move" hx-request='{"credentials": "include"}' hx-trigger="click" hx-target="#board" hx-swap="outerHTML" hx-vals='{"position":"%@"}'></div>
     """
 
     private static let NEW_GAME_BOARD = """
@@ -32,10 +32,10 @@ class GameHTMLContent {
     
     private static let GAME_BOARD = """
         <div id="board" class="flex flex-col gap-6 item-center justify-center" hx-trigger="load">
-            <h1 id="gameTitle" class="text-slate-400 text-center text-4xl font-['Teachers']">%s</h1>
+            <h1 id="gameTitle" class="text-slate-400 text-center text-4xl font-['Teachers']">%@</h1>
             <div id="game" class="flex items-center justify-center">
                 <div class="grid grid-cols-3 grid-rows-3 gap-4 bg-gray-200 p-4 rounded-lg h-64 w-64">
-                    %s
+                    %@
                 </div>
             </div>
             <button class="bg-slate-400 hover:bg-slate-600 text-white font-bold py-2 px-4 rounded-full" hx-get="http://localhost:8083/restart" hx-trigger="click" hx-target="#board" hx-swap="outerHTML" hx-request='{"credentials": "include"}'>Reset</button>
@@ -94,9 +94,8 @@ class GameHTMLContent {
                         boardContent += filledCellHTML
                     case .failure(let error):
                         print("Error: \(error.localizedDescription)")
-                        boardContent += "<div>Error in generating filled cell HTML</div>"
                     case .notFound:
-                        boardContent += "<div>Error finding info</div>"
+                        print("Error: not found")
                 }
             } else {
                 let emptyCellResult = getEmptyCellHTML(cellID: cell.id, position: cell.position)
@@ -105,14 +104,18 @@ class GameHTMLContent {
                         boardContent += emptyCellHTML
                     case .failure(let error):
                         print("Error: \(error.localizedDescription)")
-                        boardContent += "<div>Error in generating empty cell HTML</div>"
                     case .notFound:
-                        boardContent += "<div>Error finding info</div>"
+                        print("Error: not found")
                 }
             }
         }
 
-        return .success(String(format: GAME_BOARD, title.rawValue, boardContent))
+        print("Title: \(title)")
+
+        let formattedBoard = String(format: GAME_BOARD, title.rawValue, boardContent)
+        print("Formatted Board Content: \(formattedBoard)")
+
+        return .success(formattedBoard)
 
     }
 

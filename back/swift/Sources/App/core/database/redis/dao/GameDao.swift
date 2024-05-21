@@ -139,15 +139,23 @@ class GameDao: GameDaoProtocol {
     func updateInfo(gameID: String, board: StateType, info: GameInfo) async -> Result<GameType, Error> {
         do {
             guard let currentPlayer = TypeConverter.playerTypeToString(info.currentPlayer),
-                        let gameState = TypeConverter.gameStateToString(info.gameState),
-                        let winner = info.winner,
-                        let winnerFormatted = TypeConverter.playerTypeToString(winner) else {
+                        let gameState = TypeConverter.gameStateToString(info.gameState) else {
                 return .failure(CustomError("Failed to extract or convert data from Redis"))
             }
-            _ = try await redis.hmset(["currentPlayer": currentPlayer, "gameState": gameState, "winner": winnerFormatted], in: "\(gameID):info")
+
+            if let winner = info.winner {
+                guard let winnerFormatted = TypeConverter.playerTypeToString(winner) else {
+                    return .failure(CustomError("Failed to convert player string to player type"))
+                }
+                _ = try await redis.hmset(["currentPlayer": currentPlayer, "gameState": gameState, "winner": winnerFormatted], in: "\(gameID):info")
+            } else {
+                _ = try await redis.hmset(["currentPlayer": currentPlayer, "gameState": gameState], in: "\(gameID):info")
+            }
+
             let gameInfo = GameType(id: gameID, currentPlayer: info.currentPlayer, gameState: info.gameState, state: board, winner: info.winner)
             return .success(gameInfo)
         } catch {
+            print("error updating info: \(error.localizedDescription)")
             return .failure(error)
         }
     }

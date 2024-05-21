@@ -50,6 +50,8 @@ class GameUseCases: GameUseCasesB {
             return .failure(CustomError("something went wrong when trying to retrieve board state"))
         }
 
+        print("checking winner")
+
         let checkWinnerAndDraw = gameLogic.checkForWinner(state: newBoardState)
 
         var gameState: GameState
@@ -64,16 +66,21 @@ class GameUseCases: GameUseCasesB {
                     gameState = .Draw
                 }
             case .failure(let error):
+                print("checking winner fail \(error.localizedDescription)")
                 return .failure(error)
             case .notFound:
                 gameState = .InProgress
         }
 
+        print("getting next player")
 
         let nextPlayer = gameLogic.getNextPlayer(currentPlayer: player)
         guard case let .success(nextPlayer) = nextPlayer else {
-                return .failure(CustomError("Something went wrong while getting next player"))
-            }
+            return .failure(CustomError("Something went wrong while getting next player"))
+        }
+
+        print("updating game")
+
         return await gameRepo.updateGameState(gameID: gameID, board: newBoardState, info: GameInfo(currentPlayer: nextPlayer, gameState: gameState, winner: winner))
     }
 
