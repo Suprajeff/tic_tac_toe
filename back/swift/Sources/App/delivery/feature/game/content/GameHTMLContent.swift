@@ -110,10 +110,10 @@ class GameHTMLContent {
             }
         }
 
-        print("Title: \(title)")
+        //print("Title: \(title)")
 
         let formattedBoard = String(format: GAME_BOARD, title.rawValue, boardContent)
-        print("Formatted Board Content: \(formattedBoard)")
+        //print("Formatted Board Content: \(formattedBoard)")
 
         return .success(formattedBoard)
 

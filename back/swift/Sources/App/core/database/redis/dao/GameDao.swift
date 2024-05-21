@@ -15,7 +15,7 @@ class GameDao: GameDaoProtocol {
             guard let starter = TypeConverter.playerTypeToString(player) else {
                 return .failure(CustomError("Failed to extract or convert data from Redis"))
             }
-            _ = try await redis.hmset(["currentPlayer": starter, "gameState": "IN_PROGRESS"], in: "\(newKey):info")
+            _ = try redis.hmset(["currentPlayer": starter, "gameState": "IN_PROGRESS"], in: "\(newKey):info")
             let newGame = GameType(id: newKey, currentPlayer: player, gameState: .InProgress, state: .board(board), winner: nil)
             return .success(newGame)
         } catch {
@@ -27,12 +27,12 @@ class GameDao: GameDaoProtocol {
     func resetGame(gameID: String, board: BoardType, player: PlayerType) async -> Result<GameType, Error> {
 
         do {
-            _ = try await redis.delete(["\(gameID):moves:X", "\(gameID):moves:O"])
-            _ = try await redis.hdel(["winner"], from: "\(gameID):info")
+            _ = try redis.delete(["\(gameID):moves:X", "\(gameID):moves:O"])
+            _ = try redis.hdel(["winner"], from: "\(gameID):info")
             guard let starter = TypeConverter.playerTypeToString(player) else {
                 return .failure(CustomError("Failed to extract or convert data from Redis"))
             }
-            _ = try await redis.hmset(["currentPlayer": starter, "gameState": "IN_PROGRESS"], in: "\(gameID):info")
+            _ = try redis.hmset(["currentPlayer": starter, "gameState": "IN_PROGRESS"], in: "\(gameID):info")
             let newGame = GameType(id: gameID, currentPlayer: player, gameState: .InProgress, state: .board(board), winner: nil)
             return .success(newGame)
         } catch {
@@ -44,7 +44,7 @@ class GameDao: GameDaoProtocol {
     func addPlayerMove(gameID: String, move: Move) async -> Result<StateType, Error> {
         do {
             let cellPosition = TypeConverter.cellPositiontoString(move.position)
-            _ = try await redis.sadd(cellPosition, to: "\(gameID):moves:\(move.player.symbol)")
+            _ = try redis.sadd(cellPosition, to: "\(gameID):moves:\(move.player.symbol)")
             let xPositions = try await redis.smembers(of: "\(gameID):moves:X").get()
             let oPositions = try await redis.smembers(of: "\(gameID):moves:O").get()
 
