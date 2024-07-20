@@ -6,7 +6,7 @@
 Tic Tac Toe HTMX App
 ====================
 
-This repository showcases, via this classic implementation of the tic-tac-toe game, an htmx application built with four different backend language implementations: Go, TypeScript, Kotlin, and Swift. The application maintains a consistent user interface and functionality across all backends and demonstrates the simplicity of htmx, a powerful library that enables developers to create high-performance, modern web applications by seamlessly integrating HTML and server-side technologies. The codebase serves as a valuable reference for developers exploring htmx or seeking to integrate it with various backend stacks, highlighting the framework's language-agnostic nature and its ability to facilitate efficient development across multiple platforms.
+This repository showcases, via this classic implementation of the tic-tac-toe game, an htmx application built with four different backend languages: Go, TypeScript, Kotlin, and Swift. The application maintains a consistent user interface and functionality across all backends and demonstrates the simplicity of htmx, a powerful library that enables developers to create high-performance, modern web applications by seamlessly integrating HTML and server-side technologies. The codebase serves as a valuable reference for developers exploring htmx or seeking to integrate it with various backend stacks, highlighting the framework's language-agnostic nature and its ability to facilitate efficient development across multiple platforms.
 
 ## **Development Environment / Deployment**
 
@@ -15,5 +15,3 @@ To facilitate easy deployment and ensure consistency across different environmen
 ## **Architecture**
 
 This application adheres to the principles of Clean Architecture, employing a vertical, layered structure organized by features and utilizing Object-Oriented Programming (OOP). The codebase is modularized into self-contained feature modules, each encapsulating its own domain logic, use cases, and infrastructure concerns. This architectural approach, combined with OOP principles, promotes separation of concerns, enhancing code maintainability, testability, and extensibility.
-
-The app is currently in development.
